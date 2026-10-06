@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import { useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,36 +27,19 @@ interface StudentUser {
 }
 
 export function ProfileConnections({ connections, showAll = false }: ProfileConnectionsProps) {
-  const [students, setStudents] = useState<StudentUser[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        setLoading(true)
-        const studentsData = await getAllStudents()
-
-        // Transform and clean the data
-        const formattedStudents = studentsData.map((student: any) => ({
-          id: student.id,
-          fullName: student.fullName || "Unnamed Student",
-          title: student.title || "Student",
-          avatar: student.avatar || "/placeholder.svg?height=50&width=50",
-          university: student.university,
-        }))
-
-        setStudents(formattedStudents)
-      } catch (error) {
-        console.error("Error fetching students:", error)
-        // Set empty array on error
-        setStudents([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchStudents()
-  }, [])
+  const { data: students = [], isPending: loading } = useQuery<StudentUser[]>({
+    queryKey: ["students", "all"],
+    queryFn: async () => {
+      const studentsData = await getAllStudents()
+      return studentsData.map((student: any) => ({
+        id: student.id,
+        fullName: student.fullName || "Unnamed Student",
+        title: student.title || "Student",
+        avatar: student.avatar || "/placeholder.svg?height=50&width=50",
+        university: student.university,
+      }))
+    },
+  })
 
   const displayedUsers = showAll ? students : students.slice(0, 3)
 

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { PremiumNavbar } from "@/components/premium-navbar"
 import { RecruiterExploreHeader } from "@/components/explore/recruiters/recruiter-explore-header"
 import { RecruiterFilters } from "@/components/explore/recruiters/recruiter-filters"
@@ -66,8 +67,6 @@ export default function RecruiterExplorePage() {
 
   const [recruiter, setRecruiter] = useState<any>(null)
 
-  const [students, setStudents] = useState<Student[]>([])
-  const [filteredStudents, setFilteredStudents] = useState<Student[]>([])
   const [selectedStudent, setSelectedStudent] = useState<any>(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [isContactModalOpen, setIsContactModalOpen] = useState(false)
@@ -85,36 +84,8 @@ export default function RecruiterExplorePage() {
   const [savedStudents, setSavedStudents] = useState<string[]>([])
   const [contactedStudents, setContactedStudents] = useState<string[]>([])
 
-  const [isLoading, setIsLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const PAGE_SIZE = 10
-
-  const [filterOptions, setFilterOptions] = useState({
-    availableSkills: [
-      "web-dev",
-      "ui-ux",
-      "mobile-dev",
-      "backend",
-      "frontend",
-      "fullstack",
-      "cloud",
-      "devops",
-      "machine-learning",
-      "data-science",
-    ],
-    universities: ["iiitdm", "iit-madras", "nit-trichy", "vit", "bits-pilani"],
-    graduationYears: [2024, 2025, 2026, 2027],
-    locations: ["bangalore", "hyderabad", "chennai", "mumbai", "delhi", "pune"],
-    roles: [
-      "software-engineer",
-      "frontend-developer",
-      "backend-developer",
-      "full-stack-developer",
-      "ui-ux-designer",
-      "data-scientist",
-      "devops-engineer",
-    ],
-  })
 
   const [isJobModalOpen, setIsJobModalOpen] = useState(false)
   const [jobFormData, setJobFormData] = useState<Omit<JobData, "postedBy" | "createdAt" | "updatedAt" | "applicants">>({
@@ -131,66 +102,98 @@ export default function RecruiterExplorePage() {
   useEffect(() => {
     const auth = getAuth()
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         toast.error("Please login first")
         router.push("/login")
         return
       }
       setRecruiterId(user.uid)
-
-      try {
-        setIsLoading(true)
-
-        // Fetch all students
-        const allStudents = await getAllStudents()
-
-        // Calculate match scores for each student
-        const studentsWithScores = allStudents.map((student) => ({
-          ...student,
-          matchScore: calculateMatchScore(student),
-        })) as Student[]
-
-        setStudents(studentsWithScores)
-        setFilteredStudents(studentsWithScores)
-
-        // Update filter options based on actual data
-        const uniqueSkills = new Set<string>()
-        const uniqueUniversities = new Set<string>()
-        const uniqueLocations = new Set<string>()
-        const uniqueRoles = new Set<string>()
-
-        studentsWithScores.forEach((student) => {
-          student.skills?.forEach((skill) => uniqueSkills.add(skill))
-          if (student.university) uniqueUniversities.add(student.university)
-          if (student.preferredLocations) {
-            student.preferredLocations.forEach((loc) => uniqueLocations.add(loc))
-          }
-          if (student.preferredRoles) {
-            student.preferredRoles.forEach((role) => uniqueRoles.add(role))
-          }
-        })
-
-        setFilterOptions({
-          availableSkills: Array.from(uniqueSkills),
-          universities: Array.from(uniqueUniversities),
-          graduationYears: [2024, 2025, 2026, 2027],
-          locations: Array.from(uniqueLocations),
-          roles: Array.from(uniqueRoles),
-        })
-      } catch (error) {
-        console.error("Error:", error)
-        toast.error("Failed to fetch data. Please try again.")
-      } finally {
-        setIsLoading(false)
-      }
     })
 
     return () => unsubscribe()
   }, [router])
 
-  // Filter students based on selected filters
+  const {
+    data: fetchedStudents,
+    isPending: isLoading,
+    isError,
+    error,
+  } = useQuery<Student[]>({
+    queryKey: ["recruiter-explore", "students"],
+    queryFn: () => getAllStudents(),
+    enabled: !!recruiterId,
+  })
+
   useEffect(() => {
+    if (isError) {
+      console.error("Error:", error)
+      toast.error("Failed to fetch data. Please try again.")
+    }
+  }, [isError, error])
+
+  const students = useMemo(
+    () => (fetchedStudents ?? []).map((student) => ({ ...student, matchScore: calculateMatchScore(student) })),
+    [fetchedStudents],
+  )
+
+  const filterOptions = useMemo(() => {
+    if (!fetchedStudents) {
+      return {
+        availableSkills: [
+          "web-dev",
+          "ui-ux",
+          "mobile-dev",
+          "backend",
+          "frontend",
+          "fullstack",
+          "cloud",
+          "devops",
+          "machine-learning",
+          "data-science",
+        ],
+        universities: ["iiitdm", "iit-madras", "nit-trichy", "vit", "bits-pilani"],
+        graduationYears: [2024, 2025, 2026, 2027],
+        locations: ["bangalore", "hyderabad", "chennai", "mumbai", "delhi", "pune"],
+        roles: [
+          "software-engineer",
+          "frontend-developer",
+          "backend-developer",
+          "full-stack-developer",
+          "ui-ux-designer",
+          "data-scientist",
+          "devops-engineer",
+        ],
+      }
+    }
+
+    const uniqueSkills = new Set<string>()
+    const uniqueUniversities = new Set<string>()
+    const uniqueLocations = new Set<string>()
+    const uniqueRoles = new Set<string>()
+
+    students.forEach((student) => {
+      student.skills?.forEach((skill) => uniqueSkills.add(skill))
+      if (student.university) uniqueUniversities.add(student.university)
+      if (student.preferredLocations) {
+        student.preferredLocations.forEach((loc) => uniqueLocations.add(loc))
+      }
+      if (student.preferredRoles) {
+        student.preferredRoles.forEach((role) => uniqueRoles.add(role))
+      }
+    })
+
+    return {
+      availableSkills: Array.from(uniqueSkills),
+      universities: Array.from(uniqueUniversities),
+      graduationYears: [2024, 2025, 2026, 2027],
+      locations: Array.from(uniqueLocations),
+      roles: Array.from(uniqueRoles),
+    }
+  }, [fetchedStudents, students])
+
+  // Filter students based on selected filters
+  const filteredStudents = useMemo(() => {
     let result = [...students]
 
     // Filter by search query
@@ -251,7 +254,7 @@ export default function RecruiterExplorePage() {
       result.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0))
     }
 
-    setFilteredStudents(result)
+    return result
   }, [filters, students, activeTab, savedStudents, contactedStudents])
 
   const handleFilterChange = (newFilters: any) => {

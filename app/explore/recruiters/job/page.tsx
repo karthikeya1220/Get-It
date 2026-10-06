@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { PremiumNavbar } from "@/components/premium-navbar"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
@@ -24,10 +25,8 @@ import { format } from "date-fns"
 
 export default function RecruiterJobsPage() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [recruiterId, setRecruiterId] = useState<string | null>(null)
-  const [recruiter, setRecruiter] = useState<any>(null)
-  const [jobs, setJobs] = useState<JobData[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [sortOption, setSortOption] = useState<"recent" | "applicants" | "payment">("recent")
   const [filterStatus, setFilterStatus] = useState<"all" | "open" | "closed">("all")
   const [searchQuery, setSearchQuery] = useState("")
@@ -48,7 +47,7 @@ export default function RecruiterJobsPage() {
   useEffect(() => {
     const auth = getAuth()
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         toast.error("Please login first")
         router.push("/login")
@@ -56,21 +55,24 @@ export default function RecruiterJobsPage() {
       }
 
       setRecruiterId(user.uid)
-
-      try {
-        setIsLoading(true)
-        const jobsData = await getRecruiterJobs(user.uid)
-        setJobs(jobsData)
-      } catch (error) {
-        console.error("Error:", error)
-        toast.error("Failed to fetch jobs. Please try again.")
-      } finally {
-        setIsLoading(false)
-      }
     })
 
     return () => unsubscribe()
   }, [router])
+
+  const { data: jobs = [], isPending: isLoading } = useQuery<JobData[]>({
+    queryKey: ["jobs", "recruiter", recruiterId],
+    queryFn: async () => {
+      try {
+        return await getRecruiterJobs(recruiterId as string)
+      } catch (error) {
+        console.error("Error:", error)
+        toast.error("Failed to fetch jobs. Please try again.")
+        return []
+      }
+    },
+    enabled: !!recruiterId,
+  })
 
   const handleCreateJob = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -90,8 +92,7 @@ export default function RecruiterJobsPage() {
       })
 
       // Refresh jobs list
-      const updatedJobs = await getRecruiterJobs(recruiterId)
-      setJobs(updatedJobs)
+      await queryClient.invalidateQueries({ queryKey: ["jobs"] })
 
       toast.success("Job created successfully!")
       setIsJobModalOpen(false)
@@ -130,33 +131,37 @@ export default function RecruiterJobsPage() {
     })
   }
 
-  const filteredJobs = jobs
-    .filter((job) => {
-      // Filter by status
-      if (filterStatus !== "all" && job.status !== filterStatus) return false
+  const filteredJobs = useMemo(
+    () =>
+      jobs
+        .filter((job) => {
+          // Filter by status
+          if (filterStatus !== "all" && job.status !== filterStatus) return false
 
-      // Filter by search query
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase()
-        return (
-          job.title.toLowerCase().includes(query) ||
-          job.description.toLowerCase().includes(query) ||
-          job.requirements.some((req) => req.toLowerCase().includes(query))
-        )
-      }
+          // Filter by search query
+          if (searchQuery) {
+            const query = searchQuery.toLowerCase()
+            return (
+              job.title.toLowerCase().includes(query) ||
+              job.description.toLowerCase().includes(query) ||
+              job.requirements.some((req) => req.toLowerCase().includes(query))
+            )
+          }
 
-      return true
-    })
-    .sort((a, b) => {
-      // Sort by selected option
-      if (sortOption === "recent") {
-        return b.createdAt.getTime() - a.createdAt.getTime()
-      } else if (sortOption === "applicants") {
-        return b.applicants.length - a.applicants.length
-      } else {
-        return b.payment - a.payment
-      }
-    })
+          return true
+        })
+        .sort((a, b) => {
+          // Sort by selected option
+          if (sortOption === "recent") {
+            return b.createdAt.getTime() - a.createdAt.getTime()
+          } else if (sortOption === "applicants") {
+            return b.applicants.length - a.applicants.length
+          } else {
+            return b.payment - a.payment
+          }
+        }),
+    [jobs, filterStatus, searchQuery, sortOption],
+  )
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">

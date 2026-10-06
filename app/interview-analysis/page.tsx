@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { analyzeInterviewVideo, getUserInterviewAnalyses } from "@/lib/firebase-service"
 import { PremiumNavbar } from "@/components/premium-navbar"
 import { Icons } from "@/components/icons"
@@ -48,18 +49,17 @@ interface InterviewAnalysis {
 
 export default function InterviewAnalysisPage() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [userId, setUserId] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [analyses, setAnalyses] = useState<InterviewAnalysis[]>([])
-  const [currentAnalysis, setCurrentAnalysis] = useState<InterviewAnalysis | null>(null)
+  const [selectedAnalysis, setSelectedAnalysis] = useState<InterviewAnalysis | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const auth = getAuth()
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         toast.error("Please login first")
         router.push("/login")
@@ -67,27 +67,33 @@ export default function InterviewAnalysisPage() {
       }
 
       setUserId(user.uid)
-
-      try {
-        setIsLoading(true)
-        const userAnalyses = await getUserInterviewAnalyses(user.uid)
-        // Cast the result to InterviewAnalysis[]
-        setAnalyses(userAnalyses as unknown as InterviewAnalysis[])
-
-        // Set the most recent analysis as current if available
-        if (userAnalyses.length > 0) {
-          setCurrentAnalysis(userAnalyses[0] as unknown as InterviewAnalysis)
-        }
-      } catch (error) {
-        console.error("Error:", error)
-        toast.error("Failed to fetch analysis data. Please try again.")
-      } finally {
-        setIsLoading(false)
-      }
     })
 
     return () => unsubscribe()
   }, [router])
+
+  const {
+    data: analyses = [],
+    isLoading,
+    error,
+  } = useQuery<InterviewAnalysis[]>({
+    queryKey: ["interview-analyses", userId],
+    queryFn: async () => {
+      const userAnalyses = await getUserInterviewAnalyses(userId as string)
+      // Cast the result to InterviewAnalysis[]
+      return userAnalyses as unknown as InterviewAnalysis[]
+    },
+    enabled: !!userId,
+  })
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error:", error)
+      toast.error("Failed to fetch analysis data. Please try again.")
+    }
+  }, [error])
+
+  const currentAnalysis = selectedAnalysis ?? analyses[0] ?? null
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -138,9 +144,13 @@ export default function InterviewAnalysisPage() {
           analysis: result.analysis,
         }
 
-        setAnalyses([newAnalysis, ...analyses])
-        setCurrentAnalysis(newAnalysis)
+        queryClient.setQueryData<InterviewAnalysis[]>(["interview-analyses", userId], (previous) => [
+          newAnalysis,
+          ...(previous ?? []),
+        ])
+        setSelectedAnalysis(newAnalysis)
         setSelectedFile(null)
+        queryClient.invalidateQueries({ queryKey: ["interview-analyses"] })
 
         // Clear the file input
         if (fileInputRef.current) {
@@ -156,7 +166,7 @@ export default function InterviewAnalysisPage() {
   }
 
   const handleSelectAnalysis = (analysis: InterviewAnalysis) => {
-    setCurrentAnalysis(analysis)
+    setSelectedAnalysis(analysis)
   }
 
   return (

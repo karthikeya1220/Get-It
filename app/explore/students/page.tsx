@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { PremiumNavbar } from "@/components/premium-navbar"
 import { PremiumFooter } from "@/components/premium-footer"
@@ -11,22 +12,20 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
 import { Toaster } from "@/components/ui/toaster"
-import { JobData, getAllJobs, getStudentJobPreferences, toggleSaveJob as toggleSaveJobFn } from "@/lib/firebase-service"
+import {
+  StudentJobPreferences,
+  getAllJobs,
+  getStudentJobPreferences,
+  toggleSaveJob as toggleSaveJobFn,
+} from "@/lib/firebase-service"
 
 export default function StudentJobsPage() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [studentId, setStudentId] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [jobs, setJobs] = useState<JobData[]>([])
-  const [filteredJobs, setFilteredJobs] = useState<JobData[]>([])
   const [activeTab, setActiveTab] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
-  const [allJobs, setAllJobs] = useState<JobData[]>([])
-  const [appliedJobs, setAppliedJobs] = useState<string[]>([])
-  const [savedJobs, setSavedJobs] = useState<string[]>([])
-  const [hasMore, setHasMore] = useState(true)
-  const [lastVisible, setLastVisible] = useState<string | null>(null)
 
   // Available skill options for filtering
   const skillOptions = [
@@ -50,49 +49,42 @@ export default function StudentJobsPage() {
 
   useEffect(() => {
     const auth = getAuth()
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         toast.error("Please login first")
         router.push("/login")
         return
       }
-
       setStudentId(user.uid)
-
-      try {
-        setIsLoading(true)
-
-        // Fetch all jobs directly from Firebase
-        const jobsResult = await getAllJobs(null, 50)
-        setAllJobs(jobsResult.jobs)
-        setJobs(jobsResult.jobs)
-        setFilteredJobs(jobsResult.jobs)
-        setLastVisible(jobsResult.lastVisible)
-        setHasMore(jobsResult.hasMore)
-
-        // Get student preferences (saved and applied jobs)
-        const preferences = await getStudentJobPreferences(user.uid)
-        setAppliedJobs(preferences.appliedJobs || [])
-        setSavedJobs(preferences.savedJobs || [])
-      } catch (error) {
-        console.error("Error:", error)
-        toast.error("Failed to fetch jobs. Please try again.")
-      } finally {
-        setIsLoading(false)
-      }
     })
 
     return () => unsubscribe()
   }, [router])
 
-  // Filter jobs when filters change
-  useEffect(() => {
-    if (!allJobs.length) return
+  const jobsQuery = useInfiniteQuery({
+    queryKey: ["jobs", "open"],
+    queryFn: ({ pageParam }) => getAllJobs(pageParam, pageParam ? 20 : 50),
+    initialPageParam: null as string | null,
+    getNextPageParam: (last) => (last.hasMore ? last.lastVisible : undefined),
+    enabled: !!studentId,
+  })
 
-    let filtered = [...allJobs]
+  const preferencesQuery = useQuery({
+    queryKey: ["student", "jobPreferences", studentId],
+    queryFn: () => getStudentJobPreferences(studentId as string),
+    enabled: !!studentId,
+  })
 
-    // Filter by search query
+  const allJobs = useMemo(() => jobsQuery.data?.pages.flatMap((page) => page.jobs) ?? [], [jobsQuery.data])
+  const appliedJobs = useMemo(() => preferencesQuery.data?.appliedJobs ?? [], [preferencesQuery.data])
+  const savedJobs = useMemo(() => preferencesQuery.data?.savedJobs ?? [], [preferencesQuery.data])
+  const hasMore = jobsQuery.data?.pages.at(-1)?.hasMore ?? false
+  const isLoading = jobsQuery.isPending || preferencesQuery.isPending
+  const isLoadingMore = jobsQuery.isFetchingNextPage
+
+  const filteredJobs = useMemo(() => {
+    let filtered = allJobs
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
@@ -103,7 +95,6 @@ export default function StudentJobsPage() {
       )
     }
 
-    // Filter by selected skills
     if (selectedSkills.length > 0) {
       filtered = filtered.filter((job) =>
         job.requirements.some((requirement) =>
@@ -112,15 +103,14 @@ export default function StudentJobsPage() {
       )
     }
 
-    // Filter by active tab
     if (activeTab === "applied") {
       filtered = filtered.filter((job) => appliedJobs.includes(job.jobId || ""))
     } else if (activeTab === "saved") {
       filtered = filtered.filter((job) => savedJobs.includes(job.jobId || ""))
     }
 
-    setFilteredJobs(filtered)
-  }, [searchQuery, selectedSkills, activeTab, allJobs, appliedJobs, savedJobs])
+    return filtered
+  }, [allJobs, searchQuery, selectedSkills, activeTab, appliedJobs, savedJobs])
 
   const toggleSkillFilter = (skill: string) => {
     setSelectedSkills((prev) => (prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]))
@@ -129,42 +119,30 @@ export default function StudentJobsPage() {
   const saveJob = async (jobId: string) => {
     if (!studentId) return
 
+    const preferencesKey = ["student", "jobPreferences", studentId]
+    const isSaved = savedJobs.includes(jobId)
+
     try {
-      const isSaved = savedJobs.includes(jobId)
-
-      // Use Firebase function directly
+      queryClient.setQueryData<StudentJobPreferences>(preferencesKey, (previous) =>
+        previous
+          ? {
+              ...previous,
+              savedJobs: isSaved ? previous.savedJobs.filter((id) => id !== jobId) : [...previous.savedJobs, jobId],
+            }
+          : previous,
+      )
       await toggleSaveJobFn(studentId, jobId, !isSaved)
-
-      // Update local state
-      if (isSaved) {
-        setSavedJobs((prev) => prev.filter((id) => id !== jobId))
-        toast.success("Job removed from saved jobs")
-      } else {
-        setSavedJobs((prev) => [...prev, jobId])
-        toast.success("Job saved successfully")
-      }
+      await queryClient.invalidateQueries({ queryKey: preferencesKey })
+      toast.success(isSaved ? "Job removed from saved jobs" : "Job saved successfully")
     } catch (error) {
       console.error("Error saving job:", error)
+      await queryClient.invalidateQueries({ queryKey: preferencesKey })
       toast.error("Failed to save job")
     }
   }
 
-  const loadMoreJobs = async () => {
-    if (!hasMore || !lastVisible) return
-
-    try {
-      setIsLoading(true)
-      const jobsResult = await getAllJobs(lastVisible, 20)
-
-      setAllJobs((prev) => [...prev, ...jobsResult.jobs])
-      setLastVisible(jobsResult.lastVisible)
-      setHasMore(jobsResult.hasMore)
-    } catch (error) {
-      console.error("Error loading more jobs:", error)
-      toast.error("Failed to load more jobs")
-    } finally {
-      setIsLoading(false)
-    }
+  const loadMoreJobs = () => {
+    if (jobsQuery.hasNextPage && !jobsQuery.isFetchingNextPage) void jobsQuery.fetchNextPage()
   }
 
   return (
@@ -325,8 +303,8 @@ export default function StudentJobsPage() {
 
                     {hasMore && activeTab === "all" && (
                       <div className="mt-8 flex justify-center">
-                        <Button onClick={loadMoreJobs} disabled={isLoading} variant="outline">
-                          {isLoading ? (
+                        <Button onClick={loadMoreJobs} disabled={isLoadingMore} variant="outline">
+                          {isLoadingMore ? (
                             <>
                               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                               Loading...

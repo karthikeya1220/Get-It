@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { motion } from "framer-motion"
 import { ProfileHeader } from "@/components/profile/profile-header"
 import { ProfileAbout } from "@/components/profile/profile-about"
@@ -89,6 +90,7 @@ const loadRazorpayScript = () => {
 export default function StudentProfilePage() {
   const params = useParams()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { studentId } = params
   const viewingOwnProfile = true // We'll set this based on auth check
 
@@ -132,7 +134,6 @@ export default function StudentProfilePage() {
     projects: false,
     experience: false,
   })
-  const [isLoading, setIsLoading] = useState(true)
   const [isEditable, setIsEditable] = useState(false)
   const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false)
   const [verificationForm, setVerificationForm] = useState({
@@ -144,36 +145,14 @@ export default function StudentProfilePage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Modify the useEffect to properly set isEditable
   useEffect(() => {
     const auth = getAuth()
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         // Don't show an error when viewing someone else's profile
         console.log("User not logged in, viewing in read-only mode")
         setIsEditable(false)
-
-        try {
-          setIsLoading(true)
-          // Always fetch the requested student's profile data
-          const profileData = await getUserProfile(studentId as string)
-
-          // Log detailed info about verification status
-          console.log("Fetched profile data, verified status:", profileData?.verified)
-          console.log("Verified status type:", typeof profileData?.verified)
-          console.log("Is verified exactly true?", profileData?.verified === true)
-
-          setUserData((prev) => ({
-            ...defaultProfile,
-            ...profileData,
-          }))
-          setIsLoading(false)
-        } catch (error) {
-          console.error("Failed to fetch profile:", error)
-          toast.error("Failed to fetch profile data")
-          setIsLoading(false)
-        }
         return
       }
 
@@ -183,30 +162,40 @@ export default function StudentProfilePage() {
       const isOwnProfile = user.uid === (studentId as string)
       setIsEditable(isOwnProfile)
       console.log(`Current user: ${user.uid}, Profile ID: ${studentId}, Is own profile: ${isOwnProfile}`)
-
-      try {
-        setIsLoading(true)
-        const profileData = await getUserProfile(studentId as string)
-
-        // Log detailed info about verification status
-        console.log("Fetched profile data for logged in user, verified status:", profileData?.verified)
-        console.log("Verified status type:", typeof profileData?.verified)
-        console.log("Is verified exactly true?", profileData?.verified === true)
-
-        setUserData((prev) => ({
-          ...defaultProfile,
-          ...profileData,
-        }))
-      } catch (error) {
-        console.error("Failed to fetch profile:", error)
-        toast.error("Failed to fetch profile data")
-      } finally {
-        setIsLoading(false)
-      }
     })
 
     return () => unsubscribe()
   }, [studentId, router, defaultProfile])
+
+  const {
+    data: profileData,
+    isPending: isLoading,
+    error: profileError,
+  } = useQuery({
+    queryKey: ["profile", "student", studentId],
+    queryFn: async () => {
+      const data = await getUserProfile(studentId as string)
+
+      console.log("Fetched profile data, verified status:", data?.verified)
+      console.log("Verified status type:", typeof data?.verified)
+      console.log("Is verified exactly true?", data?.verified === true)
+
+      return data
+    },
+  })
+
+  useEffect(() => {
+    if (profileData) {
+      setUserData({ ...defaultProfile, ...profileData })
+    }
+  }, [profileData, defaultProfile])
+
+  useEffect(() => {
+    if (profileError) {
+      console.error("Failed to fetch profile:", profileError)
+      toast.error("Failed to fetch profile data")
+    }
+  }, [profileError])
 
   const handleUpdateUserData = async (section: string, data: any) => {
     // Only allow updates if the user is viewing their own profile
@@ -259,6 +248,7 @@ export default function StudentProfilePage() {
       updateData.updatedAt = new Date()
 
       await updateUserProfile(currentUserId, section, updateData)
+      queryClient.invalidateQueries({ queryKey: ["profile", "student", studentId] })
       toast.success(`Your ${section || "profile"} has been updated successfully`)
     } catch (error) {
       console.error("Failed to update profile:", error)

@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "sonner"
 import { AuthSessionSync } from "@/components/auth-session-sync"
+import { QueryProvider } from "@/components/query-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -28,7 +29,7 @@ export default function RootLayout({
           disableTransitionOnChange={false}
           storageKey="GetIT-theme"
         >
-          {children}
+          <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>
         <AuthSessionSync />
         <Toaster position="top-center" />

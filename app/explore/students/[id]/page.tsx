@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { PremiumNavbar } from "@/components/premium-navbar"
 import { PremiumFooter } from "@/components/premium-footer"
 import { Button } from "@/components/ui/button"
@@ -38,10 +39,7 @@ export default function JobDetailsPage() {
   const jobId = id as string
 
   const [studentId, setStudentId] = useState<string | null>(null)
-  const [job, setJob] = useState<JobData | null>(null)
-  const [hasApplied, setHasApplied] = useState(false)
-  const [isSaved, setIsSaved] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const queryClient = useQueryClient()
 
   // Application modal states
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
@@ -56,7 +54,7 @@ export default function JobDetailsPage() {
   useEffect(() => {
     const auth = getAuth()
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         toast.error("Please login first")
         router.push("/login")
@@ -64,44 +62,71 @@ export default function JobDetailsPage() {
       }
 
       setStudentId(user.uid)
+    })
 
+    return () => unsubscribe()
+  }, [router])
+
+  const { data: job = null, isPending: isJobPending } = useQuery<JobData | null>({
+    queryKey: ["job", jobId],
+    queryFn: async () => {
       try {
-        setIsLoading(true)
         const jobData = await getJobById(jobId)
 
         if (!jobData) {
           toast.error("Job not found")
           router.push("/explore/students")
-          return
         }
 
-        setJob(jobData)
-
-        // Check if student has already applied
-        const hasApplied = await hasStudentAppliedToJob(user.uid, jobId)
-        setHasApplied(hasApplied)
-
-        // Check if job is saved
-        const preferences = await getStudentJobPreferences(user.uid)
-        setIsSaved(preferences.savedJobs.includes(jobId))
+        return jobData
       } catch (error) {
         console.error("Error:", error)
         toast.error("Failed to fetch job details. Please try again.")
-      } finally {
-        setIsLoading(false)
+        return null
       }
-    })
+    },
+    enabled: !!studentId,
+  })
 
-    return () => unsubscribe()
-  }, [jobId, router])
+  const { data: hasApplied = false, isPending: isAppliedPending } = useQuery<boolean>({
+    queryKey: ["job", jobId, "application", studentId],
+    queryFn: async () => {
+      try {
+        return await hasStudentAppliedToJob(studentId!, jobId)
+      } catch (error) {
+        console.error("Error:", error)
+        toast.error("Failed to fetch job details. Please try again.")
+        return false
+      }
+    },
+    enabled: !!studentId,
+  })
+
+  const { data: isSaved = false, isPending: isSavedPending } = useQuery<boolean>({
+    queryKey: ["job", jobId, "saved", studentId],
+    queryFn: async () => {
+      try {
+        const preferences = await getStudentJobPreferences(studentId!)
+        return preferences.savedJobs.includes(jobId)
+      } catch (error) {
+        console.error("Error:", error)
+        toast.error("Failed to fetch job details. Please try again.")
+        return false
+      }
+    },
+    enabled: !!studentId,
+  })
+
+  const isLoading = isJobPending || isAppliedPending || isSavedPending
 
   const handleToggleSaveJob = async () => {
     if (!studentId || !jobId) return
 
     try {
       await toggleSaveJobFn(studentId, jobId, !isSaved)
-      setIsSaved(!isSaved)
+      queryClient.setQueryData(["job", jobId, "saved", studentId], !isSaved)
       toast.success(isSaved ? "Job removed from saved jobs" : "Job saved successfully")
+      queryClient.invalidateQueries({ queryKey: ["job", jobId] })
     } catch (error) {
       console.error("Error saving job:", error)
       toast.error("Failed to save job")
@@ -123,9 +148,10 @@ export default function JobDetailsPage() {
         appliedAt: new Date(),
       })
 
-      setHasApplied(true)
+      queryClient.setQueryData(["job", jobId, "application", studentId], true)
       toast.success("Application submitted successfully!")
       setIsApplyModalOpen(false)
+      queryClient.invalidateQueries({ queryKey: ["job", jobId] })
     } catch (error) {
       console.error("Error applying for job:", error)
       toast.error("Failed to submit application. Please try again.")

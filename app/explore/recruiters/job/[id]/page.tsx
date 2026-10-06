@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { PremiumNavbar } from "@/components/premium-navbar"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
@@ -29,10 +30,8 @@ export default function JobDetailPage() {
   const { id } = params
   const jobId = id as string
 
+  const queryClient = useQueryClient()
   const [recruiterId, setRecruiterId] = useState<string | null>(null)
-  const [job, setJob] = useState<JobData | null>(null)
-  const [applicants, setApplicants] = useState<StudentData[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("details")
 
   // Message modal states
@@ -50,7 +49,7 @@ export default function JobDetailPage() {
   useEffect(() => {
     const auth = getAuth()
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         toast.error("Please login first")
         router.push("/login")
@@ -58,9 +57,17 @@ export default function JobDetailPage() {
       }
 
       setRecruiterId(user.uid)
+    })
+
+    return () => unsubscribe()
+  }, [router])
+
+  const { data: job = null, isPending: isJobPending } = useQuery<JobData | null>({
+    queryKey: ["jobs", "detail", jobId],
+    queryFn: async () => {
+      if (!recruiterId) return null
 
       try {
-        setIsLoading(true)
         const jobData = await getJobById(jobId)
         console.log("job id", jobData)
 
@@ -68,42 +75,54 @@ export default function JobDetailPage() {
         if (!jobData) {
           toast.error("Job not found")
           router.push("/explore/recruiters/job")
-          return
+          return null
         }
 
-        if (jobData.postedBy !== user.uid) {
+        if (jobData.postedBy !== recruiterId) {
           toast.error("You don't have permission to view this job")
           router.push("/explore/recruiters/job")
-          return
+          return null
         }
 
-        setJob(jobData)
-        setEditedJob({ ...jobData }) // Clone for edit form
-
-        // Fetch applicant details if there are any
-        if (jobData.applicants.length > 0) {
-          const applicantData = await getStudentsByIds(jobData.applicants)
-          console.log("applicant data", applicantData)
-          setApplicants(applicantData)
-        }
+        return jobData
       } catch (error) {
         console.error("Error:", error)
         toast.error("Failed to fetch job details. Please try again.")
-      } finally {
-        setIsLoading(false)
+        return null
       }
-    })
+    },
+    enabled: !!recruiterId,
+  })
 
-    return () => unsubscribe()
-  }, [jobId, router])
+  const { data: applicants = [], isPending: isApplicantsPending } = useQuery<StudentData[]>({
+    queryKey: ["jobs", "detail", jobId, "applicants"],
+    queryFn: async () => {
+      if (!job) return []
+
+      try {
+        const applicantData = await getStudentsByIds(job.applicants)
+        console.log("applicant data", applicantData)
+        return applicantData
+      } catch (error) {
+        console.error("Error:", error)
+        toast.error("Failed to fetch job details. Please try again.")
+        return []
+      }
+    },
+    enabled: !!job && job.applicants.length > 0,
+  })
+
+  const isLoading = isJobPending || (!!job && job.applicants.length > 0 && isApplicantsPending)
 
   const handleStatusChange = async (newStatus: "open" | "closed") => {
     if (!job || !job.jobId) return
 
     try {
       await updateJobStatus(job.jobId, newStatus)
-      setJob({ ...job, status: newStatus })
+      const updatedJob = { ...job, status: newStatus }
+      queryClient.setQueryData<JobData | null>(["jobs", "detail", jobId], updatedJob)
       toast.success(`Job ${newStatus === "open" ? "opened" : "closed"} successfully`)
+      await queryClient.invalidateQueries({ queryKey: ["jobs"] })
     } catch (error) {
       console.error("Error updating job status:", error)
       toast.error("Failed to update job status")
@@ -142,9 +161,10 @@ export default function JobDetailPage() {
       await updateJob(job.jobId, editedJob)
 
       // Update local state
-      setJob(editedJob)
+      queryClient.setQueryData<JobData | null>(["jobs", "detail", jobId], editedJob)
       toast.success("Job updated successfully")
       setEditModalOpen(false)
+      await queryClient.invalidateQueries({ queryKey: ["jobs"] })
     } catch (error) {
       console.error("Error updating job:", error)
       toast.error("Failed to update job")
@@ -212,7 +232,13 @@ export default function JobDetailPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setEditModalOpen(true)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setEditedJob({ ...job }) // Clone for edit form
+                      setEditModalOpen(true)
+                    }}
+                  >
                     <Icons.edit className="h-4 w-4 mr-2" />
                     Edit Job
                   </Button>
