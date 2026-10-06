@@ -1,18 +1,11 @@
-let userConfig = undefined
-try {
-  userConfig = await import('./skill-hub-user-next.config')
-} catch (e) {
-  // ignore error
-}
+// `@sentry/nextjs` ships CJS only, so Node's ESM loader can't see named exports
+// on the package root — the webpack wrapper lives on the `/config` subpath.
+import sentryConfig from "@sentry/nextjs/config"
+
+const { withSentryConfig } = sentryConfig
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: {
     unoptimized: true,
   },
@@ -23,26 +16,12 @@ const nextConfig = {
   },
 }
 
-mergeConfig(nextConfig, userConfig)
-
-function mergeConfig(nextConfig, userConfig) {
-  if (!userConfig) {
-    return
-  }
-
-  for (const key in userConfig) {
-    if (
-      typeof nextConfig[key] === 'object' &&
-      !Array.isArray(nextConfig[key])
-    ) {
-      nextConfig[key] = {
-        ...nextConfig[key],
-        ...userConfig[key],
-      }
-    } else {
-      nextConfig[key] = userConfig[key]
-    }
-  }
-}
-
-export default nextConfig
+// Source-map upload only runs when SENTRY_AUTH_TOKEN + SENTRY_ORG + SENTRY_PROJECT
+// are present; without them the build is unchanged.
+export default withSentryConfig(nextConfig, {
+  silent: !process.env.CI,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  widenClientFileUpload: true,
+  disableLogger: true,
+})
