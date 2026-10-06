@@ -359,6 +359,19 @@ agreements/
 6. **Type-Safe Data Access**: TypeScript interfaces for all data models
 7. **Cache Layer**: `@tanstack/react-query` owns all client fetches, keyed like `["agreement", recruiterId, studentId]`
 
+### Rendering & Data Fetching
+
+Every read goes through the **client** Firebase SDK inside `"use client"` components; React Query owns the cache and `loading.tsx` supplies the Suspense fallback per route segment.
+
+Server components are used for what they are good at today — layout, `metadata`, `params` and redirects — but **no server page awaits data**, so there is nothing to stream yet. Moving reads server-side would mean a second data layer on `firebase-admin` (already initialised in `lib/firebase-admin.ts`) feeding `initialData` into the React Query hooks, wrapped in `<Suspense>`.
+
+That migration is deliberately **deferred**:
+
+- Every app route sits behind the session-cookie middleware (`isProtectedPath`), so server-rendered HTML is not crawlable — the usual SEO reason for RSC does not apply. Opening those routes is a product decision, not a technical one.
+- First Load JS is 420–461 kB per app page against a **165 kB shared floor** (React + Next + Firebase + TanStack + Sentry). RSC trims the feature code, not the floor, so bundle-splitting buys more than server rendering would.
+
+Revisit this if public (ungated) job or profile pages are ever added.
+
 ---
 
 ## Authentication System

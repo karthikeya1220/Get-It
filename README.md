@@ -265,6 +265,7 @@ We welcome contributions to GetIt! Here's how you can help:
 ## 🐛 Known Issues
 
 - Agreements have no link into the offer flow yet — a recruiter reaches one from the navbar's _Agreement_ item, not from an application
+- RSC/streaming is deferred: no server page awaits data yet, and every app route is session-gated — see _Rendering & Data Fetching_ in `PROJECT_DOCUMENTATION.md`
 - The feed's _Upcoming Events_ and _Learning Resources_ sidebar cards are static editorial content, not app data
 - "People You May Know" lists every student; there is no connections graph yet
 - Rate limiting is per-process — swap `lib/rate-limit.ts` for a shared store when running multiple replicas

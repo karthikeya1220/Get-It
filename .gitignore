@@ -26,6 +26,7 @@ yarn-error.log*
 # local tooling artifacts
 .streak_temp
 .freebuff/
+.playwright-mcp/
 
 # vercel
 .vercel
