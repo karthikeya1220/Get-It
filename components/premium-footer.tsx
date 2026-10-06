@@ -3,203 +3,114 @@
 import Link from "next/link"
 import { Icons } from "@/components/icons"
 
+const COLUMNS = [
+  {
+    title: "Platform",
+    links: [
+      { label: "Features", href: "#features" },
+      { label: "How It Works", href: "#how-it-works" },
+      { label: "Testimonials", href: "#testimonials" },
+      { label: "Explore gigs", href: "/explore" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About Us", href: "#" },
+      { label: "Careers", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "Contact", href: "#" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Terms", href: "#" },
+      { label: "Privacy", href: "#" },
+      { label: "Cookies", href: "#" },
+      { label: "Licenses", href: "#" },
+    ],
+  },
+]
+
+const SOCIALS = [
+  { label: "Twitter", href: "#", Icon: Icons.twitter },
+  { label: "Facebook", href: "#", Icon: Icons.facebook },
+  { label: "Instagram", href: "#", Icon: Icons.instagram },
+  { label: "LinkedIn", href: "#", Icon: Icons.linkedin },
+]
+
 export function PremiumFooter() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="relative border-t border-violet-100 bg-white py-20 dark:border-violet-800/30 dark:bg-black">
+    <footer className="border-t border-border bg-background">
       <div className="container px-4 md:px-8 lg:px-12">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-            <div className="space-y-6">
-              <Link href="/" className="flex items-center gap-2 text-xl font-bold text-violet-900 dark:text-white">
-                <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-amber-600 p-[1px] shadow-lg">
-                  <div className="flex h-full w-full items-center justify-center rounded-xl bg-white dark:bg-black">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-5 w-5 text-violet-800 dark:text-white"
+        <div className="mx-auto grid max-w-7xl gap-10 py-16 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
+          <div className="space-y-5">
+            <Link href="/" className="flex items-center gap-2.5 focus-visible:outline-none">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                >
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                  <path d="M12 8v4" />
+                  <path d="M12 16h.01" />
+                </svg>
+              </span>
+              <span className="text-lg font-semibold tracking-tight">GetIT</span>
+            </Link>
+            <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
+              Connecting talented students with opportunities that matter. Build your portfolio, earn money, and gain
+              real-world experience.
+            </p>
+            <div className="flex gap-1">
+              {SOCIALS.map(({ label, href, Icon }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <Icon className="h-4 w-4" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {COLUMNS.map((column) => (
+            <div key={column.title} className="space-y-4">
+              <h4 className="text-sm font-semibold text-foreground">{column.title}</h4>
+              <ul className="space-y-2.5">
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:rounded-sm"
                     >
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-                      <path d="M12 8v4" />
-                      <path d="M12 16h.01" />
-                    </svg>
-                  </div>
-                </div>
-                <span>GetIT</span>
-              </Link>
-              <p className="text-sm text-violet-700 dark:text-violet-300">
-                Connecting talented students with opportunities that matter. Build your portfolio, earn money, and gain
-                real-world experience.
-              </p>
-              <div className="flex space-x-4">
-                <Link
-                  href="#"
-                  className="text-violet-600 transition-colors hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
-                >
-                  <Icons.twitter className="h-5 w-5" />
-                  <span className="sr-only">Twitter</span>
-                </Link>
-                <Link
-                  href="#"
-                  className="text-violet-600 transition-colors hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
-                >
-                  <Icons.facebook className="h-5 w-5" />
-                  <span className="sr-only">Facebook</span>
-                </Link>
-                <Link
-                  href="#"
-                  className="text-violet-600 transition-colors hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
-                >
-                  <Icons.instagram className="h-5 w-5" />
-                  <span className="sr-only">Instagram</span>
-                </Link>
-                <Link
-                  href="#"
-                  className="text-violet-600 transition-colors hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300"
-                >
-                  <Icons.linkedin className="h-5 w-5" />
-                  <span className="sr-only">LinkedIn</span>
-                </Link>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h4 className="text-sm font-semibold uppercase tracking-wider text-violet-800 dark:text-violet-300">
-                Platform
-              </h4>
-              <ul className="space-y-3 text-sm">
-                <li>
-                  <Link
-                    href="#features"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    Features
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#how-it-works"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#pricing"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    FAQ
-                  </Link>
-                </li>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
-
-            <div className="space-y-4">
-              <h4 className="text-sm font-semibold uppercase tracking-wider text-violet-800 dark:text-violet-300">
-                Company
-              </h4>
-              <ul className="space-y-3 text-sm">
-                <li>
-                  <Link
-                    href="#"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div className="space-y-4">
-              <h4 className="text-sm font-semibold uppercase tracking-wider text-violet-800 dark:text-violet-300">
-                Legal
-              </h4>
-              <ul className="space-y-3 text-sm">
-                <li>
-                  <Link
-                    href="#"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    Terms
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    Privacy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    Cookies
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-violet-700 transition-colors hover:text-violet-900 dark:text-violet-400 dark:hover:text-white"
-                  >
-                    Licenses
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="mt-12 border-t border-violet-100 pt-8 text-center text-sm text-violet-700 dark:border-violet-800/30 dark:text-violet-400">
-            <p>© {currentYear} GetIT. All rights reserved.</p>
-          </div>
+          ))}
         </div>
-      </div>
 
-      {/* Animated background elements */}
-      <div className="absolute bottom-0 left-0 right-0 top-0 overflow-hidden">
-        <div className="absolute -left-20 top-20 h-64 w-64 rounded-full bg-violet-600/5 blur-3xl dark:bg-violet-900/10"></div>
-        <div className="absolute -right-20 top-10 h-64 w-64 rounded-full bg-amber-600/5 blur-3xl dark:bg-amber-900/10"></div>
+        <div className="mx-auto flex max-w-7xl flex-col gap-2 border-t border-border py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © <span className="font-mono">{currentYear}</span> GetIT. All rights reserved.
+          </p>
+          <p className="text-xs">Paying students properly since day one.</p>
+        </div>
       </div>
     </footer>
   )

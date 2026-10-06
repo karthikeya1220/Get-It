@@ -38,3 +38,5 @@ next-env.d.ts
 current-hero.png
 current-landing.png
 current-landing-2.png
+.screens/
+*.png
