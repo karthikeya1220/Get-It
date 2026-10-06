@@ -185,7 +185,7 @@ GetIt/
 │   ├── explore/           # Recruiter discovery components
 │   ├── profile/           # Profile editing sections
 │   └── ai/                # Interview analysis UI
-├── lib/                   # Auth, payments, Firebase, validation, rate limiting
+├── lib/                   # Auth, feed, agreements, payments, validation, rate limiting
 ├── middleware.ts          # Session-cookie UX gate for app routes
 ├── firestore.rules        # Firestore security rules (the real auth boundary)
 ├── firestore.indexes.json # Composite indexes
@@ -264,7 +264,7 @@ We welcome contributions to GetIt! Here's how you can help:
 
 ## 🐛 Known Issues
 
-- Agreements are still backed by client-side mock data — they need a Firestore collection
+- Agreements have no link into the offer flow yet — a recruiter reaches one from the navbar's _Agreement_ item, not from an application
 - The feed's _Upcoming Events_ and _Learning Resources_ sidebar cards are static editorial content, not app data
 - "People You May Know" lists every student; there is no connections graph yet
 - Rate limiting is per-process — swap `lib/rate-limit.ts` for a shared store when running multiple replicas

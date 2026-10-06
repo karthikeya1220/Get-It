@@ -242,6 +242,48 @@ service cloud.firestore {
       allow delete: if signedIn() && resource.data.get('authorId', '') == request.auth.uid;
     }
 
+    // ── Agreements: one document per (recruiter, student) pair. The recruiter
+    //    drafts and edits the terms while the agreement is pending; only the
+    //    student may sign or decline, and only the signing fields may move. ──
+    match /agreements/{agreementId} {
+      function isPartyOf(d) {
+        return signedIn() && request.auth.uid in d.get('parties', ['']);
+      }
+
+      function onlyTouches(keys) {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+      }
+
+      function agreementPending() {
+        return resource.data.get('status', '') == 'pending';
+      }
+
+      allow read: if signedIn()
+        && request.auth.uid in resource.data.get('parties', ['']);
+
+      allow create: if isPartyOf(request.resource.data)
+        && request.resource.data.get('createdBy', '') == request.auth.uid
+        && request.resource.data.get('status', '') == 'pending'
+        && request.resource.data.get('studentSignature', '') == ''
+        && request.resource.data.get('studentSignedAt', '') == '';
+
+      // Either party may revise the offer terms while it is still pending.
+      allow update: if (isPartyOf(resource.data)
+          && agreementPending()
+          && onlyTouches(['companyName', 'companyLogo', 'position', 'salary',
+                          'startDate', 'duration', 'workType', 'location',
+                          'additionalNotes', 'terms', 'updatedAt']))
+        || (signedIn()
+          && request.auth.uid == resource.data.get('studentId', '')
+          && agreementPending()
+          && request.resource.data.get('status', '') in ['accepted', 'declined']
+          && onlyTouches(['status', 'studentSignature', 'studentSignedAt', 'updatedAt'])
+          && (request.resource.data.get('status', '') == 'declined'
+              || request.resource.data.get('studentSignature', '') != ''));
+
+      allow delete: if false;
+    }
+
     // ── Payments: server-only. Written by /api/payments/* and the Razorpay
     //    webhook through the Admin SDK, which bypasses these rules. ──────────
     match /payments/{paymentId} {

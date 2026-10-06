@@ -214,6 +214,7 @@ app/
 │   └── [dynamic routes]    # Individual profiles/jobs
 │
 ├── agreements/
+│   ├── page.tsx                      # Index: every agreement you are a party to
 │   └── recruiters/[id]/[studentId]/  # Digital contracts
 │
 ├── profile/
@@ -226,7 +227,7 @@ app/
 │
 ├── interview-analysis/     # AI interview feedback tool
 │
-├── feed/                   # Social feed (future feature)
+├── feed/                   # Social feed (Firestore-backed posts/comments)
 │
 └── api/
     ├── analyze-interview/  # Gemini AI video analysis
@@ -306,16 +307,57 @@ applications/
     - status: "pending" | "viewed" | "contacted" | "rejected"
     - appliedAt: Timestamp
     - updatedAt: Timestamp
+
+posts/
+  {postId}/
+    - authorId: string
+    - authorName: string
+    - authorRole: string
+    - authorAvatar: string
+    - content: string
+    - image?: string (Storage path under posts/{uid}/)
+    - hashtags: string[]
+    - likeCount: number
+    - likedBy: string[]
+    - commentCount: number
+    - shares: number
+    - createdAt: Timestamp
+    - updatedAt: Timestamp
+    comments/
+      {commentId}/
+        - authorId: string
+        - authorName: string
+        - authorAvatar: string
+        - content: string
+        - likeCount: number
+        - likedBy: string[]
+        - createdAt: Timestamp
+
+agreements/
+  {recruiterId_studentId}/
+    - recruiterId: string
+    - studentId: string
+    - parties: string[] (both uids — the read rule keys off this)
+    - createdBy: string
+    - companyName, companyLogo, studentName, studentAvatar
+    - recruiterName, recruiterSignature, recruiterSignedAt
+    - studentSignature, studentSignedAt
+    - position, salary, startDate, duration, workType, location, additionalNotes
+    - terms: Array<{title, content}>
+    - status: "pending" | "accepted" | "declined"
+    - createdAt: Timestamp
+    - updatedAt: Timestamp
 ```
 
 ### Key Design Patterns
 
-1. **Repository Pattern**: `lib/firebase-service.ts` abstracts all Firebase operations
+1. **Repository Pattern**: `lib/firebase-service.ts`, `lib/feed-service.ts` and `lib/agreement-service.ts` abstract Firebase reads/writes
 2. **Component Composition**: Reusable UI components in `components/ui/`
 3. **Feature-Based Organization**: Components grouped by feature (explore, agreement, ai, feed)
 4. **Server Components**: Default to server components, use "use client" only when needed
 5. **API Route Handlers**: Serverless functions for backend logic
 6. **Type-Safe Data Access**: TypeScript interfaces for all data models
+7. **Cache Layer**: `@tanstack/react-query` owns all client fetches, keyed like `["agreement", recruiterId, studentId]`
 
 ---
 
@@ -851,8 +893,9 @@ await sendPasswordResetEmail(auth, email)
        ▼
 ┌─────────────────────────────────────────────────────────┐
 │  Client: /agreements/recruiters/[id]/[studentId]        │
-│  - Loads mock agreement data (getMockAgreementData)     │
-│  - In production: would fetch from Firestore            │
+│  - Reads agreements/{recruiterId_studentId} (TanStack   │
+│    Query); offers "Create draft" when the doc is absent │
+│  - Draft is seeded from both real profiles              │
 └──────┬──────────────────────────────────────────────────┘
        │
        ▼

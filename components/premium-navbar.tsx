@@ -139,7 +139,7 @@ export function PremiumNavbar({ recruiterId, userId }: PremiumNavbarProps) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="agreements/recruiters/qvdjshac/eqgcdhsvj" className="flex cursor-pointer items-center">
+              <Link href="/agreements" className="flex cursor-pointer items-center">
                 <Icons.fileText className="mr-2 h-4 w-4" />
                 <span>Agreement</span>
               </Link>
@@ -333,8 +333,8 @@ export function PremiumNavbar({ recruiterId, userId }: PremiumNavbarProps) {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/agreements/recruiters/qvdjshac/eqgcdhsvj" className="flex cursor-pointer items-center">
-                    <Icons.settings className="mr-2 h-4 w-4" />
+                  <Link href="/agreements" className="flex cursor-pointer items-center">
+                    <Icons.fileText className="mr-2 h-4 w-4" />
                     <span>Agreement</span>
                   </Link>
                 </DropdownMenuItem>
