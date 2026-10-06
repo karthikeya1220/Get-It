@@ -8,13 +8,13 @@ export const metadata: Metadata = {
 }
 
 interface AiRecruiterPageProps {
-  params: {
+  params: Promise<{
     recruiterId: string
-  }
+  }>
 }
 
-export default function AiRecruiterPage({ params }: AiRecruiterPageProps) {
-  const { recruiterId } = params
+export default async function AiRecruiterPage({ params }: AiRecruiterPageProps) {
+  await params
 
   return (
     <div className="container mx-auto px-4 py-8 pt-24 md:px-8 lg:px-12">
@@ -66,4 +66,3 @@ export default function AiRecruiterPage({ params }: AiRecruiterPageProps) {
     </div>
   )
 }
-

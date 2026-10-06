@@ -5,19 +5,20 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Image, Link, FileText, Video, X, Upload, Users, MapPin } from "lucide-react"
+import { Image as ImageIcon, Link, FileText, Video, X, Upload, Users, MapPin } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { motion, AnimatePresence } from "framer-motion"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import type { Post } from "@/components/feed/types"
 
-export function CreatePost({ onPostCreated }) {
+export function CreatePost({ onPostCreated }: { onPostCreated: (post: Post) => void }) {
   const [content, setContent] = useState("")
   const [isExpanded, setIsExpanded] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedImage, setSelectedImage] = useState(null)
-  const [previewUrl, setPreviewUrl] = useState(null)
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [privacy, setPrivacy] = useState("public")
-  const fileInputRef = useRef(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
   const { toast } = useToast()
 
   const handleFocus = () => {
@@ -28,8 +29,8 @@ export function CreatePost({ onPostCreated }) {
     fileInputRef.current?.click()
   }
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
     if (file) {
       setSelectedImage(file)
       const url = URL.createObjectURL(file)
@@ -71,14 +72,13 @@ export function CreatePost({ onPostCreated }) {
           avatar: "/placeholder.svg?height=40&width=40",
         },
         content,
-        image: previewUrl ? previewUrl : null,
-        imageAlt: selectedImage ? selectedImage.name : null,
+        image: previewUrl ?? undefined,
+        imageAlt: selectedImage ? selectedImage.name : undefined,
         timestamp: new Date().toISOString(),
         likes: 0,
         comments: [],
         shares: 0,
         isLiked: false,
-        privacy: privacy,
       }
 
       onPostCreated(newPost)
@@ -178,7 +178,7 @@ export function CreatePost({ onPostCreated }) {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={handleImageClick}>
-                      <Image className="h-4 w-4" />
+                      <ImageIcon className="h-4 w-4" />
                       <span className="hidden sm:inline">Image</span>
                       <input
                         type="file"
@@ -264,4 +264,3 @@ export function CreatePost({ onPostCreated }) {
     </TooltipProvider>
   )
 }
-

@@ -106,4 +106,3 @@ export function RecruiterTestimonials({ testimonials }: RecruiterTestimonialsPro
     </motion.div>
   )
 }
-

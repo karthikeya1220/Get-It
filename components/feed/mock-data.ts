@@ -1,4 +1,6 @@
-export const mockFeedData = [
+import type { Post } from "@/components/feed/types"
+
+export const mockFeedData: Post[] = [
   {
     id: "post-1",
     author: {
@@ -350,4 +352,3 @@ export const learningResources = [
     image: "/placeholder.svg?height=60&width=100",
   },
 ]
-

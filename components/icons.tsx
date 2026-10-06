@@ -1,4 +1,6 @@
 import {
+  UserCheck,
+  Quote,
   AlertTriangle,
   ArrowRight,
   Check,
@@ -156,8 +158,13 @@ import {
 export type Icon = LucideIcon
 
 export const Icons = {
+  userCheck: UserCheck,
+  loader: Loader2,
+  bookmarkFilled: Bookmark,
+  quote: Quote,
+
   logo: Command,
-  logOut : LogOut,
+  logOut: LogOut,
   close: X,
   spinner: Loader2,
   chevronLeft: ChevronLeft,
@@ -340,9 +347,7 @@ export const Icons = {
   stethoscope: Stethoscope,
   pill: Pill,
   dna: Dna,
-  pizza: Pizza,
   utensils: Utensils,
-  lightbulb: Lightbulb,
   bed: Bed,
   sofa: Sofa,
   sunrise: Sunrise,
@@ -367,4 +372,3 @@ export const Icons = {
   image: Image,
   school: GraduationCap,
 }
-

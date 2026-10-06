@@ -5,4 +5,3 @@ export default function AiPage() {
   // For now, we'll redirect to the students AI page
   redirect("/ai/students")
 }
-

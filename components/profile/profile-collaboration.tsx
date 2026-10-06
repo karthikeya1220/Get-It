@@ -126,4 +126,3 @@ export function ProfileCollaboration({ projects }: ProfileCollaborationProps) {
     </Card>
   )
 }
-

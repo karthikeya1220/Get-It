@@ -2,13 +2,13 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { signOut } from "firebase/auth"
@@ -20,7 +20,7 @@ interface UserButtonProps {
 
 export function UserButton({ userId }: UserButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
-  
+
   const handleSignOut = async () => {
     const auth = getAuth()
     try {
@@ -51,10 +51,8 @@ export function UserButton({ userId }: UserButtonProps) {
           <Link href="/settings">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
-          Sign out
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>Sign out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
-} 
+}

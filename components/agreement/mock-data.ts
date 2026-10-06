@@ -60,4 +60,3 @@ export function getMockAgreementData(recruiterId: string, studentId: string) {
     ],
   }
 }
-

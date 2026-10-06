@@ -6,15 +6,16 @@ export const metadata: Metadata = {
   description: "Review and sign your agreement with the recruiter",
 }
 
-export default function AgreementPage({
+export default async function AgreementPage({
   params,
 }: {
-  params: { recruiterId: string; studentId: string }
+  params: Promise<{ recruiterId: string; studentId: string }>
 }) {
+  const { recruiterId, studentId } = await params
+
   return (
     <div className="container max-w-6xl py-8 mx-auto">
-      <AgreementContainer recruiterId={params.recruiterId} studentId={params.studentId} />
+      <AgreementContainer recruiterId={recruiterId} studentId={studentId} />
     </div>
   )
 }
-

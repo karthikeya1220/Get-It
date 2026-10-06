@@ -47,4 +47,3 @@ export default function AgreementTerms({ terms }: AgreementTermsProps) {
     </div>
   )
 }
-

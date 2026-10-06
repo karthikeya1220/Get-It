@@ -11,12 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
 import { Toaster } from "@/components/ui/toaster"
-import { 
-  JobData, 
-  getAllJobs, 
-  getStudentJobPreferences,
-  toggleSaveJob as toggleSaveJobFn
-} from "@/lib/firebase-service"
+import { JobData, getAllJobs, getStudentJobPreferences, toggleSaveJob as toggleSaveJobFn } from "@/lib/firebase-service"
 
 export default function StudentJobsPage() {
   const router = useRouter()
@@ -35,39 +30,51 @@ export default function StudentJobsPage() {
 
   // Available skill options for filtering
   const skillOptions = [
-    "React", "Next.js", "JavaScript", "TypeScript", 
-    "Node.js", "Python", "Java", "SQL",
-    "MongoDB", "Firebase", "AWS", "UI/UX",
-    "Mobile Dev", "Data Science", "DevOps", "Cloud"
+    "React",
+    "Next.js",
+    "JavaScript",
+    "TypeScript",
+    "Node.js",
+    "Python",
+    "Java",
+    "SQL",
+    "MongoDB",
+    "Firebase",
+    "AWS",
+    "UI/UX",
+    "Mobile Dev",
+    "Data Science",
+    "DevOps",
+    "Cloud",
   ]
 
   useEffect(() => {
     const auth = getAuth()
-    
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         toast.error("Please login first")
         router.push("/login")
         return
       }
-      
+
       setStudentId(user.uid)
 
       try {
         setIsLoading(true)
-        
+
         // Fetch all jobs directly from Firebase
-        const jobsResult = await getAllJobs(null, 50);
-        setAllJobs(jobsResult.jobs);
-        setJobs(jobsResult.jobs);
-        setFilteredJobs(jobsResult.jobs);
-        setLastVisible(jobsResult.lastVisible);
-        setHasMore(jobsResult.hasMore);
-        
+        const jobsResult = await getAllJobs(null, 50)
+        setAllJobs(jobsResult.jobs)
+        setJobs(jobsResult.jobs)
+        setFilteredJobs(jobsResult.jobs)
+        setLastVisible(jobsResult.lastVisible)
+        setHasMore(jobsResult.hasMore)
+
         // Get student preferences (saved and applied jobs)
-        const preferences = await getStudentJobPreferences(user.uid);
-        setAppliedJobs(preferences.appliedJobs || []);
-        setSavedJobs(preferences.savedJobs || []);
+        const preferences = await getStudentJobPreferences(user.uid)
+        setAppliedJobs(preferences.appliedJobs || [])
+        setSavedJobs(preferences.savedJobs || [])
       } catch (error) {
         console.error("Error:", error)
         toast.error("Failed to fetch jobs. Please try again.")
@@ -81,92 +88,89 @@ export default function StudentJobsPage() {
 
   // Filter jobs when filters change
   useEffect(() => {
-    if (!allJobs.length) return;
-    
-    let filtered = [...allJobs];
-    
+    if (!allJobs.length) return
+
+    let filtered = [...allJobs]
+
     // Filter by search query
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(job => 
-        job.title.toLowerCase().includes(query) ||
-        job.description.toLowerCase().includes(query) ||
-        job.requirements.some(req => req.toLowerCase().includes(query))
-      );
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(
+        (job) =>
+          job.title.toLowerCase().includes(query) ||
+          job.description.toLowerCase().includes(query) ||
+          job.requirements.some((req) => req.toLowerCase().includes(query)),
+      )
     }
-    
+
     // Filter by selected skills
     if (selectedSkills.length > 0) {
-      filtered = filtered.filter(job => 
-        job.requirements.some(requirement => 
-          selectedSkills.some(skill => requirement.toLowerCase().includes(skill.toLowerCase()))
-        )
-      );
+      filtered = filtered.filter((job) =>
+        job.requirements.some((requirement) =>
+          selectedSkills.some((skill) => requirement.toLowerCase().includes(skill.toLowerCase())),
+        ),
+      )
     }
-    
+
     // Filter by active tab
     if (activeTab === "applied") {
-      filtered = filtered.filter(job => appliedJobs.includes(job.jobId || ''));
+      filtered = filtered.filter((job) => appliedJobs.includes(job.jobId || ""))
     } else if (activeTab === "saved") {
-      filtered = filtered.filter(job => savedJobs.includes(job.jobId || ''));
+      filtered = filtered.filter((job) => savedJobs.includes(job.jobId || ""))
     }
 
-    setFilteredJobs(filtered);
-  }, [searchQuery, selectedSkills, activeTab, allJobs, appliedJobs, savedJobs]);
+    setFilteredJobs(filtered)
+  }, [searchQuery, selectedSkills, activeTab, allJobs, appliedJobs, savedJobs])
 
   const toggleSkillFilter = (skill: string) => {
-    setSelectedSkills(prev => 
-      prev.includes(skill) 
-        ? prev.filter(s => s !== skill) 
-        : [...prev, skill]
-    );
-  };
+    setSelectedSkills((prev) => (prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]))
+  }
 
   const saveJob = async (jobId: string) => {
-    if (!studentId) return;
-    
+    if (!studentId) return
+
     try {
-      const isSaved = savedJobs.includes(jobId);
-      
+      const isSaved = savedJobs.includes(jobId)
+
       // Use Firebase function directly
-      await toggleSaveJobFn(studentId, jobId, !isSaved);
-      
+      await toggleSaveJobFn(studentId, jobId, !isSaved)
+
       // Update local state
       if (isSaved) {
-        setSavedJobs(prev => prev.filter(id => id !== jobId));
-        toast.success("Job removed from saved jobs");
+        setSavedJobs((prev) => prev.filter((id) => id !== jobId))
+        toast.success("Job removed from saved jobs")
       } else {
-        setSavedJobs(prev => [...prev, jobId]);
-        toast.success("Job saved successfully");
+        setSavedJobs((prev) => [...prev, jobId])
+        toast.success("Job saved successfully")
       }
     } catch (error) {
-      console.error("Error saving job:", error);
-      toast.error("Failed to save job");
+      console.error("Error saving job:", error)
+      toast.error("Failed to save job")
     }
-  };
+  }
 
   const loadMoreJobs = async () => {
-    if (!hasMore || !lastVisible) return;
-    
+    if (!hasMore || !lastVisible) return
+
     try {
-      setIsLoading(true);
-      const jobsResult = await getAllJobs(lastVisible, 20);
-      
-      setAllJobs(prev => [...prev, ...jobsResult.jobs]);
-      setLastVisible(jobsResult.lastVisible);
-      setHasMore(jobsResult.hasMore);
+      setIsLoading(true)
+      const jobsResult = await getAllJobs(lastVisible, 20)
+
+      setAllJobs((prev) => [...prev, ...jobsResult.jobs])
+      setLastVisible(jobsResult.lastVisible)
+      setHasMore(jobsResult.hasMore)
     } catch (error) {
-      console.error("Error loading more jobs:", error);
-      toast.error("Failed to load more jobs");
+      console.error("Error loading more jobs:", error)
+      toast.error("Failed to load more jobs")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
-      <PremiumNavbar studentId={studentId || ""} />
-      
+      <PremiumNavbar />
+
       <main className="flex-1 pt-16">
         <div className="container px-4 py-8 md:px-8 lg:px-12">
           <div className="flex flex-col space-y-4">
@@ -174,7 +178,7 @@ export default function StudentJobsPage() {
             <p className="text-gray-600 dark:text-gray-400">
               Find and apply to jobs that match your skills and interests
             </p>
-            
+
             {/* Search and Filter */}
             <div className="flex flex-col md:flex-row gap-4 my-4">
               <Input
@@ -183,22 +187,22 @@ export default function StudentJobsPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1"
               />
-              
-              <Button 
+
+              <Button
                 variant="outline"
                 onClick={() => {
-                  setSearchQuery("");
-                  setSelectedSkills([]);
+                  setSearchQuery("")
+                  setSelectedSkills([])
                 }}
               >
                 <Icons.x className="mr-2 h-4 w-4" />
                 Clear Filters
               </Button>
             </div>
-            
+
             {/* Skill chips */}
             <div className="flex flex-wrap gap-2 my-2">
-              {skillOptions.map(skill => (
+              {skillOptions.map((skill) => (
                 <button
                   key={skill}
                   onClick={() => toggleSkillFilter(skill)}
@@ -209,13 +213,11 @@ export default function StudentJobsPage() {
                   }`}
                 >
                   {skill}
-                  {selectedSkills.includes(skill) && (
-                    <Icons.check className="ml-1 inline h-3 w-3" />
-                  )}
+                  {selectedSkills.includes(skill) && <Icons.check className="ml-1 inline h-3 w-3" />}
                 </button>
               ))}
             </div>
-            
+
             {/* Job Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-8">
@@ -239,23 +241,25 @@ export default function StudentJobsPage() {
                         >
                           <div className="p-6">
                             <div className="flex justify-between items-start mb-2">
-                              <h3 
+                              <h3
                                 className="text-xl font-semibold text-violet-800 dark:text-violet-300 cursor-pointer hover:text-violet-600 dark:hover:text-violet-400"
                                 onClick={() => router.push(`/explore/students/${job.jobId}`)}
                               >
                                 {job.title}
                               </h3>
-                              <span className={`text-xs px-2 py-1 rounded-full ${
-                                job.status === "open" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                              }`}>
+                              <span
+                                className={`text-xs px-2 py-1 rounded-full ${
+                                  job.status === "open" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                }`}
+                              >
                                 {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
                               </span>
                             </div>
-                            
+
                             <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
                               {job.description}
                             </p>
-                            
+
                             {/* Requirements/Skills */}
                             <div className="mb-4">
                               <div className="flex flex-wrap gap-1">
@@ -274,21 +278,21 @@ export default function StudentJobsPage() {
                                 )}
                               </div>
                             </div>
-                            
+
                             {/* Payment */}
                             <div className="text-lg font-medium text-violet-800 dark:text-violet-300">
                               {job.payment} {job.currency}
                             </div>
                           </div>
-                          
+
                           {/* Action buttons */}
                           <div className="flex border-t border-violet-100 dark:border-zinc-800">
                             <Button
                               variant="ghost"
                               className="flex-1 rounded-none text-violet-700 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20"
                               onClick={(e) => {
-                                e.stopPropagation();
-                                saveJob(job.jobId || "");
+                                e.stopPropagation()
+                                saveJob(job.jobId || "")
                               }}
                             >
                               {savedJobs.includes(job.jobId || "") ? (
@@ -303,9 +307,9 @@ export default function StudentJobsPage() {
                                 </>
                               )}
                             </Button>
-                            
+
                             <div className="w-px bg-violet-100 dark:bg-zinc-800" />
-                            
+
                             <Button
                               variant="ghost"
                               className="flex-1 rounded-none text-violet-700 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20"
@@ -318,14 +322,10 @@ export default function StudentJobsPage() {
                         </div>
                       ))}
                     </div>
-                    
+
                     {hasMore && activeTab === "all" && (
                       <div className="mt-8 flex justify-center">
-                        <Button 
-                          onClick={loadMoreJobs}
-                          disabled={isLoading}
-                          variant="outline"
-                        >
+                        <Button onClick={loadMoreJobs} disabled={isLoading} variant="outline">
                           {isLoading ? (
                             <>
                               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -343,9 +343,9 @@ export default function StudentJobsPage() {
                     <Icons.search className="h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" />
                     <h3 className="text-xl font-medium mb-2">No jobs found</h3>
                     <p className="text-gray-500 dark:text-gray-400 max-w-md">
-                      {activeTab === "all" 
+                      {activeTab === "all"
                         ? "Try adjusting your search or filter criteria."
-                        : activeTab === "saved" 
+                        : activeTab === "saved"
                           ? "You haven't saved any jobs yet."
                           : "You haven't applied to any jobs yet."}
                     </p>

@@ -13,15 +13,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface RecruiterCompanyProps {
-  recruiter: any;
-  isEditable?: boolean;
-  onUpdate?: (section: string, data: any) => void;
+  recruiter: any
+  isEditable?: boolean
+  onUpdate?: (section: string, data: any) => void
 }
 
 export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: RecruiterCompanyProps) {
-  const [isEditCompanyOpen, setIsEditCompanyOpen] = useState(false);
-  const [isEditCultureOpen, setIsEditCultureOpen] = useState(false);
-  
+  const [isEditCompanyOpen, setIsEditCompanyOpen] = useState(false)
+  const [isEditCultureOpen, setIsEditCultureOpen] = useState(false)
+
   const [editedCompanyData, setEditedCompanyData] = useState({
     companyName: recruiter.companyName || "",
     industry: recruiter.industry || "",
@@ -29,18 +29,18 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
     companyLocation: recruiter.companyLocation || "",
     companyWebsite: recruiter.companyWebsite || "",
     companyDescription: recruiter.companyDescription || "",
-  });
-  
+  })
+
   const [editedCultureData, setEditedCultureData] = useState({
     companyValues: recruiter.companyValues || [],
     workEnvironment: recruiter.workEnvironment || "",
     teamStructure: recruiter.teamStructure || "",
     benefits: recruiter.benefits || [],
-  });
-  
-  const [newValue, setNewValue] = useState("");
-  const [newBenefit, setNewBenefit] = useState("");
-  
+  })
+
+  const [newValue, setNewValue] = useState("")
+  const [newBenefit, setNewBenefit] = useState("")
+
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
@@ -62,68 +62,68 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
 
     return industryMap[industry] || industry
   }
-  
+
   const handleCompanyDataChange = (field: string, value: string) => {
-    setEditedCompanyData(prev => ({
+    setEditedCompanyData((prev) => ({
       ...prev,
-      [field]: value
-    }));
-  };
-  
+      [field]: value,
+    }))
+  }
+
   const handleCultureDataChange = (field: string, value: string) => {
-    setEditedCultureData(prev => ({
+    setEditedCultureData((prev) => ({
       ...prev,
-      [field]: value
-    }));
-  };
-  
+      [field]: value,
+    }))
+  }
+
   const handleAddValue = () => {
-    if (!newValue.trim()) return;
-    setEditedCultureData(prev => ({
+    if (!newValue.trim()) return
+    setEditedCultureData((prev) => ({
       ...prev,
-      companyValues: [...prev.companyValues, newValue.trim()]
-    }));
-    setNewValue("");
-  };
-  
+      companyValues: [...prev.companyValues, newValue.trim()],
+    }))
+    setNewValue("")
+  }
+
   const handleRemoveValue = (index: number) => {
-    const updated = [...editedCultureData.companyValues];
-    updated.splice(index, 1);
-    setEditedCultureData(prev => ({
+    const updated = [...editedCultureData.companyValues]
+    updated.splice(index, 1)
+    setEditedCultureData((prev) => ({
       ...prev,
-      companyValues: updated
-    }));
-  };
-  
+      companyValues: updated,
+    }))
+  }
+
   const handleAddBenefit = () => {
-    if (!newBenefit.trim()) return;
-    setEditedCultureData(prev => ({
+    if (!newBenefit.trim()) return
+    setEditedCultureData((prev) => ({
       ...prev,
-      benefits: [...prev.benefits, newBenefit.trim()]
-    }));
-    setNewBenefit("");
-  };
-  
+      benefits: [...prev.benefits, newBenefit.trim()],
+    }))
+    setNewBenefit("")
+  }
+
   const handleRemoveBenefit = (index: number) => {
-    const updated = [...editedCultureData.benefits];
-    updated.splice(index, 1);
-    setEditedCultureData(prev => ({
+    const updated = [...editedCultureData.benefits]
+    updated.splice(index, 1)
+    setEditedCultureData((prev) => ({
       ...prev,
-      benefits: updated
-    }));
-  };
-  
+      benefits: updated,
+    }))
+  }
+
   const handleSaveCompany = () => {
-    if (!onUpdate) return;
-    onUpdate("", editedCompanyData);
-    setIsEditCompanyOpen(false);
-  };
-  
+    if (!onUpdate) return
+    onUpdate("", editedCompanyData)
+    setIsEditCompanyOpen(false)
+  }
+
   const handleSaveCulture = () => {
-    if (!onUpdate) return;
-    onUpdate("", editedCultureData);
-    setIsEditCultureOpen(false);
-  };
+    if (!onUpdate) return
+    onUpdate("", editedCultureData)
+    setIsEditCultureOpen(false)
+  }
 
   return (
     <motion.div
@@ -145,11 +145,11 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
               <CardTitle className="text-xl">Company Overview</CardTitle>
               <CardDescription>Information about {recruiter.companyName}</CardDescription>
             </div>
-            
+
             {isEditable && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setIsEditCompanyOpen(true)}
                 className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
               >
@@ -220,11 +220,11 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
               <CardTitle className="text-xl">Company Culture</CardTitle>
               <CardDescription>Values, work environment, and team structure</CardDescription>
             </div>
-            
+
             {isEditable && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setIsEditCultureOpen(true)}
                 className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
               >
@@ -286,7 +286,7 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
           </CardContent>
         </Card>
       </motion.div>
-      
+
       {/* Edit Company Dialog */}
       {isEditable && (
         <Dialog open={isEditCompanyOpen} onOpenChange={setIsEditCompanyOpen}>
@@ -297,16 +297,16 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="companyName">Company Name</Label>
-                <Input 
-                  id="companyName" 
+                <Input
+                  id="companyName"
                   value={editedCompanyData.companyName}
-                  onChange={(e) => handleCompanyDataChange("companyName", e.target.value)} 
+                  onChange={(e) => handleCompanyDataChange("companyName", e.target.value)}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="industry">Industry</Label>
-                <Select 
-                  value={editedCompanyData.industry} 
+                <Select
+                  value={editedCompanyData.industry}
                   onValueChange={(value) => handleCompanyDataChange("industry", value)}
                 >
                   <SelectTrigger id="industry">
@@ -328,8 +328,8 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="companySize">Company Size</Label>
-                <Select 
-                  value={editedCompanyData.companySize} 
+                <Select
+                  value={editedCompanyData.companySize}
                   onValueChange={(value) => handleCompanyDataChange("companySize", value)}
                 >
                   <SelectTrigger id="companySize">
@@ -348,33 +348,35 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="companyLocation">Location</Label>
-                <Input 
-                  id="companyLocation" 
+                <Input
+                  id="companyLocation"
                   value={editedCompanyData.companyLocation}
-                  onChange={(e) => handleCompanyDataChange("companyLocation", e.target.value)} 
+                  onChange={(e) => handleCompanyDataChange("companyLocation", e.target.value)}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="companyWebsite">Website</Label>
-                <Input 
-                  id="companyWebsite" 
+                <Input
+                  id="companyWebsite"
                   value={editedCompanyData.companyWebsite}
-                  onChange={(e) => handleCompanyDataChange("companyWebsite", e.target.value)} 
+                  onChange={(e) => handleCompanyDataChange("companyWebsite", e.target.value)}
                   placeholder="https://"
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="companyDescription">Company Description</Label>
-                <Textarea 
-                  id="companyDescription" 
+                <Textarea
+                  id="companyDescription"
                   value={editedCompanyData.companyDescription}
-                  onChange={(e) => handleCompanyDataChange("companyDescription", e.target.value)} 
+                  onChange={(e) => handleCompanyDataChange("companyDescription", e.target.value)}
                   rows={4}
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsEditCompanyOpen(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setIsEditCompanyOpen(false)}>
+                Cancel
+              </Button>
               <Button onClick={handleSaveCompany}>Save</Button>
             </DialogFooter>
           </DialogContent>
@@ -392,24 +394,24 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
               <div className="grid gap-2">
                 <Label htmlFor="companyValues">Company Values</Label>
                 <div className="flex gap-2">
-                  <Input 
-                    id="companyValues" 
+                  <Input
+                    id="companyValues"
                     value={newValue}
-                    onChange={(e) => setNewValue(e.target.value)} 
+                    onChange={(e) => setNewValue(e.target.value)}
                     placeholder="Add a value"
                   />
                   <Button onClick={handleAddValue}>Add</Button>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {editedCultureData.companyValues.map((value, index) => (
-                    <Badge 
-                      key={index} 
+                  {editedCultureData.companyValues.map((value: string, index: number) => (
+                    <Badge
+                      key={index}
                       className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
                     >
                       {value}
-                      <Button 
-                        variant="ghost" 
-                        size="xs" 
+                      <Button
+                        variant="ghost"
+                        size="xs"
                         onClick={() => handleRemoveValue(index)}
                         className="ml-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                       >
@@ -421,43 +423,43 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="workEnvironment">Work Environment</Label>
-                <Textarea 
-                  id="workEnvironment" 
+                <Textarea
+                  id="workEnvironment"
                   value={editedCultureData.workEnvironment}
-                  onChange={(e) => handleCultureDataChange("workEnvironment", e.target.value)} 
+                  onChange={(e) => handleCultureDataChange("workEnvironment", e.target.value)}
                   rows={4}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="teamStructure">Team Structure</Label>
-                <Textarea 
-                  id="teamStructure" 
+                <Textarea
+                  id="teamStructure"
                   value={editedCultureData.teamStructure}
-                  onChange={(e) => handleCultureDataChange("teamStructure", e.target.value)} 
+                  onChange={(e) => handleCultureDataChange("teamStructure", e.target.value)}
                   rows={4}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="benefits">Benefits & Perks</Label>
                 <div className="flex gap-2">
-                  <Input 
-                    id="benefits" 
+                  <Input
+                    id="benefits"
                     value={newBenefit}
-                    onChange={(e) => setNewBenefit(e.target.value)} 
+                    onChange={(e) => setNewBenefit(e.target.value)}
                     placeholder="Add a benefit"
                   />
                   <Button onClick={handleAddBenefit}>Add</Button>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {editedCultureData.benefits.map((benefit, index) => (
-                    <Badge 
-                      key={index} 
+                  {editedCultureData.benefits.map((benefit: string, index: number) => (
+                    <Badge
+                      key={index}
                       className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
                     >
                       {benefit}
-                      <Button 
-                        variant="ghost" 
-                        size="xs" 
+                      <Button
+                        variant="ghost"
+                        size="xs"
                         onClick={() => handleRemoveBenefit(index)}
                         className="ml-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                       >
@@ -469,7 +471,9 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsEditCultureOpen(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setIsEditCultureOpen(false)}>
+                Cancel
+              </Button>
               <Button onClick={handleSaveCulture}>Save</Button>
             </DialogFooter>
           </DialogContent>
@@ -478,4 +482,3 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
     </motion.div>
   )
 }
-

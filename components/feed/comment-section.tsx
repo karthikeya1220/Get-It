@@ -8,15 +8,21 @@ import { formatDistanceToNow } from "date-fns"
 import { ThumbsUp, Reply, Smile, Send, MoreHorizontal } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import type { PostComment } from "@/components/feed/types"
 
-export function CommentSection({ postId, comments: initialComments }) {
-  const [comments, setComments] = useState(initialComments)
+interface CommentSectionProps {
+  postId: string
+  comments: PostComment[]
+}
+
+export function CommentSection({ postId, comments: initialComments }: CommentSectionProps) {
+  const [comments, setComments] = useState<PostComment[]>(initialComments)
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [replyingTo, setReplyingTo] = useState(null)
-  const commentInputRef = useRef(null)
+  const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const commentInputRef = useRef<HTMLTextAreaElement | null>(null)
 
-  const handleSubmitComment = (e) => {
+  const handleSubmitComment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!newComment.trim()) return
@@ -36,7 +42,7 @@ export function CommentSection({ postId, comments: initialComments }) {
         timestamp: new Date().toISOString(),
         likes: 0,
         isLiked: false,
-        replyTo: replyingTo,
+        replyTo: replyingTo ?? undefined,
       }
 
       setComments([...comments, comment])
@@ -46,7 +52,7 @@ export function CommentSection({ postId, comments: initialComments }) {
     }, 500)
   }
 
-  const handleLikeComment = (commentId) => {
+  const handleLikeComment = (commentId: string) => {
     setComments(
       comments.map((comment) => {
         if (comment.id === commentId) {
@@ -62,15 +68,14 @@ export function CommentSection({ postId, comments: initialComments }) {
     )
   }
 
-  const handleReply = (comment) => {
+  const handleReply = (comment: PostComment) => {
     setReplyingTo(comment.id)
     setNewComment(`@${comment.author.name} `)
 
     // Focus the comment input
-    if (commentInputRef.current) {
-      setTimeout(() => {
-        commentInputRef.current.focus()
-      }, 0)
+    const input = commentInputRef.current
+    if (input) {
+      setTimeout(() => input.focus(), 0)
     }
   }
 
@@ -221,4 +226,3 @@ export function CommentSection({ postId, comments: initialComments }) {
     </div>
   )
 }
-

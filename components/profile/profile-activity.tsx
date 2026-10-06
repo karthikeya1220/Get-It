@@ -124,4 +124,3 @@ export function ProfileActivity({ activity, analytics, showAll = false }: Profil
     </Card>
   )
 }
-

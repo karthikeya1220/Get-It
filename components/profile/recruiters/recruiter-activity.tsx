@@ -160,12 +160,16 @@ export function RecruiterActivity({ recruiter }: RecruiterActivityProps) {
                     {(activity.type === "candidate_contacted" || activity.type === "candidate_hired") && (
                       <div className="flex items-center gap-2">
                         <Avatar className="h-6 w-6">
-                          <AvatarImage src={activity.details.candidate.avatar} alt={activity.details.candidate.name} />
+                          <AvatarImage
+                            src={activity.details.candidate?.avatar}
+                            alt={activity.details.candidate?.name ?? ""}
+                          />
                           <AvatarFallback className="text-xs">
-                            {activity.details.candidate.name
-                              .split(" ")
-                              .map((n: string) => n[0])
-                              .join("")}
+                            {activity.details.candidate?.name ??
+                              ""
+                                .split(" ")
+                                .map((n: string) => n[0])
+                                .join("")}
                           </AvatarFallback>
                         </Avatar>
                         <span className="text-sm text-muted-foreground">{activity.details.role}</span>
@@ -244,4 +248,3 @@ export function RecruiterActivity({ recruiter }: RecruiterActivityProps) {
     </motion.div>
   )
 }
-

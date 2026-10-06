@@ -12,39 +12,39 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
 interface RecruiterAboutProps {
-  recruiter: any;
-  isEditable?: boolean;
-  onUpdate?: (section: string, data: any) => void;
+  recruiter: any
+  isEditable?: boolean
+  onUpdate?: (section: string, data: any) => void
 }
 
 export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: RecruiterAboutProps) {
-  const [isEditContactOpen, setIsEditContactOpen] = useState(false);
-  const [isEditSpecializationsOpen, setIsEditSpecializationsOpen] = useState(false);
-  const [editedSpecializations, setEditedSpecializations] = useState(recruiter.specializations || []);
-  const [newSpecialization, setNewSpecialization] = useState("");
-  
+  const [isEditContactOpen, setIsEditContactOpen] = useState(false)
+  const [isEditSpecializationsOpen, setIsEditSpecializationsOpen] = useState(false)
+  const [editedSpecializations, setEditedSpecializations] = useState(recruiter.specializations || [])
+  const [newSpecialization, setNewSpecialization] = useState("")
+
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
   }
-  
+
   const handleAddSpecialization = () => {
-    if (!newSpecialization.trim()) return;
-    setEditedSpecializations([...editedSpecializations, newSpecialization.trim()]);
-    setNewSpecialization("");
-  };
-  
+    if (!newSpecialization.trim()) return
+    setEditedSpecializations([...editedSpecializations, newSpecialization.trim()])
+    setNewSpecialization("")
+  }
+
   const handleRemoveSpecialization = (index: number) => {
-    const updated = [...editedSpecializations];
-    updated.splice(index, 1);
-    setEditedSpecializations(updated);
-  };
-  
+    const updated = [...editedSpecializations]
+    updated.splice(index, 1)
+    setEditedSpecializations(updated)
+  }
+
   const handleSaveSpecializations = () => {
-    if (!onUpdate) return;
-    onUpdate("specializations", editedSpecializations);
-    setIsEditSpecializationsOpen(false);
-  };
+    if (!onUpdate) return
+    onUpdate("specializations", editedSpecializations)
+    setIsEditSpecializationsOpen(false)
+  }
 
   return (
     <motion.div
@@ -66,11 +66,11 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
               <CardTitle className="text-xl">Personal Information</CardTitle>
               <CardDescription>Contact details and professional information</CardDescription>
             </div>
-            
+
             {isEditable && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setIsEditContactOpen(true)}
                 className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
               >
@@ -148,7 +148,7 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
             <div className="pt-4 border-t">
               <div className="flex justify-between items-center mb-2">
                 <p className="text-sm text-muted-foreground">Specializations</p>
-                
+
                 {isEditable && (
                   <Button
                     variant="ghost"
@@ -194,7 +194,9 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
               </div>
               <div>
                 <p className="font-medium">Prefers communication via {recruiter.preferredCommunication || "email"}</p>
-                <p className="text-sm text-muted-foreground">Average response time: {recruiter.averageResponseTime || "24 hours"}</p>
+                <p className="text-sm text-muted-foreground">
+                  Average response time: {recruiter.averageResponseTime || "24 hours"}
+                </p>
               </div>
               <Button className="ml-auto bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700">
                 Contact
@@ -203,7 +205,7 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
           </CardContent>
         </Card>
       </motion.div>
-      
+
       {/* Edit Specializations Dialog */}
       {isEditable && (
         <Dialog open={isEditSpecializationsOpen} onOpenChange={setIsEditSpecializationsOpen}>
@@ -213,22 +215,24 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="flex gap-2">
-                <Input 
-                  placeholder="Add a specialization..." 
+                <Input
+                  placeholder="Add a specialization..."
                   value={newSpecialization}
                   onChange={(e) => setNewSpecialization(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddSpecialization();
+                    if (e.key === "Enter") {
+                      e.preventDefault()
+                      handleAddSpecialization()
                     }
                   }}
                 />
-                <Button onClick={handleAddSpecialization} type="button">Add</Button>
+                <Button onClick={handleAddSpecialization} type="button">
+                  Add
+                </Button>
               </div>
-              
+
               <div className="flex flex-wrap gap-2 mt-4">
-                {editedSpecializations.map((specialization, index) => (
+                {editedSpecializations.map((specialization: string, index: number) => (
                   <Badge
                     key={index}
                     variant="outline"
@@ -251,14 +255,12 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
                 )}
               </div>
             </div>
-            
+
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsEditSpecializationsOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSaveSpecializations}>
-                Save Changes
-              </Button>
+              <Button onClick={handleSaveSpecializations}>Save Changes</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -266,4 +268,3 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
     </motion.div>
   )
 }
-

@@ -1,21 +1,14 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { PremiumNavbar } from "@/components/premium-navbar";
-import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/icons";
-import { toast } from "sonner";
-import { Toaster } from "@/components/ui/toaster";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import {
-  getJobById,
-  getStudentsByIds,
-  updateJobStatus,
-  JobData,
-  StudentData,
-  updateJob,
-} from "@/lib/firebase-service";
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { PremiumNavbar } from "@/components/premium-navbar"
+import { Button } from "@/components/ui/button"
+import { Icons } from "@/components/icons"
+import { toast } from "sonner"
+import { Toaster } from "@/components/ui/toaster"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { getJobById, getStudentsByIds, updateJobStatus, JobData, StudentData, updateJob } from "@/lib/firebase-service"
 import {
   Dialog,
   DialogContent,
@@ -23,166 +16,163 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { format } from "date-fns";
+} from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { format } from "date-fns"
 
 export default function JobDetailPage() {
-  const params = useParams();
-  const router = useRouter();
-  const { id } = params;
-  const jobId = id as string;
+  const params = useParams()
+  const router = useRouter()
+  const { id } = params
+  const jobId = id as string
 
-  const [recruiterId, setRecruiterId] = useState<string | null>(null);
-  const [job, setJob] = useState<JobData | null>(null);
-  const [applicants, setApplicants] = useState<StudentData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("details");
+  const [recruiterId, setRecruiterId] = useState<string | null>(null)
+  const [job, setJob] = useState<JobData | null>(null)
+  const [applicants, setApplicants] = useState<StudentData[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState("details")
 
   // Message modal states
-  const [messageModalOpen, setMessageModalOpen] = useState(false);
-  const [selectedApplicant, setSelectedApplicant] =
-    useState<StudentData | null>(null);
-  const [messageText, setMessageText] = useState("");
-  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const [messageModalOpen, setMessageModalOpen] = useState(false)
+  const [selectedApplicant, setSelectedApplicant] = useState<StudentData | null>(null)
+  const [messageText, setMessageText] = useState("")
+  const [isSendingMessage, setIsSendingMessage] = useState(false)
 
   // Edit job modal states
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editedJob, setEditedJob] = useState<JobData | null>(null);
-  const [requirementInput, setRequirementInput] = useState("");
-  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editedJob, setEditedJob] = useState<JobData | null>(null)
+  const [requirementInput, setRequirementInput] = useState("")
+  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false)
 
   useEffect(() => {
-    const auth = getAuth();
+    const auth = getAuth()
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        toast.error("Please login first");
-        router.push("/login");
-        return;
+        toast.error("Please login first")
+        router.push("/login")
+        return
       }
 
-      setRecruiterId(user.uid);
+      setRecruiterId(user.uid)
 
       try {
-        setIsLoading(true);
-        const jobData = await getJobById(jobId);
-        console.log("job id", jobData);
+        setIsLoading(true)
+        const jobData = await getJobById(jobId)
+        console.log("job id", jobData)
 
         // Make sure the job exists and belongs to this recruiter
         if (!jobData) {
-          toast.error("Job not found");
-          router.push("/explore/recruiters/job");
-          return;
+          toast.error("Job not found")
+          router.push("/explore/recruiters/job")
+          return
         }
 
         if (jobData.postedBy !== user.uid) {
-          toast.error("You don't have permission to view this job");
-          router.push("/explore/recruiters/job");
-          return;
+          toast.error("You don't have permission to view this job")
+          router.push("/explore/recruiters/job")
+          return
         }
 
-        setJob(jobData);
-        setEditedJob({ ...jobData }); // Clone for edit form
+        setJob(jobData)
+        setEditedJob({ ...jobData }) // Clone for edit form
 
         // Fetch applicant details if there are any
         if (jobData.applicants.length > 0) {
-          const applicantData = await getStudentsByIds(jobData.applicants);
-          console.log("applicant data", applicantData);
-          setApplicants(applicantData);
+          const applicantData = await getStudentsByIds(jobData.applicants)
+          console.log("applicant data", applicantData)
+          setApplicants(applicantData)
         }
       } catch (error) {
-        console.error("Error:", error);
-        toast.error("Failed to fetch job details. Please try again.");
+        console.error("Error:", error)
+        toast.error("Failed to fetch job details. Please try again.")
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    });
+    })
 
-    return () => unsubscribe();
-  }, [jobId, router]);
+    return () => unsubscribe()
+  }, [jobId, router])
 
   const handleStatusChange = async (newStatus: "open" | "closed") => {
-    if (!job || !job.jobId) return;
+    if (!job || !job.jobId) return
 
     try {
-      await updateJobStatus(job.jobId, newStatus);
-      setJob({ ...job, status: newStatus });
-      toast.success(
-        `Job ${newStatus === "open" ? "opened" : "closed"} successfully`
-      );
+      await updateJobStatus(job.jobId, newStatus)
+      setJob({ ...job, status: newStatus })
+      toast.success(`Job ${newStatus === "open" ? "opened" : "closed"} successfully`)
     } catch (error) {
-      console.error("Error updating job status:", error);
-      toast.error("Failed to update job status");
+      console.error("Error updating job status:", error)
+      toast.error("Failed to update job status")
     }
-  };
+  }
 
   const handleMessageSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedApplicant || !messageText.trim()) return;
+    e.preventDefault()
+    if (!selectedApplicant || !messageText.trim()) return
 
-    setIsSendingMessage(true);
+    setIsSendingMessage(true)
 
     // In a real app, you'd send the message to the student through your backend
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      toast.success(`Message sent to ${selectedApplicant.fullName}`);
-      setMessageModalOpen(false);
-      setMessageText("");
+      toast.success(`Message sent to ${selectedApplicant.fullName}`)
+      setMessageModalOpen(false)
+      setMessageText("")
     } catch (error) {
-      toast.error("Failed to send message");
+      toast.error("Failed to send message")
     } finally {
-      setIsSendingMessage(false);
+      setIsSendingMessage(false)
     }
-  };
+  }
 
   const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editedJob || !job?.jobId) return;
+    e.preventDefault()
+    if (!editedJob || !job?.jobId) return
 
-    setIsSubmittingEdit(true);
+    setIsSubmittingEdit(true)
 
     try {
       // Update job in the database
-      await updateJob(job.jobId, editedJob);
+      await updateJob(job.jobId, editedJob)
 
       // Update local state
-      setJob(editedJob);
-      toast.success("Job updated successfully");
-      setEditModalOpen(false);
+      setJob(editedJob)
+      toast.success("Job updated successfully")
+      setEditModalOpen(false)
     } catch (error) {
-      console.error("Error updating job:", error);
-      toast.error("Failed to update job");
+      console.error("Error updating job:", error)
+      toast.error("Failed to update job")
     } finally {
-      setIsSubmittingEdit(false);
+      setIsSubmittingEdit(false)
     }
-  };
+  }
 
   const handleAddRequirement = () => {
-    if (!editedJob || !requirementInput.trim()) return;
+    if (!editedJob || !requirementInput.trim()) return
 
     if (!editedJob.requirements.includes(requirementInput.trim())) {
       setEditedJob({
         ...editedJob,
         requirements: [...editedJob.requirements, requirementInput.trim()],
-      });
-      setRequirementInput("");
+      })
+      setRequirementInput("")
     }
-  };
+  }
 
   const handleRemoveRequirement = (index: number) => {
-    if (!editedJob) return;
+    if (!editedJob) return
 
     setEditedJob({
       ...editedJob,
       requirements: editedJob.requirements.filter((_, i) => i !== index),
-    });
-  };
+    })
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
@@ -212,9 +202,7 @@ export default function JobDetailPage() {
                     </Button>
                     <span
                       className={`text-xs px-2 py-1 rounded-full ${
-                        job.status === "open"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                        job.status === "open" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                       }`}
                     >
                       {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
@@ -224,10 +212,7 @@ export default function JobDetailPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setEditModalOpen(true)}
-                  >
+                  <Button variant="outline" onClick={() => setEditModalOpen(true)}>
                     <Icons.edit className="h-4 w-4 mr-2" />
                     Edit Job
                   </Button>
@@ -257,9 +242,7 @@ export default function JobDetailPage() {
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="mb-6">
                   <TabsTrigger value="details">Job Details</TabsTrigger>
-                  <TabsTrigger value="applicants">
-                    Applicants ({applicants.length})
-                  </TabsTrigger>
+                  <TabsTrigger value="applicants">Applicants ({applicants.length})</TabsTrigger>
                 </TabsList>
 
                 <TabsContent
@@ -268,91 +251,55 @@ export default function JobDetailPage() {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2">
-                      <h3 className="text-lg font-semibold mb-3">
-                        Description
-                      </h3>
-                      <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line mb-6">
-                        {job.description}
-                      </p>
+                      <h3 className="text-lg font-semibold mb-3">Description</h3>
+                      <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line mb-6">{job.description}</p>
 
-                      <h3 className="text-lg font-semibold mb-3">
-                        Requirements
-                      </h3>
+                      <h3 className="text-lg font-semibold mb-3">Requirements</h3>
                       {job.requirements.length > 0 ? (
                         <ul className="list-disc pl-5 mb-6 space-y-1">
                           {job.requirements.map((req, index) => (
-                            <li
-                              key={index}
-                              className="text-gray-700 dark:text-gray-300"
-                            >
+                            <li key={index} className="text-gray-700 dark:text-gray-300">
                               {req}
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-gray-500 dark:text-gray-400 mb-6">
-                          No specific requirements listed.
-                        </p>
+                        <p className="text-gray-500 dark:text-gray-400 mb-6">No specific requirements listed.</p>
                       )}
                     </div>
 
                     <div>
                       <div className="bg-violet-50 dark:bg-violet-900/20 rounded-lg p-4 mb-6">
-                        <h3 className="text-lg font-semibold mb-3">
-                          Job Details
-                        </h3>
+                        <h3 className="text-lg font-semibold mb-3">Job Details</h3>
 
                         <div className="space-y-3">
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                              Payment
-                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Payment</p>
                             <p className="font-medium text-lg">
                               {job.payment} {job.currency}
                             </p>
                           </div>
 
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                              Status
-                            </p>
-                            <p
-                              className={`font-medium ${
-                                job.status === "open"
-                                  ? "text-green-600"
-                                  : "text-red-600"
-                              }`}
-                            >
-                              {job.status.charAt(0).toUpperCase() +
-                                job.status.slice(1)}
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
+                            <p className={`font-medium ${job.status === "open" ? "text-green-600" : "text-red-600"}`}>
+                              {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
                             </p>
                           </div>
 
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                              Posted on
-                            </p>
-                            <p className="font-medium">
-                              {format(job.createdAt, "MMMM d, yyyy")}
-                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Posted on</p>
+                            <p className="font-medium">{format(job.createdAt, "MMMM d, yyyy")}</p>
                           </div>
 
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                              Last updated
-                            </p>
-                            <p className="font-medium">
-                              {format(job.updatedAt, "MMMM d, yyyy")}
-                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Last updated</p>
+                            <p className="font-medium">{format(job.updatedAt, "MMMM d, yyyy")}</p>
                           </div>
 
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                              Applicants
-                            </p>
-                            <p className="font-medium">
-                              {job.applicants.length}
-                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Applicants</p>
+                            <p className="font-medium">{job.applicants.length}</p>
                           </div>
                         </div>
                       </div>
@@ -369,14 +316,10 @@ export default function JobDetailPage() {
                     <>
                       <div className="mb-6">
                         <h3 className="text-lg font-medium mb-2">
-                          {job.applicants.length}{" "}
-                          {job.applicants.length === 1
-                            ? "Applicant"
-                            : "Applicants"}
+                          {job.applicants.length} {job.applicants.length === 1 ? "Applicant" : "Applicants"}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400">
-                          Review applicant profiles and contact qualified
-                          candidates.
+                          Review applicant profiles and contact qualified candidates.
                         </p>
                       </div>
 
@@ -393,8 +336,7 @@ export default function JobDetailPage() {
                                     {applicant.fullName || "Unnamed Student"}
                                   </h3>
                                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {applicant.university ||
-                                      "University not specified"}
+                                    {applicant.university || "University not specified"}
                                   </p>
                                 </div>
                                 <div className="flex items-center">
@@ -408,23 +350,18 @@ export default function JobDetailPage() {
                               </div>
 
                               <div className="mb-4">
-                                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
-                                  Skills
-                                </p>
+                                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">Skills</p>
                                 <div className="mt-1 flex flex-wrap gap-1">
-                                  {applicant.skills &&
-                                  applicant.skills.length > 0 ? (
+                                  {applicant.skills && applicant.skills.length > 0 ? (
                                     <>
-                                      {applicant.skills
-                                        .slice(0, 5)
-                                        .map((skill, index) => (
-                                          <span
-                                            key={index}
-                                            className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full"
-                                          >
-                                            {skill}
-                                          </span>
-                                        ))}
+                                      {applicant.skills.slice(0, 5).map((skill, index) => (
+                                        <span
+                                          key={index}
+                                          className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full"
+                                        >
+                                          {skill.name}
+                                        </span>
+                                      ))}
                                       {applicant.skills.length > 5 && (
                                         <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-full">
                                           +{applicant.skills.length - 5} more
@@ -432,9 +369,7 @@ export default function JobDetailPage() {
                                       )}
                                     </>
                                   ) : (
-                                    <span className="text-gray-500 dark:text-gray-400 text-xs">
-                                      No skills listed
-                                    </span>
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs">No skills listed</span>
                                   )}
                                 </div>
                               </div>
@@ -443,8 +378,8 @@ export default function JobDetailPage() {
                                 <Button
                                   className="flex-1"
                                   onClick={() => {
-                                    setSelectedApplicant(applicant);
-                                    setMessageModalOpen(true);
+                                    setSelectedApplicant(applicant)
+                                    setMessageModalOpen(true)
                                   }}
                                 >
                                   <Icons.mail className="mr-2 h-4 w-4" />
@@ -455,9 +390,7 @@ export default function JobDetailPage() {
                                   className="flex-1"
                                   onClick={() => {
                                     // Navigate to student profile
-                                    router.push(
-                                      `/profiles/students/${applicant.id}`
-                                    );
+                                    router.push(`/profiles/students/${applicant.id}`)
                                   }}
                                 >
                                   <Icons.user className="mr-2 h-4 w-4" />
@@ -474,13 +407,9 @@ export default function JobDetailPage() {
                             Applicant Details Unavailable
                           </h3>
                           <p className="text-amber-600 dark:text-amber-400 text-center mb-4">
-                            There are {job.applicants.length} applicant(s), but
-                            we couldn't load their details.
+                            There are {job.applicants.length} applicant(s), but we couldn't load their details.
                           </p>
-                          <Button
-                            variant="outline"
-                            onClick={() => window.location.reload()}
-                          >
+                          <Button variant="outline" onClick={() => window.location.reload()}>
                             <Icons.refresh className="mr-2 h-4 w-4" />
                             Retry
                           </Button>
@@ -490,9 +419,7 @@ export default function JobDetailPage() {
                   ) : (
                     <div className="flex flex-col items-center justify-center h-64 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center">
                       <Icons.users className="h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" />
-                      <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        No applicants yet
-                      </h3>
+                      <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">No applicants yet</h3>
                       <p className="text-gray-500 dark:text-gray-500 mb-6">
                         {job?.status === "open"
                           ? "When students apply for this job, they'll appear here."
@@ -516,12 +443,9 @@ export default function JobDetailPage() {
               <Icons.warning className="h-12 w-12 text-yellow-500 mb-4" />
               <h3 className="text-xl font-medium mb-2">Job not found</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-6">
-                The job you're looking for doesn't exist or you don't have
-                permission to view it.
+                The job you're looking for doesn't exist or you don't have permission to view it.
               </p>
-              <Button onClick={() => router.push("/explore/recruiters/job")}>
-                Go to My Jobs
-              </Button>
+              <Button onClick={() => router.push("/explore/recruiters/job")}>Go to My Jobs</Button>
             </div>
           )}
         </div>
@@ -533,8 +457,7 @@ export default function JobDetailPage() {
           <DialogHeader>
             <DialogTitle>Contact Applicant</DialogTitle>
             <DialogDescription>
-              {selectedApplicant &&
-                `Send a message to ${selectedApplicant.fullName}`}
+              {selectedApplicant && `Send a message to ${selectedApplicant.fullName}`}
             </DialogDescription>
           </DialogHeader>
 
@@ -560,10 +483,7 @@ export default function JobDetailPage() {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={!messageText.trim() || isSendingMessage}
-              >
+              <Button type="submit" disabled={!messageText.trim() || isSendingMessage}>
                 {isSendingMessage ? (
                   <>
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -583,9 +503,7 @@ export default function JobDetailPage() {
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Edit Job</DialogTitle>
-            <DialogDescription>
-              Make changes to your job posting.
-            </DialogDescription>
+            <DialogDescription>Make changes to your job posting.</DialogDescription>
           </DialogHeader>
 
           {editedJob && (
@@ -597,9 +515,7 @@ export default function JobDetailPage() {
                     id="edit-title"
                     placeholder="e.g. Frontend Developer"
                     value={editedJob.title}
-                    onChange={(e) =>
-                      setEditedJob({ ...editedJob, title: e.target.value })
-                    }
+                    onChange={(e) => setEditedJob({ ...editedJob, title: e.target.value })}
                     required
                   />
                 </div>
@@ -631,16 +547,12 @@ export default function JobDetailPage() {
                       onChange={(e) => setRequirementInput(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleAddRequirement();
+                          e.preventDefault()
+                          handleAddRequirement()
                         }
                       }}
                     />
-                    <Button
-                      type="button"
-                      onClick={handleAddRequirement}
-                      className="w-[80px]"
-                    >
+                    <Button type="button" onClick={handleAddRequirement} className="w-[80px]">
                       Add
                     </Button>
                   </div>
@@ -691,9 +603,7 @@ export default function JobDetailPage() {
                       id="edit-currency"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       value={editedJob.currency}
-                      onChange={(e) =>
-                        setEditedJob({ ...editedJob, currency: e.target.value })
-                      }
+                      onChange={(e) => setEditedJob({ ...editedJob, currency: e.target.value })}
                       required
                     >
                       <option value="INR">INR</option>
@@ -732,14 +642,7 @@ export default function JobDetailPage() {
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={
-                    !editedJob.title ||
-                    !editedJob.description ||
-                    isSubmittingEdit
-                  }
-                >
+                <Button type="submit" disabled={!editedJob.title || !editedJob.description || isSubmittingEdit}>
                   {isSubmittingEdit ? (
                     <>
                       <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -757,5 +660,5 @@ export default function JobDetailPage() {
 
       <Toaster />
     </div>
-  );
+  )
 }

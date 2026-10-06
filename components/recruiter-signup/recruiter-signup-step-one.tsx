@@ -347,4 +347,3 @@ export function RecruiterSignupStepOne({ formData, updateFormData, nextStep, isL
     </motion.form>
   )
 }
-

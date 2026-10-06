@@ -19,8 +19,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { motion, AnimatePresence } from "framer-motion"
+import type { Post } from "@/components/feed/types"
 
-export function PostCard({ post }) {
+export function PostCard({ post }: { post: Post }) {
   const [showComments, setShowComments] = useState(false)
   const [isImageExpanded, setIsImageExpanded] = useState(false)
 
@@ -106,7 +107,7 @@ export function PostCard({ post }) {
           <div className="mt-3">
             <Badge variant="outline" className="bg-secondary text-primary">
               <Award className="mr-1 h-3 w-3" /> Trending in{" "}
-              {post.content.includes("#") ? post.content.match(/#(\w+)/g)[0].substring(1) : "Tech"}
+              {post.content.match(/#(\w+)/g)?.[0]?.substring(1) ?? "Tech"}
             </Badge>
           </div>
         )}
@@ -192,4 +193,3 @@ export function PostSkeleton() {
     </Card>
   )
 }
-

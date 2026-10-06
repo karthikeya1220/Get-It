@@ -81,8 +81,7 @@ export function StudentProfileList({
               </div>
               <Progress
                 value={student.matchScore}
-                className="mt-1 h-2 bg-amber-100 dark:bg-amber-900/30"
-                indicatorClassName="bg-gradient-to-r from-amber-600 to-amber-500"
+                className="mt-1 h-2 bg-amber-100 dark:bg-amber-900/30 [&>div]:bg-gradient-to-r [&>div]:from-amber-600 [&>div]:to-amber-500"
               />
             </div>
 
@@ -138,4 +137,3 @@ export function StudentProfileList({
     </div>
   )
 }
-

@@ -164,4 +164,3 @@ export function RecruiterStats({ recruiter }: RecruiterStatsProps) {
     </>
   )
 }
-

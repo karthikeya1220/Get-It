@@ -13,89 +13,89 @@ export default function ProfilePage() {
   const [loadingMessage, setLoadingMessage] = useState("Loading your profile...")
 
   useEffect(() => {
-    let isMounted = true;
-    
+    let isMounted = true
+
     const checkAuth = async () => {
       try {
-        if (isMounted) setLoadingMessage("Checking authentication...");
-        
-        const auth = getAuth();
-        
+        if (isMounted) setLoadingMessage("Checking authentication...")
+
+        const auth = getAuth()
+
         // Wait for auth state to initialize
         await new Promise((resolve) => {
           const unsubscribe = onAuthStateChanged(auth, (user) => {
-            unsubscribe();
-            resolve(user);
-          });
-        });
-        
+            unsubscribe()
+            resolve(user)
+          })
+        })
+
         // Now check the current user
-        const user = auth.currentUser;
-        console.log("Current user:", user?.uid);
-        
+        const user = auth.currentUser
+        console.log("Current user:", user?.uid)
+
         if (!user) {
-          console.log("No user logged in");
+          console.log("No user logged in")
           if (isMounted) {
-            toast.error("Please login first");
-            router.push("/login");
+            toast.error("Please login first")
+            router.push("/login")
           }
-          return;
+          return
         }
-        
-        if (isMounted) setLoadingMessage("Fetching your profile data...");
-        
+
+        if (isMounted) setLoadingMessage("Fetching your profile data...")
+
         try {
           // Add a short delay to ensure Firebase is fully initialized
-          await new Promise(r => setTimeout(r, 500));
-          
-          const userDetails = await getUserDetails(user.uid);
-          console.log("User details:", userDetails);
-          
-          if (!isMounted) return;
-          
+          await new Promise((r) => setTimeout(r, 500))
+
+          const userDetails = await getUserDetails(user.uid)
+          console.log("User details:", userDetails)
+
+          if (!isMounted) return
+
           if (userDetails.Role?.toLowerCase() === "recruiter") {
-            router.push(`/profiles/recruiters/${user.uid}`); 
+            router.push(`/profiles/recruiters/${user.uid}`)
           } else if (userDetails.Role?.toLowerCase() === "student") {
-            router.push(`/profiles/students/${user.uid}`); // Direct to student profile
+            router.push(`/profiles/students/${user.uid}`) // Direct to student profile
           } else {
-            console.error("Unknown role:", userDetails.Role);
-            toast.error(`Invalid user role: ${userDetails.Role || "none"}`);
+            console.error("Unknown role:", userDetails.Role)
+            toast.error(`Invalid user role: ${userDetails.Role || "none"}`)
             // Stay on current page so user can see the error
           }
         } catch (error: any) {
-          console.error("Error fetching user details:", error);
-          
-          if (!isMounted) return;
-          
-          toast.error(error.message || "Failed to fetch user details");
-          
+          console.error("Error fetching user details:", error)
+
+          if (!isMounted) return
+
+          toast.error(error.message || "Failed to fetch user details")
+
           // Create a fallback route to prevent being stuck
           setTimeout(() => {
             if (isMounted) {
-              router.push("/login");
+              router.push("/login")
             }
-          }, 3000);
+          }, 3000)
         }
       } catch (error) {
-        console.error("Authentication error:", error);
-        
+        console.error("Authentication error:", error)
+
         if (isMounted) {
-          toast.error("Authentication error");
-          router.push("/login");
+          toast.error("Authentication error")
+          router.push("/login")
         }
       } finally {
         if (isMounted) {
-          setIsLoading(false);
+          setIsLoading(false)
         }
       }
-    };
-    
-    checkAuth();
-    
+    }
+
+    checkAuth()
+
     return () => {
-      isMounted = false;
-    };
-  }, [router]);
+      isMounted = false
+    }
+  }, [router])
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
@@ -105,4 +105,3 @@ export default function ProfilePage() {
     </div>
   )
 }
-

@@ -15,20 +15,20 @@ import { toast } from "sonner"
 import { DialogTrigger } from "@radix-ui/react-dialog"
 
 interface RecruiterProfileHeaderProps {
-  recruiter: any;
-  isEditable?: boolean;
-  onUpdate?: (section: string, data: any) => void;
+  recruiter: any
+  isEditable?: boolean
+  onUpdate?: (section: string, data: any) => void
 }
 
 export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate }: RecruiterProfileHeaderProps) {
-  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false)
   const [editedProfileData, setEditedProfileData] = useState({
     fullName: recruiter.fullName || "",
     jobTitle: recruiter.jobTitle || "",
     phoneNumber: recruiter.phoneNumber || "",
     linkedinProfile: recruiter.linkedinProfile || "",
-  });
-  
+  })
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -53,33 +53,33 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
 
     return industryMap[industry] || industry
   }
-  
+
   const handleProfileChange = (field: string, value: string) => {
-    setEditedProfileData(prev => ({
+    setEditedProfileData((prev) => ({
       ...prev,
-      [field]: value
-    }));
-  };
-  
+      [field]: value,
+    }))
+  }
+
   const handleSaveProfile = () => {
-    if (!onUpdate) return;
-    
+    if (!onUpdate) return
+
     try {
-      onUpdate("", editedProfileData);
-      setIsEditProfileOpen(false);
-      toast.success("Profile updated successfully");
+      onUpdate("", editedProfileData)
+      setIsEditProfileOpen(false)
+      toast.success("Profile updated successfully")
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Failed to update profile");
+      console.error("Error updating profile:", error)
+      toast.error("Failed to update profile")
     }
-  };
+  }
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
       <Card className="overflow-hidden border-0 shadow-lg">
         <div className="h-48 bg-gradient-to-r from-amber-500 to-orange-600 relative">
           <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-black/40 to-transparent"></div>
-          
+
           {isEditable && (
             <motion.button
               className="absolute bottom-4 right-4 rounded-full bg-white/80 p-2 text-amber-800 backdrop-blur-sm transition-all hover:bg-white hover:text-amber-900 dark:bg-zinc-900/80 dark:text-amber-300 dark:hover:bg-zinc-800/80 dark:hover:text-amber-200"
@@ -102,7 +102,7 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
                     {getInitials(recruiter.fullName)}
                   </AvatarFallback>
                 </Avatar>
-                
+
                 {isEditable && (
                   <motion.button
                     className="absolute bottom-2 right-2 rounded-full bg-white/80 p-1.5 text-amber-800 backdrop-blur-sm transition-all hover:bg-white hover:text-amber-900 dark:bg-zinc-900/80 dark:text-amber-300 dark:hover:bg-zinc-800/80 dark:hover:text-amber-200"
@@ -168,15 +168,16 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
                   >
                     {recruiter.companySize} employees
                   </Badge>
-                  {recruiter.specializations && recruiter.specializations.map((specialization: string, index: number) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
-                    >
-                      {specialization}
-                    </Badge>
-                  ))}
+                  {recruiter.specializations &&
+                    recruiter.specializations.map((specialization: string, index: number) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
+                      >
+                        {specialization}
+                      </Badge>
+                    ))}
                 </div>
               </div>
 
@@ -185,7 +186,7 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
                   <Icons.mail className="mr-2 h-4 w-4" />
                   Contact
                 </Button>
-                
+
                 {isEditable ? (
                   <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                     <DialogTrigger asChild>
@@ -201,34 +202,34 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
                       <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
                           <Label htmlFor="fullName">Full Name</Label>
-                          <Input 
-                            id="fullName" 
+                          <Input
+                            id="fullName"
                             value={editedProfileData.fullName}
-                            onChange={(e) => handleProfileChange("fullName", e.target.value)} 
+                            onChange={(e) => handleProfileChange("fullName", e.target.value)}
                           />
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="jobTitle">Job Title</Label>
-                          <Input 
-                            id="jobTitle" 
+                          <Input
+                            id="jobTitle"
                             value={editedProfileData.jobTitle}
-                            onChange={(e) => handleProfileChange("jobTitle", e.target.value)} 
+                            onChange={(e) => handleProfileChange("jobTitle", e.target.value)}
                           />
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="phoneNumber">Phone Number</Label>
-                          <Input 
-                            id="phoneNumber" 
+                          <Input
+                            id="phoneNumber"
                             value={editedProfileData.phoneNumber}
-                            onChange={(e) => handleProfileChange("phoneNumber", e.target.value)} 
+                            onChange={(e) => handleProfileChange("phoneNumber", e.target.value)}
                           />
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="linkedinProfile">LinkedIn Username</Label>
-                          <Input 
-                            id="linkedinProfile" 
+                          <Input
+                            id="linkedinProfile"
                             value={editedProfileData.linkedinProfile}
-                            onChange={(e) => handleProfileChange("linkedinProfile", e.target.value)} 
+                            onChange={(e) => handleProfileChange("linkedinProfile", e.target.value)}
                           />
                         </div>
                       </div>
@@ -236,10 +237,7 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
                         <Button variant="outline" onClick={() => setIsEditProfileOpen(false)}>
                           Cancel
                         </Button>
-                        <Button 
-                          onClick={handleSaveProfile}
-                          className="bg-gradient-to-r from-amber-600 to-orange-600"
-                        >
+                        <Button onClick={handleSaveProfile} className="bg-gradient-to-r from-amber-600 to-orange-600">
                           Save Changes
                         </Button>
                       </DialogFooter>
@@ -259,4 +257,3 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
     </motion.div>
   )
 }
-

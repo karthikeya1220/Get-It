@@ -12,9 +12,8 @@ export default function StudentAIPage() {
     <div className="min-h-screen bg-gradient-to-b from-violet-50 to-white dark:from-zinc-900 dark:to-black">
       <PremiumNavbar />
       <div className="container max-w-6xl py-14 mx-auto">
-      <AiStudentDashboard studentId={studentId} />
+        <AiStudentDashboard studentId={studentId} />
       </div>
     </div>
   )
 }
-

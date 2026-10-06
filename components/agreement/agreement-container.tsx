@@ -12,13 +12,7 @@ import AgreementSignature from "./agreement-signature"
 import AgreementEditMode from "./agreement-edit-mode"
 import { getMockAgreementData } from "./mock-data"
 
-export default function AgreementContainer({
-  recruiterId,
-  studentId,
-}: {
-  recruiterId: string
-  studentId: string
-}) {
+export default function AgreementContainer({ recruiterId, studentId }: { recruiterId: string; studentId: string }) {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [agreementData, setAgreementData] = useState(getMockAgreementData(recruiterId, studentId))
@@ -147,4 +141,3 @@ export default function AgreementContainer({
     </div>
   )
 }
-

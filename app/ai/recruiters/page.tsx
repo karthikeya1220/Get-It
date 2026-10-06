@@ -6,4 +6,3 @@ export default function AiRecruitersPage() {
   const demoRecruiterId = "recruiter-123"
   redirect(`/ai/recruiters/${demoRecruiterId}`)
 }
-

@@ -26,14 +26,14 @@ export default function AgreementEditMode({ agreementData, onSave, onCancel }: A
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
+    setFormData((prev: typeof formData) => ({
       ...prev,
       [name]: value,
     }))
   }
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({
+    setFormData((prev: typeof formData) => ({
       ...prev,
       [name]: value,
     }))
@@ -42,7 +42,7 @@ export default function AgreementEditMode({ agreementData, onSave, onCancel }: A
   const handleDateChange = (date: Date | undefined) => {
     if (date) {
       setStartDate(date)
-      setFormData((prev) => ({
+      setFormData((prev: typeof formData) => ({
         ...prev,
         startDate: date.toISOString(),
       }))
@@ -158,4 +158,3 @@ export default function AgreementEditMode({ agreementData, onSave, onCancel }: A
     </form>
   )
 }
-

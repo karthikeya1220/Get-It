@@ -5,7 +5,15 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -27,16 +35,16 @@ interface ProfileSkillsProps {
   isEditable?: boolean
 }
 
-export function ProfileSkills({ 
-  skills, 
-  onUpdate, 
-  viewAll = false, 
+export function ProfileSkills({
+  skills,
+  onUpdate,
+  viewAll = false,
   onViewAllClick,
-  isEditable = false
+  isEditable = false,
 }: ProfileSkillsProps) {
   // Ensure skills is always an array
-  const skillsArray = Array.isArray(skills) ? skills : [];
-  
+  const skillsArray = Array.isArray(skills) ? skills : []
+
   const [isAddSkillOpen, setIsAddSkillOpen] = useState(false)
   const [isEditSkillOpen, setIsEditSkillOpen] = useState(false)
   const [editingSkillIndex, setEditingSkillIndex] = useState(-1)
@@ -51,7 +59,7 @@ export function ProfileSkills({
 
   const handleAddSkill = () => {
     if (!newSkill.name) return
-    
+
     const updatedSkills = [...skillsArray, { ...newSkill }]
     onUpdate?.(updatedSkills)
     setNewSkill({
@@ -68,7 +76,7 @@ export function ProfileSkills({
 
   const handleEditSkill = () => {
     if (editingSkillIndex === -1 || !newSkill.name) return
-    
+
     const updatedSkills = [...skillsArray]
     updatedSkills[editingSkillIndex] = { ...newSkill }
     onUpdate?.(updatedSkills)
@@ -119,33 +127,21 @@ export function ProfileSkills({
           </CardTitle>
           <div className="flex gap-2">
             {isEditable && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 gap-1"
-                onClick={() => setIsAddSkillOpen(true)}
-              >
+              <Button size="sm" variant="outline" className="h-8 gap-1" onClick={() => setIsAddSkillOpen(true)}>
                 <Icons.plus className="h-3.5 w-3.5" />
                 <span>Add</span>
               </Button>
             )}
           </div>
         </CardHeader>
-        
+
         <CardContent className="p-6">
           {displayedSkills.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <Icons.code className="h-12 w-12 text-gray-300 dark:text-gray-700" />
-              <p className="mt-4 text-gray-500 dark:text-gray-400">
-                No skills added yet
-              </p>
+              <p className="mt-4 text-gray-500 dark:text-gray-400">No skills added yet</p>
               {isEditable && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-4"
-                  onClick={() => setIsAddSkillOpen(true)}
-                >
+                <Button variant="outline" size="sm" className="mt-4" onClick={() => setIsAddSkillOpen(true)}>
                   <Icons.plus className="mr-2 h-4 w-4" />
                   Add your first skill
                 </Button>
@@ -342,4 +338,3 @@ export function ProfileSkills({
     </>
   )
 }
-

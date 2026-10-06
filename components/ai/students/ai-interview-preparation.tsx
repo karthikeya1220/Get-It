@@ -504,4 +504,3 @@ export function AiInterviewPreparation({ studentId, userData }: AiInterviewPrepa
     </div>
   )
 }
-

@@ -13,37 +13,37 @@ import { toast } from "sonner"
 
 // Add interface definitions to fix type issues
 interface InterviewAnalysis {
-  id: string;
-  videoUrl: string;
-  date: Date;
+  id: string
+  videoUrl: string
+  date: Date
   analysis: {
-    overall_assessment: string;
-    final_action_plan: string[];
+    overall_assessment: string
+    final_action_plan: string[]
     speaking_skills: {
-      clarity: string;
-      tone: string;
-      common_mistakes: string[];
-      improvements: string[];
-    };
+      clarity: string
+      tone: string
+      common_mistakes: string[]
+      improvements: string[]
+    }
     body_language: {
-      eye_contact: string;
-      posture: string;
-      gestures: string;
-      improvements: string[];
-    };
+      eye_contact: string
+      posture: string
+      gestures: string
+      improvements: string[]
+    }
     confidence_and_presence: {
-      confidence_level: string;
-      energy: string;
-      professionalism: string;
-      improvements: string[];
-    };
+      confidence_level: string
+      energy: string
+      professionalism: string
+      improvements: string[]
+    }
     answer_quality: {
-      structure: string;
-      depth: string;
-      conciseness: string;
-      improvements: string[];
-    };
-  };
+      structure: string
+      depth: string
+      conciseness: string
+      improvements: string[]
+    }
+  }
 }
 
 export default function InterviewAnalysisPage() {
@@ -58,7 +58,7 @@ export default function InterviewAnalysisPage() {
 
   useEffect(() => {
     const auth = getAuth()
-    
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         toast.error("Please login first")
@@ -67,13 +67,13 @@ export default function InterviewAnalysisPage() {
       }
 
       setUserId(user.uid)
-      
+
       try {
         setIsLoading(true)
         const userAnalyses = await getUserInterviewAnalyses(user.uid)
         // Cast the result to InterviewAnalysis[]
         setAnalyses(userAnalyses as unknown as InterviewAnalysis[])
-        
+
         // Set the most recent analysis as current if available
         if (userAnalyses.length > 0) {
           setCurrentAnalysis(userAnalyses[0] as unknown as InterviewAnalysis)
@@ -92,19 +92,19 @@ export default function InterviewAnalysisPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
-      
+
       // Check if the file is a video
-      if (!file.type.startsWith('video/')) {
+      if (!file.type.startsWith("video/")) {
         toast.error("Please select a valid video file")
         return
       }
-      
+
       // Check file size (limit to 100MB for example)
       if (file.size > 100 * 1024 * 1024) {
         toast.error("File size exceeds 100MB limit")
         return
       }
-      
+
       setSelectedFile(file)
     }
   }
@@ -124,24 +124,24 @@ export default function InterviewAnalysisPage() {
     try {
       setIsUploading(true)
       toast.info("Uploading and analyzing video. This may take a few minutes...")
-      
+
       const result = await analyzeInterviewVideo(selectedFile, userId)
-      
+
       if (result.success) {
         toast.success("Analysis complete!")
-        
+
         // Add the new analysis to the list and set as current
         const newAnalysis: InterviewAnalysis = {
           id: result.analysisId,
           videoUrl: result.videoUrl,
           date: new Date(),
-          analysis: result.analysis
+          analysis: result.analysis,
         }
-        
+
         setAnalyses([newAnalysis, ...analyses])
         setCurrentAnalysis(newAnalysis)
         setSelectedFile(null)
-        
+
         // Clear the file input
         if (fileInputRef.current) {
           fileInputRef.current.value = ""
@@ -182,7 +182,7 @@ export default function InterviewAnalysisPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div 
+                  <div
                     className="flex h-40 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 hover:border-violet-500 dark:border-gray-700 dark:hover:border-violet-600"
                     onClick={handleUploadClick}
                   >
@@ -195,19 +195,12 @@ export default function InterviewAnalysisPage() {
                     />
                     <Icons.upload className="mb-2 h-8 w-8 text-gray-400" />
                     <p className="text-sm text-gray-500">
-                      {selectedFile 
-                        ? `Selected: ${selectedFile.name}`
-                        : "Click to select a video file"
-                      }
+                      {selectedFile ? `Selected: ${selectedFile.name}` : "Click to select a video file"}
                     </p>
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button 
-                    className="w-full"
-                    onClick={handleAnalyzeVideo}
-                    disabled={!selectedFile || isUploading}
-                  >
+                  <Button className="w-full" onClick={handleAnalyzeVideo} disabled={!selectedFile || isUploading}>
                     {isUploading ? (
                       <>
                         <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -230,27 +223,19 @@ export default function InterviewAnalysisPage() {
                       <Icons.spinner className="h-5 w-5 animate-spin text-violet-600" />
                     </div>
                   ) : analyses.length === 0 ? (
-                    <p className="text-center text-sm text-gray-500">
-                      No previous analyses found
-                    </p>
+                    <p className="text-center text-sm text-gray-500">No previous analyses found</p>
                   ) : (
                     <div className="space-y-2">
                       {analyses.map((analysis) => (
-                        <div 
+                        <div
                           key={analysis.id}
                           className={`cursor-pointer rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-gray-800 ${
-                            currentAnalysis?.id === analysis.id
-                              ? "bg-violet-100 dark:bg-violet-900/30"
-                              : ""
+                            currentAnalysis?.id === analysis.id ? "bg-violet-100 dark:bg-violet-900/30" : ""
                           }`}
                           onClick={() => handleSelectAnalysis(analysis)}
                         >
-                          <p className="font-medium">
-                            Analysis {new Date(analysis.date).toLocaleDateString()}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(analysis.date).toLocaleTimeString()}
-                          </p>
+                          <p className="font-medium">Analysis {new Date(analysis.date).toLocaleDateString()}</p>
+                          <p className="text-xs text-gray-500">{new Date(analysis.date).toLocaleTimeString()}</p>
                         </div>
                       ))}
                     </div>
@@ -265,17 +250,11 @@ export default function InterviewAnalysisPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Interview Video</CardTitle>
-                      <CardDescription>
-                        Recorded on {new Date(currentAnalysis.date).toLocaleString()}
-                      </CardDescription>
+                      <CardDescription>Recorded on {new Date(currentAnalysis.date).toLocaleString()}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="aspect-video overflow-hidden rounded-lg bg-black">
-                        <video
-                          src={currentAnalysis.videoUrl}
-                          controls
-                          className="h-full w-full"
-                        />
+                        <video src={currentAnalysis.videoUrl} controls className="h-full w-full" />
                       </div>
                     </CardContent>
                   </Card>
@@ -293,13 +272,13 @@ export default function InterviewAnalysisPage() {
                           <TabsTrigger value="confidence">Confidence</TabsTrigger>
                           <TabsTrigger value="answers">Answers</TabsTrigger>
                         </TabsList>
-                        
+
                         <TabsContent value="overview" className="mt-4 space-y-4">
                           <div className="rounded-lg bg-violet-50 p-4 dark:bg-violet-900/20">
                             <h3 className="mb-2 font-semibold">Overall Assessment</h3>
                             <p>{currentAnalysis.analysis.overall_assessment}</p>
                           </div>
-                          
+
                           <div className="rounded-lg bg-amber-50 p-4 dark:bg-amber-900/20">
                             <h3 className="mb-2 font-semibold">Action Plan</h3>
                             <ul className="ml-5 list-disc space-y-1">
@@ -309,118 +288,128 @@ export default function InterviewAnalysisPage() {
                             </ul>
                           </div>
                         </TabsContent>
-                        
+
                         <TabsContent value="speaking" className="mt-4 space-y-4">
                           <div className="space-y-4">
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Clarity</h3>
                               <p>{currentAnalysis.analysis.speaking_skills.clarity}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Tone</h3>
                               <p>{currentAnalysis.analysis.speaking_skills.tone}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Common Mistakes</h3>
                               <ul className="ml-5 list-disc space-y-1">
-                                {currentAnalysis.analysis.speaking_skills.common_mistakes.map((mistake: string, index: number) => (
-                                  <li key={index}>{mistake}</li>
-                                ))}
+                                {currentAnalysis.analysis.speaking_skills.common_mistakes.map(
+                                  (mistake: string, index: number) => (
+                                    <li key={index}>{mistake}</li>
+                                  ),
+                                )}
                               </ul>
                             </div>
-                            
+
                             <div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
                               <h3 className="mb-2 font-semibold">Improvements</h3>
                               <ul className="ml-5 list-disc space-y-1">
-                                {currentAnalysis.analysis.speaking_skills.improvements.map((improvement: string, index: number) => (
-                                  <li key={index}>{improvement}</li>
-                                ))}
+                                {currentAnalysis.analysis.speaking_skills.improvements.map(
+                                  (improvement: string, index: number) => (
+                                    <li key={index}>{improvement}</li>
+                                  ),
+                                )}
                               </ul>
                             </div>
                           </div>
                         </TabsContent>
-                        
+
                         <TabsContent value="body-language" className="mt-4 space-y-4">
                           <div className="space-y-4">
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Eye Contact</h3>
                               <p>{currentAnalysis.analysis.body_language.eye_contact}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Posture</h3>
                               <p>{currentAnalysis.analysis.body_language.posture}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Gestures</h3>
                               <p>{currentAnalysis.analysis.body_language.gestures}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
                               <h3 className="mb-2 font-semibold">Improvements</h3>
                               <ul className="ml-5 list-disc space-y-1">
-                                {currentAnalysis.analysis.body_language.improvements.map((improvement: string, index: number) => (
-                                  <li key={index}>{improvement}</li>
-                                ))}
+                                {currentAnalysis.analysis.body_language.improvements.map(
+                                  (improvement: string, index: number) => (
+                                    <li key={index}>{improvement}</li>
+                                  ),
+                                )}
                               </ul>
                             </div>
                           </div>
                         </TabsContent>
-                        
+
                         <TabsContent value="confidence" className="mt-4 space-y-4">
                           <div className="space-y-4">
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Confidence Level</h3>
                               <p>{currentAnalysis.analysis.confidence_and_presence.confidence_level}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Energy</h3>
                               <p>{currentAnalysis.analysis.confidence_and_presence.energy}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Professionalism</h3>
                               <p>{currentAnalysis.analysis.confidence_and_presence.professionalism}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
                               <h3 className="mb-2 font-semibold">Improvements</h3>
                               <ul className="ml-5 list-disc space-y-1">
-                                {currentAnalysis.analysis.confidence_and_presence.improvements.map((improvement: string, index: number) => (
-                                  <li key={index}>{improvement}</li>
-                                ))}
+                                {currentAnalysis.analysis.confidence_and_presence.improvements.map(
+                                  (improvement: string, index: number) => (
+                                    <li key={index}>{improvement}</li>
+                                  ),
+                                )}
                               </ul>
                             </div>
                           </div>
                         </TabsContent>
-                        
+
                         <TabsContent value="answers" className="mt-4 space-y-4">
                           <div className="space-y-4">
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Structure</h3>
                               <p>{currentAnalysis.analysis.answer_quality.structure}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Depth</h3>
                               <p>{currentAnalysis.analysis.answer_quality.depth}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                               <h3 className="mb-2 font-semibold">Conciseness</h3>
                               <p>{currentAnalysis.analysis.answer_quality.conciseness}</p>
                             </div>
-                            
+
                             <div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
                               <h3 className="mb-2 font-semibold">Improvements</h3>
                               <ul className="ml-5 list-disc space-y-1">
-                                {currentAnalysis.analysis.answer_quality.improvements.map((improvement: string, index: number) => (
-                                  <li key={index}>{improvement}</li>
-                                ))}
+                                {currentAnalysis.analysis.answer_quality.improvements.map(
+                                  (improvement: string, index: number) => (
+                                    <li key={index}>{improvement}</li>
+                                  ),
+                                )}
                               </ul>
                             </div>
                           </div>
@@ -435,7 +424,8 @@ export default function InterviewAnalysisPage() {
                     <Icons.video className="mx-auto h-16 w-16 text-gray-400" />
                     <h3 className="mt-4 text-lg font-medium">No Analysis Selected</h3>
                     <p className="mt-2 text-sm text-gray-500">
-                      Upload a video recording of your interview practice and our AI coach will provide detailed feedback.
+                      Upload a video recording of your interview practice and our AI coach will provide detailed
+                      feedback.
                     </p>
                   </div>
                 </div>
@@ -446,4 +436,4 @@ export default function InterviewAnalysisPage() {
       </main>
     </div>
   )
-} 
+}

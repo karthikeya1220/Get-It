@@ -221,11 +221,7 @@ export function PremiumHero() {
           >
             <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 via-transparent to-amber-600/5 dark:from-violet-600/10 dark:via-transparent dark:to-amber-600/10"></div>
             <div className="absolute inset-0">
-              <img 
-                src="/demo.gif" 
-                alt="GetIt platform demo" 
-                className="h-full w-full object-cover"
-              />
+              <img src="/demo.gif" alt="GetIt platform demo" className="h-full w-full object-cover" />
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
               <motion.div
@@ -287,4 +283,3 @@ export function PremiumHero() {
     </section>
   )
 }
-

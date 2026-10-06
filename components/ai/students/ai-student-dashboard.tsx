@@ -17,6 +17,7 @@ export function AiStudentDashboard({ studentId }: AiStudentDashboardProps) {
 
   // Mock user data - in a real app, this would be fetched from an API
   const userData = {
+    fullName: "Alex Johnson",
     name: "Alex Johnson",
     skills: [
       { name: "React", level: 85, experience: "3 years" },
@@ -143,4 +144,3 @@ export function AiStudentDashboard({ studentId }: AiStudentDashboardProps) {
     </div>
   )
 }
-

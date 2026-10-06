@@ -123,4 +123,3 @@ export function ContactStudentModal({ isOpen, onClose, student, onSubmit }: Cont
     </Dialog>
   )
 }
-

@@ -1,114 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { admin, initAdmin } from '@/lib/firebase-admin';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { NextRequest, NextResponse } from "next/server"
+import { GoogleGenerativeAI } from "@google/generative-ai"
+import { requireAuth } from "@/lib/api-auth"
+import { clientIp, rateLimit } from "@/lib/rate-limit"
 
-// Initialize Firebase Admin
-initAdmin();
+export const runtime = "nodejs"
 
-// Initialize Gemini API
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+const MAX_BYTES = 20 * 1024 * 1024 // inline base64 payload cap for Gemini
+const MODEL = "gemini-2.0-flash"
 
-export async function POST(request: NextRequest) {
-  try {
-    // Verify the user is authenticated
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const token = authHeader.split('Bearer ')[1];
-    let decodedToken;
-    try {
-      decodedToken = await admin.auth().verifyIdToken(token);
-    } catch (error) {
-      console.error('Error verifying auth token:', error);
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-    }
-    
-    const userId = decodedToken.uid;
-    console.log(`Authenticated user: ${userId}`);
-    
-    // Get form data with the video file
-    const formData = await request.formData();
-    const videoFile = formData.get('video') as File;
-    
-    if (!videoFile) {
-      return NextResponse.json({ error: 'No video file provided' }, { status: 400 });
-    }
-    
-    // Get video prompt
-    const prompt = formData.get('prompt') as string || getDefaultPrompt();
-    
-    console.log('Received video:', videoFile.name, 'size:', videoFile.size, 'bytes');
-    
-    try {
-      // Convert file to array buffer for Gemini
-      const videoArrayBuffer = await videoFile.arrayBuffer();
-      const videoBytes = new Uint8Array(videoArrayBuffer);
-      
-      // Set up Gemini model
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro-vision' });
-      
-      console.log('Sending video to Gemini API for analysis...');
-      
-      // Call Gemini API
-      const result = await model.generateContent([
-        prompt,
-        {
-          inlineData: {
-            data: Buffer.from(videoBytes).toString('base64'),
-            mimeType: videoFile.type
-          }
-        }
-      ]);
-      
-      const response = await result.response;
-      const responseText = response.text();
-      
-      console.log('Received response from Gemini API');
-      
-      // Parse JSON from response
-      try {
-        const analysisData = JSON.parse(responseText);
-        console.log('Successfully parsed Gemini response');
-        
-        return NextResponse.json({
-          success: true,
-          analysis: analysisData,
-          message: 'Interview video analysis completed successfully'
-        });
-      } catch (jsonError) {
-        console.error('Error parsing Gemini response as JSON:', jsonError);
-        console.log('Raw response:', responseText);
-        
-        // If we can't parse JSON, try to use the text as is in a structured format
-        return NextResponse.json({
-          success: true,
-          analysis: getMockAnalysisData(), // Fallback to mock data if parsing fails
-          rawResponse: responseText,
-          message: 'Using fallback data due to response format issues'
-        });
-      }
-    } catch (apiError) {
-      console.error('Error calling Gemini API:', apiError);
-      
-      // Fallback to mock data if API call fails
-      return NextResponse.json({
-        success: true,
-        analysis: getMockAnalysisData(),
-        message: 'Using fallback data due to API issues'
-      });
-    }
-  } catch (error) {
-    console.error('Error processing interview analysis:', error);
-    return NextResponse.json({ 
-      success: false, 
-      error: 'Failed to analyze interview video' 
-    }, { status: 500 });
-  }
+function getClient() {
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) throw new Error("Missing GEMINI_API_KEY env var")
+  return new GoogleGenerativeAI(apiKey)
 }
 
-function getDefaultPrompt(): string {
+function buildPrompt(studentName: string, skills: string[]): string {
   return `You are a top-tier interview coach with expertise in evaluating and improving interview performance. Your task is to deeply analyze a student's mock interview recording and provide clear, structured, and actionable feedback in JSON format.
 
 Key evaluation areas:
@@ -123,99 +29,125 @@ Answer Quality: Logical structuring, depth, and relevance of responses.
 
 Final Action Plan: A prioritized list of improvements.
 
+The student's name is ${studentName} and their skills include ${skills.join(", ") || "software development"}.
+
 STRICT OUTPUT FORMAT: Return the response only in the following JSON format with no extra commentary:
 
-{  
-  "overall_assessment": "Brief but strong summary of performance",  
-  "speaking_skills": {  
-    "clarity": "Precise feedback on clarity and fluency",  
-    "tone": "Evaluation of tone, pace, and modulation",  
-    "common_mistakes": ["Mistake 1", "Mistake 2"],  
-    "improvements": ["Actionable tip 1", "Actionable tip 2"]  
-  },  
-  "body_language": {  
-    "eye_contact": "Feedback on eye contact effectiveness",  
-    "posture": "Assessment of posture and body movements",  
-    "gestures": "Analysis of hand and facial gestures",  
-    "improvements": ["Actionable tip 1", "Actionable tip 2"]  
-  },  
-  "confidence_and_presence": {  
-    "confidence_level": "Strong or weak? Why?",  
-    "energy": "Does the candidate sound engaged and enthusiastic?",  
-    "professionalism": "Evaluation of overall professional behavior",  
-    "improvements": ["Actionable tip 1", "Actionable tip 2"]  
-  },  
-  "answer_quality": {  
-    "structure": "How well are answers structured?",  
-    "depth": "Depth of knowledge and relevance of responses",  
-    "conciseness": "Are answers too long or too short?",  
-    "improvements": ["Actionable tip 1", "Actionable tip 2"]  
-  },  
-  "final_action_plan": [  
-    "Most important improvement area 1",  
-    "Most important improvement area 2",  
-    "Most important improvement area 3"  
-  ]  
-}  
+{
+  "overall_assessment": "Brief but strong summary of performance",
+  "speaking_skills": {
+    "clarity": "Precise feedback on clarity and fluency",
+    "tone": "Evaluation of tone, pace, and modulation",
+    "common_mistakes": ["Mistake 1", "Mistake 2"],
+    "improvements": ["Actionable tip 1", "Actionable tip 2"]
+  },
+  "body_language": {
+    "eye_contact": "Feedback on eye contact effectiveness",
+    "posture": "Assessment of posture and body movements",
+    "gestures": "Analysis of hand and facial gestures",
+    "improvements": ["Actionable tip 1", "Actionable tip 2"]
+  },
+  "confidence_and_presence": {
+    "confidence_level": "Strong or weak? Why?",
+    "energy": "Does the candidate sound engaged and enthusiastic?",
+    "professionalism": "Evaluation of overall professional behavior",
+    "improvements": ["Actionable tip 1", "Actionable tip 2"]
+  },
+  "answer_quality": {
+    "structure": "How well are answers structured?",
+    "depth": "Depth of knowledge and relevance of responses",
+    "conciseness": "Are answers too long or too short?",
+    "improvements": ["Actionable tip 1", "Actionable tip 2"]
+  },
+  "final_action_plan": [
+    "Most important improvement area 1",
+    "Most important improvement area 2",
+    "Most important improvement area 3"
+  ]
+}
 
 STRICT RULES:
 DO NOT include any text outside the JSON output.
 DO NOT provide generic advice—make feedback specific and actionable.
 BE CRITICAL but constructive—highlight exact weaknesses and how to fix them.
-Keep the response clear, professional, and structured.`;
+Keep the response clear, professional, and structured.`
 }
 
-function getMockAnalysisData() {
-  return {
-    overall_assessment: "The candidate demonstrates good technical knowledge but could benefit from improved delivery and more structured responses.",
-    speaking_skills: {
-      clarity: "Speech is generally clear but occasionally hurried, especially when discussing technical topics.",
-      tone: "Monotonous at times with limited vocal variety which can affect engagement.",
-      common_mistakes: [
-        "Using filler words like 'um' and 'uh' frequently",
-        "Speaking too quickly when explaining complex concepts",
-        "Trailing off at the end of sentences"
-      ],
-      improvements: [
-        "Practice pausing instead of using filler words",
-        "Slow down by 20% when explaining technical details",
-        "Record practice sessions to identify speech patterns to improve"
-      ]
-    },
-    body_language: {
-      eye_contact: "Inconsistent eye contact with the camera, often looking down or away when thinking.",
-      posture: "Generally upright but tends to slouch forward when answering difficult questions.",
-      gestures: "Limited hand gestures used; facial expressions are minimal which reduces engagement.",
-      improvements: [
-        "Practice maintaining eye contact with the camera for 80% of response time",
-        "Use deliberate hand gestures to emphasize key points",
-        "Sit back slightly in your chair to maintain better posture throughout"
-      ]
-    },
-    confidence_and_presence: {
-      confidence_level: "Moderately confident with technical content but shows uncertainty when asked about leadership or conflict resolution.",
-      energy: "Energy level is moderate, could show more enthusiasm particularly when discussing projects.",
-      professionalism: "Professional appearance and language, but could project more executive presence.",
-      improvements: [
-        "Prepare concise stories about leadership experiences using the STAR method",
-        "Increase energy by 20% through more vocal variety and enthusiasm",
-        "Begin responses with stronger, more assertive statements"
-      ]
-    },
-    answer_quality: {
-      structure: "Answers lack consistent structure, often diving into details before providing context.",
-      depth: "Strong technical depth but sometimes overexplains implementation details at the expense of higher-level impact.",
-      conciseness: "Responses tend to be too long, averaging 3-4 minutes when 1-2 minutes would be more effective.",
-      improvements: [
-        "Use the STAR method (Situation, Task, Action, Result) for all behavioral questions",
-        "Start answers with a one-sentence summary before elaborating",
-        "Practice timing responses to stay within 2 minutes maximum"
-      ]
-    },
-    final_action_plan: [
-      "Implement structured response framework (STAR method) for all answers",
-      "Reduce filler words by practicing strategic pausing techniques",
-      "Improve eye contact and body language through recorded practice sessions"
-    ]
-  };
-} 
+export async function POST(request: NextRequest) {
+  // Rate limit before auth so forged tokens can't hammer the verifier.
+  const limit = rateLimit(`interview-analysis:${clientIp(request.headers)}`, 10, 300000)
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many requests", retryAfter: limit.retryAfterSeconds },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } },
+    )
+  }
+
+  const user = await requireAuth(request)
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  let formData: FormData
+  try {
+    formData = await request.formData()
+  } catch {
+    return NextResponse.json({ error: "Invalid form data" }, { status: 400 })
+  }
+
+  const videoFile = formData.get("video") as File | null
+  if (!videoFile) {
+    return NextResponse.json({ error: "No video file provided" }, { status: 400 })
+  }
+  if (!videoFile.type.startsWith("video/")) {
+    return NextResponse.json({ error: "Only video files can be analyzed" }, { status: 415 })
+  }
+  if (videoFile.size > MAX_BYTES) {
+    return NextResponse.json({ error: "Video exceeds the 20 MB limit" }, { status: 413 })
+  }
+
+  const studentName = (formData.get("studentName") as string) || "Student"
+  let skills: string[] = []
+  try {
+    const parsed = JSON.parse((formData.get("skills") as string) || "[]")
+    if (Array.isArray(parsed)) skills = parsed.map(String).slice(0, 50)
+  } catch {
+    // malformed skills are optional context — ignore
+  }
+
+  try {
+    const model = getClient().getGenerativeModel({
+      model: MODEL,
+      generationConfig: { responseMimeType: "application/json" },
+    })
+
+    const result = await model.generateContent([
+      buildPrompt(studentName, skills),
+      {
+        inlineData: {
+          data: Buffer.from(new Uint8Array(await videoFile.arrayBuffer())).toString("base64"),
+          mimeType: videoFile.type,
+        },
+      },
+    ])
+
+    const responseText = (await result.response.text()).trim()
+
+    let analysis: unknown
+    try {
+      analysis = JSON.parse(responseText)
+    } catch {
+      console.error("Gemini returned non-JSON output:", responseText.slice(0, 500))
+      return NextResponse.json(
+        { success: false, error: "The analysis service returned an unreadable response. Please try again." },
+        { status: 502 },
+      )
+    }
+
+    return NextResponse.json({ success: true, analysis, uid: user.uid })
+  } catch (error) {
+    console.error("Interview analysis failed:", error)
+    return NextResponse.json(
+      { success: false, error: "Analysis is temporarily unavailable. Please try again later." },
+      { status: 502 },
+    )
+  }
+}

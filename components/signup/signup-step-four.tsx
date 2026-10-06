@@ -204,4 +204,3 @@ export function SignupStepFour({ formData, updateFormData, nextStep, prevStep, i
     </form>
   )
 }
-

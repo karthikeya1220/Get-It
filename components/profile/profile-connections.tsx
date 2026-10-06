@@ -35,16 +35,16 @@ export function ProfileConnections({ connections, showAll = false }: ProfileConn
       try {
         setLoading(true)
         const studentsData = await getAllStudents()
-        
+
         // Transform and clean the data
         const formattedStudents = studentsData.map((student: any) => ({
           id: student.id,
           fullName: student.fullName || "Unnamed Student",
           title: student.title || "Student",
           avatar: student.avatar || "/placeholder.svg?height=50&width=50",
-          university: student.university
-        }));
-        
+          university: student.university,
+        }))
+
         setStudents(formattedStudents)
       } catch (error) {
         console.error("Error fetching students:", error)
@@ -86,7 +86,10 @@ export function ProfileConnections({ connections, showAll = false }: ProfileConn
           {loading ? (
             // Loading skeleton
             Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="flex items-center justify-between rounded-lg border border-violet-100 bg-white p-3 shadow-sm dark:border-violet-800/30 dark:bg-zinc-900/80">
+              <div
+                key={index}
+                className="flex items-center justify-between rounded-lg border border-violet-100 bg-white p-3 shadow-sm dark:border-violet-800/30 dark:bg-zinc-900/80"
+              >
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-10 w-10 rounded-full" />
                   <div>
@@ -161,4 +164,3 @@ export function ProfileConnections({ connections, showAll = false }: ProfileConn
     </Card>
   )
 }
-

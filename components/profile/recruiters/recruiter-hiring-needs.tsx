@@ -181,4 +181,3 @@ export function RecruiterHiringNeeds({ recruiter }: RecruiterHiringNeedsProps) {
     </motion.div>
   )
 }
-

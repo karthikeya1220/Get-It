@@ -312,4 +312,3 @@ export function RecruiterFilters({
     </div>
   )
 }
-

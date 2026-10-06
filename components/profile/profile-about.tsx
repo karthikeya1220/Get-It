@@ -101,4 +101,3 @@ export function ProfileAbout({ about, onUpdate, isEditable = false }: ProfileAbo
     </Card>
   )
 }
-

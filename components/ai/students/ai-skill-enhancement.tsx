@@ -541,4 +541,3 @@ export function AiSkillEnhancement({ studentId, userData }: AiSkillEnhancementPr
     </div>
   )
 }
-

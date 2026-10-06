@@ -30,9 +30,7 @@ export function ProfileAchievements({ achievements = [], showAll = false }: Prof
         <CardContent className="p-6 text-center">
           <div className="flex flex-col items-center justify-center py-8">
             <Icons.award className="h-12 w-12 text-gray-300 dark:text-gray-700" />
-            <p className="mt-4 text-gray-500 dark:text-gray-400">
-              No achievements yet
-            </p>
+            <p className="mt-4 text-gray-500 dark:text-gray-400">No achievements yet</p>
           </div>
         </CardContent>
       </Card>
@@ -86,7 +84,7 @@ export function ProfileAchievements({ achievements = [], showAll = false }: Prof
             </div>
           </motion.div>
         ))}
-        
+
         {!showAll && achievements.length > 3 && (
           <div className="pt-4">
             <Button
@@ -103,4 +101,3 @@ export function ProfileAchievements({ achievements = [], showAll = false }: Prof
     </Card>
   )
 }
-

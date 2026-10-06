@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button"
 import { Sparkles, TrendingUp, Clock, Users, Filter, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { motion, AnimatePresence } from "framer-motion"
+import type { Post } from "@/components/feed/types"
 
 export function FeedContainer() {
-  const [posts, setPosts] = useState([])
+  const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("for-you")
   const [showFilters, setShowFilters] = useState(false)
@@ -28,11 +29,11 @@ export function FeedContainer() {
     return () => clearTimeout(timer)
   }, [])
 
-  const handleCreatePost = (newPost) => {
+  const handleCreatePost = (newPost: Post) => {
     setPosts([newPost, ...posts])
   }
 
-  const filterPosts = (tab) => {
+  const filterPosts = (tab: string) => {
     setActiveTab(tab)
     setLoading(true)
 
@@ -43,7 +44,7 @@ export function FeedContainer() {
         setPosts([...mockFeedData].sort((a, b) => b.likes + b.shares - (a.likes + a.shares)))
       } else if (tab === "recent") {
         // Sort by timestamp (newest first)
-        setPosts([...mockFeedData].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)))
+        setPosts([...mockFeedData].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()))
       } else if (tab === "network") {
         // Filter to show only posts from your network (for demo, we'll show fewer posts)
         setPosts(mockFeedData.filter((_, index) => index % 2 === 0))
@@ -225,4 +226,3 @@ export function FeedContainer() {
     </div>
   )
 }
-

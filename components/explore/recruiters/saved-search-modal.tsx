@@ -210,4 +210,3 @@ export function SavedSearchModal({ isOpen, onClose, onSave, currentFilters }: Sa
     </Dialog>
   )
 }
-

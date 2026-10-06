@@ -26,7 +26,7 @@ interface PremiumNavbarProps {
   userId?: string
 }
 
-export function PremiumNavbar({recruiterId, userId}: PremiumNavbarProps) {
+export function PremiumNavbar({ recruiterId, userId }: PremiumNavbarProps) {
   const router = useRouter()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -103,7 +103,10 @@ export function PremiumNavbar({recruiterId, userId}: PremiumNavbarProps) {
               className="relative h-9 w-9 rounded-full border-violet-200 bg-white/80 p-0 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:text-violet-900 dark:border-violet-800/30 dark:bg-zinc-900/80 dark:text-violet-300 dark:hover:bg-zinc-800/80 dark:hover:text-violet-200"
             >
               <Avatar className="h-9 w-9">
-                <AvatarImage src={user.photoURL || "/placeholder.svg?height=36&width=36"} alt={user.displayName || "Profile"} />
+                <AvatarImage
+                  src={user.photoURL || "/placeholder.svg?height=36&width=36"}
+                  alt={user.displayName || "Profile"}
+                />
                 <AvatarFallback className="bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200">
                   {user.displayName?.charAt(0) || user.email?.charAt(0) || "U"}
                 </AvatarFallback>
@@ -120,12 +123,15 @@ export function PremiumNavbar({recruiterId, userId}: PremiumNavbarProps) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={recruiterId ? "/explore/recruiter/jobs" : "/explore/students"} className="flex cursor-pointer items-center">
+              <Link
+                href={recruiterId ? "/explore/recruiter/jobs" : "/explore/students"}
+                className="flex cursor-pointer items-center"
+              >
                 <Icons.layout className="mr-2 h-4 w-4" />
                 <span>Explore</span>
               </Link>
             </DropdownMenuItem>
-            
+
             <DropdownMenuItem asChild>
               <Link href="/settings" className="flex cursor-pointer items-center">
                 <Icons.settings className="mr-2 h-4 w-4" />
@@ -151,7 +157,7 @@ export function PremiumNavbar({recruiterId, userId}: PremiumNavbarProps) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={handleLogout}
               className="flex cursor-pointer items-center text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
             >
@@ -319,7 +325,7 @@ export function PremiumNavbar({recruiterId, userId}: PremiumNavbarProps) {
                     <span>My Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuItem asChild>
                   <Link href="/settings" className="flex cursor-pointer items-center">
                     <Icons.settings className="mr-2 h-4 w-4" />
@@ -440,4 +446,3 @@ export function PremiumNavbar({recruiterId, userId}: PremiumNavbarProps) {
     </motion.header>
   )
 }
-

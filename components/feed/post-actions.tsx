@@ -6,8 +6,14 @@ import { ThumbsUp, MessageCircle, Share2, Bookmark } from "lucide-react"
 import { motion } from "framer-motion"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import type { Post } from "@/components/feed/types"
 
-export function PostActions({ post, onToggleComments }) {
+interface PostActionsProps {
+  post: Post
+  onToggleComments: () => void
+}
+
+export function PostActions({ post, onToggleComments }: PostActionsProps) {
   const [isLiked, setIsLiked] = useState(post.isLiked)
   const [likesCount, setLikesCount] = useState(post.likes)
   const [isSaved, setIsSaved] = useState(false)
@@ -129,4 +135,3 @@ export function PostActions({ post, onToggleComments }) {
     </TooltipProvider>
   )
 }
-

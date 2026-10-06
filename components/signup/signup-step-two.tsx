@@ -175,4 +175,3 @@ export function SignupStepTwo({ formData, updateFormData, nextStep, prevStep, is
     </form>
   )
 }
-

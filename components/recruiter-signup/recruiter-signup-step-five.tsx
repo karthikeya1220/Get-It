@@ -53,14 +53,14 @@ export function RecruiterSignupStepFive({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       return
     }
-    
+
     setError("")
     setIsSubmitting(true)
-    
+
     try {
       await updateFormData(formData)
       nextStep() // Move to success screen if successful
@@ -292,7 +292,7 @@ export function RecruiterSignupStepFive({
           {error}
         </div>
       )}
-      
+
       <div className="flex gap-3">
         <Button
           type="button"
@@ -303,11 +303,7 @@ export function RecruiterSignupStepFive({
         >
           Back
         </Button>
-        <Button 
-          type="submit" 
-          disabled={isLoading || isSubmitting}
-          className="w-full"
-        >
+        <Button type="submit" disabled={isLoading || isSubmitting} className="w-full">
           {isLoading || isSubmitting ? (
             <>
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -321,4 +317,3 @@ export function RecruiterSignupStepFive({
     </form>
   )
 }
-

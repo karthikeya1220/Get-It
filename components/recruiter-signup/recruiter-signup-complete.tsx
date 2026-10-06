@@ -8,12 +8,12 @@ import { useState, useEffect } from "react"
 
 export function RecruiterSignupComplete() {
   const [redirectCounter, setRedirectCounter] = useState(3)
-  
+
   useEffect(() => {
     const timer = setInterval(() => {
       setRedirectCounter((prev) => Math.max(0, prev - 1))
     }, 1000)
-    
+
     return () => clearInterval(timer)
   }, [])
 
@@ -129,4 +129,3 @@ export function RecruiterSignupComplete() {
     </motion.div>
   )
 }
-

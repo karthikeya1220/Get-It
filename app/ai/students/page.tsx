@@ -6,4 +6,3 @@ export default function AiStudentsPage() {
   const demoStudentId = "student-123"
   redirect(`/ai/students/${demoStudentId}`)
 }
-

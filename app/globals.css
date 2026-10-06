@@ -55,7 +55,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 
   /* Improved focus styles */
@@ -115,4 +117,3 @@
     box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
   }
 }
-

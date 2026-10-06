@@ -9,7 +9,14 @@ import { toast } from "sonner"
 import { Toaster } from "@/components/ui/toaster"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
 import { getRecruiterJobs, JobData, createJob } from "@/lib/firebase-service"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -27,27 +34,27 @@ export default function RecruiterJobsPage() {
 
   // Job creation state
   const [isJobModalOpen, setIsJobModalOpen] = useState(false)
-  const [jobFormData, setJobFormData] = useState<Omit<JobData, 'postedBy' | 'createdAt' | 'updatedAt' | 'applicants'>>({
-    title: '',
-    description: '',
+  const [jobFormData, setJobFormData] = useState<Omit<JobData, "postedBy" | "createdAt" | "updatedAt" | "applicants">>({
+    title: "",
+    description: "",
     requirements: [],
     payment: 0,
-    currency: 'INR',
-    status: 'open',
+    currency: "INR",
+    status: "open",
   })
-  const [requirementInput, setRequirementInput] = useState('')
+  const [requirementInput, setRequirementInput] = useState("")
   const [isSubmittingJob, setIsSubmittingJob] = useState(false)
 
   useEffect(() => {
     const auth = getAuth()
-    
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         toast.error("Please login first")
         router.push("/login")
         return
       }
-      
+
       setRecruiterId(user.uid)
 
       try {
@@ -71,7 +78,7 @@ export default function RecruiterJobsPage() {
       toast.error("Please login first")
       return
     }
-    
+
     try {
       setIsSubmittingJob(true)
       await createJob({
@@ -81,22 +88,22 @@ export default function RecruiterJobsPage() {
         createdAt: new Date(),
         updatedAt: new Date(),
       })
-      
+
       // Refresh jobs list
       const updatedJobs = await getRecruiterJobs(recruiterId)
       setJobs(updatedJobs)
-      
+
       toast.success("Job created successfully!")
       setIsJobModalOpen(false)
-      
+
       // Reset form
       setJobFormData({
-        title: '',
-        description: '',
+        title: "",
+        description: "",
         requirements: [],
         payment: 0,
-        currency: 'INR',
-        status: 'open',
+        currency: "INR",
+        status: "open",
       })
     } catch (error) {
       console.error("Error creating job:", error)
@@ -110,34 +117,34 @@ export default function RecruiterJobsPage() {
     if (requirementInput.trim() && !jobFormData.requirements.includes(requirementInput.trim())) {
       setJobFormData({
         ...jobFormData,
-        requirements: [...jobFormData.requirements, requirementInput.trim()]
+        requirements: [...jobFormData.requirements, requirementInput.trim()],
       })
-      setRequirementInput('')
+      setRequirementInput("")
     }
   }
 
   const handleRemoveRequirement = (index: number) => {
     setJobFormData({
       ...jobFormData,
-      requirements: jobFormData.requirements.filter((_, i) => i !== index)
+      requirements: jobFormData.requirements.filter((_, i) => i !== index),
     })
   }
 
   const filteredJobs = jobs
-    .filter(job => {
+    .filter((job) => {
       // Filter by status
       if (filterStatus !== "all" && job.status !== filterStatus) return false
-      
+
       // Filter by search query
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
         return (
           job.title.toLowerCase().includes(query) ||
           job.description.toLowerCase().includes(query) ||
-          job.requirements.some(req => req.toLowerCase().includes(query))
+          job.requirements.some((req) => req.toLowerCase().includes(query))
         )
       }
-      
+
       return true
     })
     .sort((a, b) => {
@@ -159,10 +166,7 @@ export default function RecruiterJobsPage() {
         <div className="container px-4 py-8 md:px-8 lg:px-12">
           <div className="flex flex-col sm:flex-row items-center justify-between mb-8">
             <h1 className="text-3xl font-bold mb-4 sm:mb-0">My Job Postings</h1>
-            <Button 
-              className="bg-violet-600 hover:bg-violet-700 text-white"
-              onClick={() => setIsJobModalOpen(true)}
-            >
+            <Button className="bg-violet-600 hover:bg-violet-700 text-white" onClick={() => setIsJobModalOpen(true)}>
               <Icons.plus className="mr-2 h-4 w-4" /> Create New Job
             </Button>
           </div>
@@ -176,7 +180,7 @@ export default function RecruiterJobsPage() {
                 className="w-full"
               />
             </div>
-            
+
             <div className="flex gap-2">
               <select
                 value={filterStatus}
@@ -209,27 +213,29 @@ export default function RecruiterJobsPage() {
           ) : filteredJobs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredJobs.map((job) => (
-                <div 
-                  key={job.jobId} 
+                <div
+                  key={job.jobId}
                   className="border border-violet-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 cursor-pointer"
                   onClick={() => router.push(`/explore/recruiters/job/${job.jobId}`)}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-xl font-semibold truncate">{job.title}</h3>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      job.status === "open" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                    }`}>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        job.status === "open" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                      }`}
+                    >
                       {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
                     </span>
                   </div>
-                  
+
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">{job.description}</p>
-                  
+
                   {job.requirements.length > 0 && (
                     <div className="mb-4">
                       <div className="flex flex-wrap gap-2">
                         {job.requirements.slice(0, 3).map((req, index) => (
-                          <span 
+                          <span
                             key={index}
                             className="bg-violet-100 dark:bg-violet-900/30 text-violet-800 dark:text-violet-300 text-xs px-2 py-1 rounded-full"
                           >
@@ -244,7 +250,7 @@ export default function RecruiterJobsPage() {
                       </div>
                     </div>
                   )}
-                  
+
                   <div className="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-zinc-800 mt-auto">
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                       <Icons.users className="h-4 w-4" />
@@ -255,7 +261,7 @@ export default function RecruiterJobsPage() {
                       <span className="text-gray-600 dark:text-gray-400 text-sm">{job.currency}</span>
                     </div>
                   </div>
-                  
+
                   <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">
                     Posted {format(job.createdAt, "MMM d, yyyy")}
                   </div>
@@ -267,14 +273,11 @@ export default function RecruiterJobsPage() {
               <Icons.briefcase className="h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" />
               <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">No jobs found</h3>
               <p className="text-gray-500 dark:text-gray-500 mb-6">
-                {searchQuery || filterStatus !== "all" 
+                {searchQuery || filterStatus !== "all"
                   ? "Try adjusting your search or filters"
                   : "Create your first job posting to get started"}
               </p>
-              <Button
-                onClick={() => setIsJobModalOpen(true)}
-                className="bg-violet-600 hover:bg-violet-700 text-white"
-              >
+              <Button onClick={() => setIsJobModalOpen(true)} className="bg-violet-600 hover:bg-violet-700 text-white">
                 <Icons.plus className="mr-2 h-4 w-4" /> Create New Job
               </Button>
             </div>
@@ -287,11 +290,9 @@ export default function RecruiterJobsPage() {
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Create New Job</DialogTitle>
-            <DialogDescription>
-              Fill in the details to post a new job opportunity.
-            </DialogDescription>
+            <DialogDescription>Fill in the details to post a new job opportunity.</DialogDescription>
           </DialogHeader>
-          
+
           <form onSubmit={handleCreateJob} className="space-y-4 pt-4">
             <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
@@ -300,11 +301,11 @@ export default function RecruiterJobsPage() {
                   id="title"
                   placeholder="e.g. Frontend Developer"
                   value={jobFormData.title}
-                  onChange={(e) => setJobFormData({...jobFormData, title: e.target.value})}
+                  onChange={(e) => setJobFormData({ ...jobFormData, title: e.target.value })}
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="description">Job Description</Label>
                 <Textarea
@@ -312,11 +313,11 @@ export default function RecruiterJobsPage() {
                   placeholder="Describe the job responsibilities and expectations..."
                   rows={4}
                   value={jobFormData.description}
-                  onChange={(e) => setJobFormData({...jobFormData, description: e.target.value})}
+                  onChange={(e) => setJobFormData({ ...jobFormData, description: e.target.value })}
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="requirements">Requirements</Label>
                 <div className="flex space-x-2">
@@ -326,9 +327,9 @@ export default function RecruiterJobsPage() {
                     value={requirementInput}
                     onChange={(e) => setRequirementInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddRequirement();
+                      if (e.key === "Enter") {
+                        e.preventDefault()
+                        handleAddRequirement()
                       }
                     }}
                   />
@@ -336,11 +337,11 @@ export default function RecruiterJobsPage() {
                     Add
                   </Button>
                 </div>
-                
+
                 {jobFormData.requirements.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {jobFormData.requirements.map((req, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-sm text-violet-800"
                       >
@@ -357,7 +358,7 @@ export default function RecruiterJobsPage() {
                   </div>
                 )}
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="payment">Payment Amount</Label>
@@ -367,18 +368,18 @@ export default function RecruiterJobsPage() {
                     min="0"
                     placeholder="e.g. 5000"
                     value={jobFormData.payment}
-                    onChange={(e) => setJobFormData({...jobFormData, payment: parseInt(e.target.value) || 0})}
+                    onChange={(e) => setJobFormData({ ...jobFormData, payment: parseInt(e.target.value) || 0 })}
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="currency">Currency</Label>
                   <select
                     id="currency"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     value={jobFormData.currency}
-                    onChange={(e) => setJobFormData({...jobFormData, currency: e.target.value})}
+                    onChange={(e) => setJobFormData({ ...jobFormData, currency: e.target.value })}
                     required
                   >
                     <option value="INR">INR</option>
@@ -388,34 +389,31 @@ export default function RecruiterJobsPage() {
                   </select>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
                 <select
                   id="status"
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   value={jobFormData.status}
-                  onChange={(e) => setJobFormData({...jobFormData, status: e.target.value as 'open' | 'closed'})}
+                  onChange={(e) => setJobFormData({ ...jobFormData, status: e.target.value as "open" | "closed" })}
                 >
                   <option value="open">Open</option>
                   <option value="closed">Closed</option>
                 </select>
               </div>
             </div>
-            
+
             <DialogFooter>
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => setIsJobModalOpen(false)}
                 disabled={isSubmittingJob}
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                disabled={!jobFormData.title || !jobFormData.description || isSubmittingJob}
-              >
+              <Button type="submit" disabled={!jobFormData.title || !jobFormData.description || isSubmittingJob}>
                 {isSubmittingJob ? (
                   <>
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />

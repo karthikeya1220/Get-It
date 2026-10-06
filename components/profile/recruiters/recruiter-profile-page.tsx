@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
 interface RecruiterProfilePageProps {
-  recruiter: any;
-  isEditable?: boolean;
-  onUpdate?: (section: string, data: any) => void;
+  recruiter: any
+  isEditable?: boolean
+  onUpdate?: (section: string, data: any) => void
 }
 
 export function RecruiterProfilePage({ recruiter, isEditable = false, onUpdate }: RecruiterProfilePageProps) {
@@ -24,19 +24,15 @@ export function RecruiterProfilePage({ recruiter, isEditable = false, onUpdate }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <RecruiterProfileHeader 
-        recruiter={recruiter} 
-        isEditable={isEditable} 
-        onUpdate={onUpdate} 
-      />
+      <RecruiterProfileHeader recruiter={recruiter} isEditable={isEditable} onUpdate={onUpdate} />
 
       {/* Verification Warning Badge - Only show when user is not verified */}
-      {(recruiter.verified !== true && isEditable) && (
+      {recruiter.verified !== true && isEditable && (
         <div className="my-4 relative overflow-hidden rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100 shadow-md dark:border-amber-900/50 dark:from-amber-900/20 dark:to-amber-800/20">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-400 via-transparent to-transparent"></div>
           </div>
-          
+
           <div className="relative flex flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:items-center">
             <div className="flex items-center space-x-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200 text-amber-600 dark:bg-amber-900/50 dark:text-amber-500">
@@ -51,10 +47,10 @@ export function RecruiterProfilePage({ recruiter, isEditable = false, onUpdate }
                 </p>
               </div>
             </div>
-            
-            <Button 
+
+            <Button
               onClick={() => {
-                toast.info("Verification feature coming soon!");
+                toast.info("Verification feature coming soon!")
               }}
               className="bg-gradient-to-r from-amber-600 to-amber-500 text-white hover:from-amber-700 hover:to-amber-600"
             >
@@ -62,34 +58,32 @@ export function RecruiterProfilePage({ recruiter, isEditable = false, onUpdate }
               Get Verified
             </Button>
           </div>
-          
+
           <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600"></div>
         </div>
       )}
 
       {/* Success badge when user is verified */}
-      {(recruiter.verified === true && isEditable) && (
+      {recruiter.verified === true && isEditable && (
         <div className="my-4 relative overflow-hidden rounded-lg border border-green-200 bg-gradient-to-r from-green-50 to-green-100 shadow-md dark:border-green-900/50 dark:from-green-900/20 dark:to-green-800/20">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-green-400 via-transparent to-transparent"></div>
           </div>
-          
+
           <div className="relative flex flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:items-center">
             <div className="flex items-center space-x-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-200 text-green-600 dark:bg-green-900/50 dark:text-green-500">
                 <Icons.checkCircle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-medium text-green-900 dark:text-green-300">
-                  Your recruiter profile is verified
-                </h3>
+                <h3 className="font-medium text-green-900 dark:text-green-300">Your recruiter profile is verified</h3>
                 <p className="text-sm text-green-800 dark:text-green-400">
                   Your profile has increased visibility and credibility with candidates
                 </p>
               </div>
             </div>
           </div>
-          
+
           <div className="h-1 w-full bg-gradient-to-r from-green-400 via-green-500 to-green-600"></div>
         </div>
       )}
@@ -117,42 +111,23 @@ export function RecruiterProfilePage({ recruiter, isEditable = false, onUpdate }
             </TabsList>
 
             <TabsContent value="about" className="mt-0">
-              <RecruiterAbout 
-                recruiter={recruiter} 
-                isEditable={isEditable} 
-                onUpdate={onUpdate} 
-              />
+              <RecruiterAbout recruiter={recruiter} isEditable={isEditable} onUpdate={onUpdate} />
             </TabsContent>
 
             <TabsContent value="company" className="mt-0">
-              <RecruiterCompany 
-                recruiter={recruiter} 
-                isEditable={isEditable} 
-                onUpdate={onUpdate} 
-              />
+              <RecruiterCompany recruiter={recruiter} isEditable={isEditable} onUpdate={onUpdate} />
             </TabsContent>
 
             <TabsContent value="hiring" className="mt-0">
-              <RecruiterHiringNeeds 
-                recruiter={recruiter} 
-                isEditable={isEditable} 
-                onUpdate={onUpdate} 
-              />
+              <RecruiterHiringNeeds recruiter={recruiter} />
             </TabsContent>
 
             <TabsContent value="activity" className="mt-0">
-              <RecruiterActivity 
-                recruiter={recruiter}
-                isEditable={isEditable} 
-              />
+              <RecruiterActivity recruiter={recruiter} />
             </TabsContent>
 
             <TabsContent value="testimonials" className="mt-0">
-              <RecruiterTestimonials 
-                testimonials={recruiter.testimonials} 
-                isEditable={isEditable} 
-                onUpdate={onUpdate ? (data) => onUpdate("testimonials", data) : undefined} 
-              />
+              <RecruiterTestimonials testimonials={recruiter.testimonials} />
             </TabsContent>
           </Tabs>
         </div>
@@ -164,4 +139,3 @@ export function RecruiterProfilePage({ recruiter, isEditable = false, onUpdate }
     </div>
   )
 }
-

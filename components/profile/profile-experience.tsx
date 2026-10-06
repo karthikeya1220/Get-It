@@ -20,13 +20,19 @@ interface Experience {
 
 interface ProfileExperienceProps {
   experience: Experience[]
-  onUpdate: (experience: Experience[]) => void
+  onUpdate?: (experience: Experience[]) => void
   viewAll?: boolean
   onViewAllClick?: () => void
   isEditable?: boolean
 }
 
-export function ProfileExperience({ experience, onUpdate, viewAll = false, onViewAllClick, isEditable = true }: ProfileExperienceProps) {
+export function ProfileExperience({
+  experience,
+  onUpdate,
+  viewAll = false,
+  onViewAllClick,
+  isEditable = true,
+}: ProfileExperienceProps) {
   const [isAddingExperience, setIsAddingExperience] = useState(false)
   const [newExperience, setNewExperience] = useState<Experience>({
     company: "",
@@ -57,7 +63,7 @@ export function ProfileExperience({ experience, onUpdate, viewAll = false, onVie
       toast({
         title: "Error",
         description: "Company and role are required",
-        type: "error",
+        variant: "destructive",
       })
       return
     }
@@ -75,7 +81,7 @@ export function ProfileExperience({ experience, onUpdate, viewAll = false, onVie
     })
 
     // Update the experience state
-    onUpdate(updatedExperience)
+    onUpdate?.(updatedExperience)
 
     // Reset the form
     setNewExperience({
@@ -93,7 +99,7 @@ export function ProfileExperience({ experience, onUpdate, viewAll = false, onVie
     toast({
       title: "Experience added",
       description: `Your experience at ${newExperience.company} has been added successfully.`,
-      type: "success",
+      variant: "default",
     })
 
     // Set current index to show the newly added experience
@@ -105,7 +111,7 @@ export function ProfileExperience({ experience, onUpdate, viewAll = false, onVie
   // Handle deleting an experience
   const handleDeleteExperience = (company: string) => {
     const updatedExperience = experience.filter((exp) => exp.company !== company)
-    onUpdate(updatedExperience)
+    onUpdate?.(updatedExperience)
     setExperienceToDelete(null)
 
     // Adjust current index if needed
@@ -116,7 +122,7 @@ export function ProfileExperience({ experience, onUpdate, viewAll = false, onVie
     toast({
       title: "Experience deleted",
       description: `Experience at ${company} has been removed.`,
-      type: "success",
+      variant: "default",
     })
   }
 
@@ -157,14 +163,14 @@ export function ProfileExperience({ experience, onUpdate, viewAll = false, onVie
 
     const updatedExperience = experience.map((exp) => (exp.company === isEditingExperience ? editedExperience : exp))
 
-    onUpdate(updatedExperience)
+    onUpdate?.(updatedExperience)
     setIsEditingExperience(null)
     setEditedExperience(null)
 
     toast({
       title: "Experience updated",
       description: `Experience at ${editedExperience.company} has been updated successfully.`,
-      type: "success",
+      variant: "default",
     })
   }
 
@@ -645,4 +651,3 @@ export function ProfileExperience({ experience, onUpdate, viewAll = false, onVie
     </Card>
   )
 }
-

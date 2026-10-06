@@ -29,15 +29,21 @@ interface Project {
 
 interface ProfileProjectsProps {
   projects: Project[]
-  onUpdate: (projects: Project[]) => void
+  onUpdate?: (projects: Project[]) => void
   viewAll?: boolean
   onViewAllClick?: () => void
   isEditable?: boolean
 }
 
-export function ProfileProjects({ projects, onUpdate, viewAll = false, onViewAllClick, isEditable = false }: ProfileProjectsProps) {
+export function ProfileProjects({
+  projects,
+  onUpdate,
+  viewAll = false,
+  onViewAllClick,
+  isEditable = false,
+}: ProfileProjectsProps) {
   // Ensure projects is always an array
-  const projectsArray = Array.isArray(projects) ? projects : [];
+  const projectsArray = Array.isArray(projects) ? projects : []
 
   const [isAddingProject, setIsAddingProject] = useState(false)
   const [newProject, setNewProject] = useState<Project>({
@@ -59,7 +65,7 @@ export function ProfileProjects({ projects, onUpdate, viewAll = false, onViewAll
   const projectsEndRef = useRef<HTMLDivElement>(null)
 
   // Use projectsArray instead of projects directly
-  const displayedProjects = viewAll ? projectsArray : projectsArray.slice(0, 1);
+  const displayedProjects = viewAll ? projectsArray : projectsArray.slice(0, 1)
 
   // Scroll to the newly added project
   useEffect(() => {
@@ -74,7 +80,7 @@ export function ProfileProjects({ projects, onUpdate, viewAll = false, onViewAll
       toast({
         title: "Error",
         description: "Project title is required",
-        type: "error",
+        variant: "destructive",
       })
       return
     }
@@ -97,7 +103,7 @@ export function ProfileProjects({ projects, onUpdate, viewAll = false, onViewAll
     })
 
     // Update the projects state
-    onUpdate(updatedProjects)
+    onUpdate?.(updatedProjects)
 
     // Reset the form
     setNewProject({
@@ -119,7 +125,7 @@ export function ProfileProjects({ projects, onUpdate, viewAll = false, onViewAll
     toast({
       title: "Project added",
       description: `Your project has been added successfully.`,
-      type: "success",
+      variant: "default",
     })
 
     // Set current index to show the newly added project
@@ -148,7 +154,7 @@ export function ProfileProjects({ projects, onUpdate, viewAll = false, onViewAll
   // Handle deleting a project
   const handleDeleteProject = (projectTitle: string) => {
     const updatedProjects = projects.filter((project) => project.title !== projectTitle)
-    onUpdate(updatedProjects)
+    onUpdate?.(updatedProjects)
     setProjectToDelete(null)
 
     // Adjust current index if needed
@@ -159,7 +165,7 @@ export function ProfileProjects({ projects, onUpdate, viewAll = false, onViewAll
     toast({
       title: "Project deleted",
       description: `${projectTitle} has been removed from your projects.`,
-      type: "success",
+      variant: "default",
     })
   }
 
@@ -183,14 +189,14 @@ export function ProfileProjects({ projects, onUpdate, viewAll = false, onViewAll
 
     const updatedProjects = projects.map((project) => (project.title === isEditingProject ? editedProject : project))
 
-    onUpdate(updatedProjects)
+    onUpdate?.(updatedProjects)
     setIsEditingProject(null)
     setEditedProject(null)
 
     toast({
       title: "Project updated",
       description: `${editedProject.title} has been updated successfully.`,
-      type: "success",
+      variant: "default",
     })
   }
 
@@ -847,4 +853,3 @@ export function ProfileProjects({ projects, onUpdate, viewAll = false, onViewAll
     </Card>
   )
 }
-

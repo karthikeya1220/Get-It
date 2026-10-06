@@ -121,4 +121,3 @@ export function ProfileGrowth({ suggestions }: ProfileGrowthProps) {
     </Card>
   )
 }
-
