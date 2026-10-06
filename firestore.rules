@@ -18,6 +18,28 @@ service cloud.firestore {
         .hasAny(['password', 'Role']);
     }
 
+    // `resource` does not exist on create, so the update guards above cannot be
+    // reused — without this a client could DELETE its profile and re-CREATE it
+    // with verified:true to skip the payment flow.
+    function createdDocIsSafe() {
+      return !request.resource.data.keys().hasAny(['password', 'confirmPassword'])
+        && request.resource.data.get('verified', false) != true
+        && request.resource.data.get('Verified', false) != true
+        && request.resource.data.get('Role', 'student') in
+           ['student', 'recruiter', 'Student', 'Recruiter'];
+    }
+
+    // Role custom claim, minted server-side by POST /api/auth/session.
+    // `roleUnknown()` keeps sessions issued before this change working; the
+    // claim lands on the next token refresh either way.
+    function hasRole(r) {
+      return request.auth.token.get('role', '') == r;
+    }
+
+    function roleUnknown() {
+      return request.auth.token.get('role', '') == '';
+    }
+
     // `verified` may only ever be granted by the Admin SDK (payment API /
     // webhook), which bypasses these rules. Clients may set it to false
     // (profile bootstrap) but must never turn it on.
@@ -36,7 +58,7 @@ service cloud.firestore {
     // Legacy/flat doc: users/{uid}
     match /users/{uid} {
       allow read: if signedIn();
-      allow create: if isOwner(uid);
+      allow create: if isOwner(uid) && createdDocIsSafe();
       allow update: if isOwner(uid) && canEditOwnProfile();
       allow delete: if isOwner(uid);
     }
@@ -44,7 +66,8 @@ service cloud.firestore {
     // Role docs: users/student/{uid}/user_details, users/recruiter/{uid}/user_details
     match /users/{role}/{uid}/user_details {
       allow read: if signedIn();
-      allow create: if isOwner(uid) && role in ['student', 'recruiter'];
+      allow create: if isOwner(uid) && role in ['student', 'recruiter']
+                    && createdDocIsSafe();
       allow update: if isOwner(uid) && canEditOwnProfile();
       allow delete: if isOwner(uid);
     }
@@ -81,7 +104,10 @@ service cloud.firestore {
       );
 
       allow read: if signedIn();
-      allow create: if signedIn() && request.resource.data.postedBy == request.auth.uid;
+      // Job posting is a recruiter capability (UI only exposes it there).
+      allow create: if signedIn()
+        && request.resource.data.postedBy == request.auth.uid
+        && (roleUnknown() || hasRole('recruiter'));
       allow delete: if signedIn() && resource.data.get('postedBy', '') == request.auth.uid;
     }
 
@@ -99,7 +125,8 @@ service cloud.firestore {
 
       allow create: if signedIn()
         && request.resource.data.studentId == request.auth.uid
-        && jobPoster() != request.auth.uid;
+        && jobPoster() != request.auth.uid
+        && (roleUnknown() || hasRole('student'));
 
       // The student may edit their own application without touching the status;
       // the recruiter who posted the job owns status transitions.

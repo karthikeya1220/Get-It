@@ -12,11 +12,22 @@ export async function createSessionCookie(): Promise<boolean> {
   if (!user) return false
 
   try {
-    const token = await user.getIdToken()
-    const res = await fetch("/api/auth/session", {
+    let token = await user.getIdToken()
+    let res = await fetch("/api/auth/session", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
     })
+
+    // 409 = the server just wrote our role custom claim, which this token cannot
+    // carry yet. Force a refresh and retry exactly once.
+    if (res.status === 409) {
+      token = await user.getIdToken(true)
+      res = await fetch("/api/auth/session", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    }
+
     return res.ok
   } catch (error) {
     console.error("createSessionCookie failed:", error)
