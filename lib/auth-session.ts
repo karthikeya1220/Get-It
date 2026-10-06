@@ -1,6 +1,6 @@
 "use client"
 
-import { getAuth } from "firebase/auth"
+import { auth } from "@/firebase"
 
 /**
  * Exchange the current Firebase ID token for the HttpOnly `__session` cookie
@@ -8,7 +8,7 @@ import { getAuth } from "firebase/auth"
  * route, otherwise middleware will bounce you back to /login.
  */
 export async function createSessionCookie(): Promise<boolean> {
-  const user = getAuth().currentUser
+  const user = auth.currentUser
   if (!user) return false
 
   try {

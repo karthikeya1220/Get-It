@@ -12,7 +12,7 @@ import {
 } from "./ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { signOut } from "firebase/auth"
-import { getAuth } from "firebase/auth"
+import { auth } from "@/firebase"
 
 interface UserButtonProps {
   userId: string
@@ -22,7 +22,6 @@ export function UserButton({ userId }: UserButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleSignOut = async () => {
-    const auth = getAuth()
     try {
       await signOut(auth)
       window.location.href = "/"

@@ -1,0 +1,206 @@
+- generic [active] [ref=f30e1]:
+    - generic [ref=f30e2]:
+        - banner [ref=f30e3]:
+            - generic [ref=f30e4]:
+                - link "GetIT" [ref=f30e6] [cursor=pointer]:
+                    - /url: /
+                - navigation [ref=f30e12]:
+                    - link "Features" [ref=f30e14] [cursor=pointer]:
+                        - /url: "#features"
+                    - link "How It Works" [ref=f30e16] [cursor=pointer]:
+                        - /url: "#how-it-works"
+                    - link "Testimonials" [ref=f30e18] [cursor=pointer]:
+                        - /url: "#testimonials"
+                    - link "Pricing" [ref=f30e20] [cursor=pointer]:
+                        - /url: "#pricing"
+                - generic [ref=f30e21]:
+                    - button "Toggle theme" [ref=f30e23] [cursor=pointer]
+                    - generic [ref=f30e28]:
+                        - link [ref=f30e29] [cursor=pointer]:
+                            - /url: /login
+                            - button "Log In" [ref=f30e30]
+                        - link [ref=f30e31] [cursor=pointer]:
+                            - /url: /signup-options
+                            - button "Sign Up" [ref=f30e32]
+        - main [ref=f30e33]:
+            - generic [ref=f30e34]:
+                - generic [ref=f30e40]:
+                    - generic [ref=f30e41]:
+                        - generic [ref=f30e42]: Launching for Fall Semester 2025
+                        - heading "Showcase Your Skills, Find Paid Gigs" [level=1] [ref=f30e46]:
+                            - generic [ref=f30e47]: Showcase Your Skills,
+                            - generic [ref=f30e48]: Find Paid Gigs
+                        - paragraph [ref=f30e49]: Connect with startups and peers who need your talents. Build your portfolio, earn money, and gain real-world experience while still in college.
+                        - generic [ref=f30e50]:
+                            - link [ref=f30e51] [cursor=pointer]:
+                                - /url: /signup
+                                - button "Get Started" [ref=f30e53]
+                            - link [ref=f30e59] [cursor=pointer]:
+                                - /url: "#how-it-works"
+                                - button "How It Works" [ref=f30e61]
+                        - generic [ref=f30e62]:
+                            - generic [ref=f30e63]: No fees for students
+                            - generic [ref=f30e65]: AI-powered skill matching
+                            - generic [ref=f30e67]: Secure payments
+                    - img "GetIt platform demo" [ref=f30e73]
+                - generic [ref=f30e80]: Scroll to explore
+            - generic [ref=f30e88]:
+                - generic [ref=f30e92]:
+                    - heading "10,000+" [level=3] [ref=f30e99]
+                    - paragraph [ref=f30e100]: Students
+                - generic [ref=f30e104]:
+                    - heading "5,000+" [level=3] [ref=f30e109]
+                    - paragraph [ref=f30e110]: Completed Gigs
+                - generic [ref=f30e114]:
+                    - heading "1,000+" [level=3] [ref=f30e119]
+                    - paragraph [ref=f30e120]: Partner Companies
+                - generic [ref=f30e124]:
+                    - heading "$500K+" [level=3] [ref=f30e128]
+                    - paragraph [ref=f30e129]: Paid to Students
+            - generic [ref=f30e133]:
+                - generic [ref=f30e134]:
+                    - heading "Everything You Need to Succeed" [level=2] [ref=f30e135]
+                    - paragraph [ref=f30e136]: GetIT provides all the tools and resources you need to showcase your talents, find opportunities, and build your professional career.
+                - generic [ref=f30e137]:
+                    - generic [ref=f30e141]:
+                        - heading "Skill Showcase" [level=3] [ref=f30e148]
+                        - paragraph [ref=f30e149]: Create a professional profile highlighting your skills, experience, and portfolio to stand out to potential clients.
+                    - generic [ref=f30e153]:
+                        - heading "Find Paid Gigs" [level=3] [ref=f30e158]
+                        - paragraph [ref=f30e159]: Browse and apply to paid opportunities from startups and peers that match your skills and interests.
+                    - generic [ref=f30e163]:
+                        - heading "AI-Powered Matching" [level=3] [ref=f30e167]
+                        - paragraph [ref=f30e168]: Our intelligent algorithm suggests the most relevant opportunities based on your skills and preferences.
+                    - generic [ref=f30e172]:
+                        - heading "Secure Payments" [level=3] [ref=f30e176]
+                        - paragraph [ref=f30e177]: Get paid safely and on time with our secure payment system designed specifically for student freelancers.
+                    - generic [ref=f30e181]:
+                        - heading "Build Your Reputation" [level=3] [ref=f30e185]
+                        - paragraph [ref=f30e186]: Earn reviews and ratings to build a strong professional reputation while still in college.
+                    - generic [ref=f30e190]:
+                        - heading "Career Guidance" [level=3] [ref=f30e194]
+                        - paragraph [ref=f30e195]: Receive personalized recommendations for skill development and career advancement opportunities.
+            - generic [ref=f30e198]:
+                - generic [ref=f30e199]:
+                    - heading "How GetIT Works" [level=2] [ref=f30e200]
+                    - paragraph [ref=f30e201]: Getting started is easy. Follow these simple steps to begin your freelancing journey while still in college.
+                - generic [ref=f30e204]:
+                    - generic [ref=f30e206]:
+                        - generic [ref=f30e207]: "1"
+                        - generic [ref=f30e216]:
+                            - heading "Create Your Profile" [level=3] [ref=f30e217]
+                            - paragraph [ref=f30e218]: Sign up and build your professional profile showcasing your skills, education, and portfolio.
+                    - generic [ref=f30e221]:
+                        - generic [ref=f30e222]: "2"
+                        - generic [ref=f30e230]:
+                            - heading "Discover Opportunities" [level=3] [ref=f30e231]
+                            - paragraph [ref=f30e232]: Browse through available gigs or receive AI-matched opportunities based on your skills.
+                    - generic [ref=f30e235]:
+                        - generic [ref=f30e236]: "3"
+                        - generic [ref=f30e244]:
+                            - heading "Connect & Collaborate" [level=3] [ref=f30e245]
+                            - paragraph [ref=f30e246]: Apply to projects, communicate with clients, and agree on project details and payment terms.
+                    - generic [ref=f30e249]:
+                        - generic [ref=f30e250]: "4"
+                        - generic [ref=f30e259]:
+                            - heading "Complete the Work" [level=3] [ref=f30e260]
+                            - paragraph [ref=f30e261]: Deliver high-quality work on time and build your professional reputation with positive reviews.
+                    - generic [ref=f30e264]:
+                        - generic [ref=f30e265]: "5"
+                        - generic [ref=f30e273]:
+                            - heading "Get Paid" [level=3] [ref=f30e274]
+                            - paragraph [ref=f30e275]: Receive secure payments for your completed work directly to your preferred payment method.
+            - generic [ref=f30e279]:
+                - generic [ref=f30e280]:
+                    - heading "What Students Are Saying" [level=2] [ref=f30e281]
+                    - paragraph [ref=f30e282]: Join thousands of students who are already building their careers and earning while studying.
+                - generic [ref=f30e283]:
+                    - generic [ref=f30e284]:
+                        - generic [ref=f30e287]:
+                            - blockquote [ref=f30e299]: '"GetIT helped me land my first paid web development gig while still in my sophomore year. The experience I gained was invaluable for my resume."'
+                            - generic [ref=f30e300]:
+                                - generic [ref=f30e301]: DC
+                                - generic [ref=f30e303]:
+                                    - generic [ref=f30e304]: David Chen
+                                    - generic [ref=f30e305]: Computer Science Student
+                                    - generic [ref=f30e306]: Stanford University
+                        - button [ref=f30e307] [cursor=pointer]
+                        - button [ref=f30e310] [cursor=pointer]
+                    - generic [ref=f30e313]:
+                        - button [ref=f30e314] [cursor=pointer]
+                        - button [ref=f30e315] [cursor=pointer]
+                        - button [ref=f30e316] [cursor=pointer]
+            - generic [ref=f30e325]:
+                - heading "Ready to Kickstart Your Professional Journey?" [level=2] [ref=f30e326]
+                - paragraph [ref=f30e327]: Join thousands of students who are building their portfolios, earning money, and gaining real-world experience while still in college.
+                - generic [ref=f30e328]:
+                    - link [ref=f30e329] [cursor=pointer]:
+                        - /url: /signup
+                        - button "Get Started Now" [ref=f30e330]
+                    - link [ref=f30e334] [cursor=pointer]:
+                        - /url: "#how-it-works"
+                        - button "Learn More" [ref=f30e335]
+        - contentinfo [ref=f30e338]:
+            - generic [ref=f30e340]:
+                - generic [ref=f30e341]:
+                    - generic [ref=f30e342]:
+                        - link "GetIT" [ref=f30e343] [cursor=pointer]:
+                            - /url: /
+                        - paragraph [ref=f30e349]: Connecting talented students with opportunities that matter. Build your portfolio, earn money, and gain real-world experience.
+                        - generic [ref=f30e350]:
+                            - link "Twitter" [ref=f30e351] [cursor=pointer]:
+                                - /url: "#"
+                            - link "Facebook" [ref=f30e355] [cursor=pointer]:
+                                - /url: "#"
+                            - link "Instagram" [ref=f30e359] [cursor=pointer]:
+                                - /url: "#"
+                            - link "LinkedIn" [ref=f30e364] [cursor=pointer]:
+                                - /url: "#"
+                    - generic [ref=f30e370]:
+                        - heading "Platform" [level=4] [ref=f30e371]
+                        - list [ref=f30e372]:
+                            - listitem [ref=f30e373]:
+                                - link "Features" [ref=f30e374] [cursor=pointer]:
+                                    - /url: "#features"
+                            - listitem [ref=f30e375]:
+                                - link "How It Works" [ref=f30e376] [cursor=pointer]:
+                                    - /url: "#how-it-works"
+                            - listitem [ref=f30e377]:
+                                - link "Pricing" [ref=f30e378] [cursor=pointer]:
+                                    - /url: "#pricing"
+                            - listitem [ref=f30e379]:
+                                - link "FAQ" [ref=f30e380] [cursor=pointer]:
+                                    - /url: "#"
+                    - generic [ref=f30e381]:
+                        - heading "Company" [level=4] [ref=f30e382]
+                        - list [ref=f30e383]:
+                            - listitem [ref=f30e384]:
+                                - link "About Us" [ref=f30e385] [cursor=pointer]:
+                                    - /url: "#"
+                            - listitem [ref=f30e386]:
+                                - link "Careers" [ref=f30e387] [cursor=pointer]:
+                                    - /url: "#"
+                            - listitem [ref=f30e388]:
+                                - link "Blog" [ref=f30e389] [cursor=pointer]:
+                                    - /url: "#"
+                            - listitem [ref=f30e390]:
+                                - link "Contact" [ref=f30e391] [cursor=pointer]:
+                                    - /url: "#"
+                    - generic [ref=f30e392]:
+                        - heading "Legal" [level=4] [ref=f30e393]
+                        - list [ref=f30e394]:
+                            - listitem [ref=f30e395]:
+                                - link "Terms" [ref=f30e396] [cursor=pointer]:
+                                    - /url: "#"
+                            - listitem [ref=f30e397]:
+                                - link "Privacy" [ref=f30e398] [cursor=pointer]:
+                                    - /url: "#"
+                            - listitem [ref=f30e399]:
+                                - link "Cookies" [ref=f30e400] [cursor=pointer]:
+                                    - /url: "#"
+                            - listitem [ref=f30e401]:
+                                - link "Licenses" [ref=f30e402] [cursor=pointer]:
+                                    - /url: "#"
+                - paragraph [ref=f30e404]: © 2026 GetIT. All rights reserved.
+    - region "Notifications alt+T"
+    - alert [ref=f30e408]

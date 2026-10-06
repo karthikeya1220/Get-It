@@ -1,0 +1,29 @@
+- generic [active] [ref=e1]:
+    - generic [ref=e8]:
+        - button "Toggle theme" [ref=e10] [cursor=pointer]
+        - link "GetIT" [ref=e13] [cursor=pointer]:
+            - /url: /
+        - generic [ref=e23]:
+            - generic [ref=e24]:
+                - heading "Welcome back" [level=1] [ref=e29]
+                - paragraph [ref=e30]: Enter your credentials to access your account
+            - generic [ref=e31]:
+                - generic [ref=e32]:
+                    - generic [ref=e33]:
+                        - text: Email
+                        - textbox "Email" [ref=e35]:
+                            - /placeholder: name@example.com
+                    - generic [ref=e36]:
+                        - generic [ref=e37]:
+                            - generic [ref=e38]: Password
+                            - link "Forgot password?" [ref=e39] [cursor=pointer]:
+                                - /url: /forgot-password
+                        - textbox "Password" [ref=e41]:
+                            - /placeholder: ••••••••
+                    - button "Sign In" [ref=e43] [cursor=pointer]
+                - generic [ref=e44]: OR CONTINUE WITH
+                - generic [ref=e48]:
+                    - text: Don't have an account?
+                    - button "Sign up" [ref=e49] [cursor=pointer]
+    - region "Notifications alt+T"
+    - alert [ref=e50]

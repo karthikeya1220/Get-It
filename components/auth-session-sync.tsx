@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect } from "react"
-import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { onAuthStateChanged } from "firebase/auth"
+import { auth } from "@/firebase"
 import { createSessionCookie, clearSessionCookie } from "@/lib/auth-session"
 
 /**
@@ -10,7 +11,6 @@ import { createSessionCookie, clearSessionCookie } from "@/lib/auth-session"
  */
 export function AuthSessionSync() {
   useEffect(() => {
-    const auth = getAuth()
     let cancelled = false
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
