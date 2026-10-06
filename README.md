@@ -264,9 +264,9 @@ We welcome contributions to GetIt! Here's how you can help:
 
 ## 🐛 Known Issues
 
-- Feed posts and agreements are still backed by client-side mock data — they need a Firestore collection
-- Data fetching is still ad-hoc `useEffect` calls; a shared cache layer is planned
-- Role checks rely on profile documents; custom claims are the intended next step for RBAC
+- Agreements are still backed by client-side mock data — they need a Firestore collection
+- The feed's _Upcoming Events_ and _Learning Resources_ sidebar cards are static editorial content, not app data
+- "People You May Know" lists every student; there is no connections graph yet
 - Rate limiting is per-process — swap `lib/rate-limit.ts` for a shared store when running multiple replicas
 
 ## 📞 Support

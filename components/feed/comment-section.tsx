@@ -1,82 +1,78 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useRef, useState } from "react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { formatDistanceToNow } from "date-fns"
-import { ThumbsUp, Reply, Smile, Send, MoreHorizontal } from "lucide-react"
+import { ThumbsUp, Reply, Smile, Send, MoreHorizontal, Trash2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import type { PostComment } from "@/components/feed/types"
+import { addComment, deleteComment, getViewerIdentity, listComments, toggleCommentLike } from "@/lib/feed-service"
 
 interface CommentSectionProps {
   postId: string
-  comments: PostComment[]
 }
 
-export function CommentSection({ postId, comments: initialComments }: CommentSectionProps) {
-  const [comments, setComments] = useState<PostComment[]>(initialComments)
+export function CommentSection({ postId }: CommentSectionProps) {
   const [newComment, setNewComment] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const commentInputRef = useRef<HTMLTextAreaElement | null>(null)
+  const queryClient = useQueryClient()
+
+  const commentsKey = ["post-comments", postId]
+
+  const { data: viewer } = useQuery({
+    queryKey: ["viewer-identity"],
+    queryFn: getViewerIdentity,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const { data: comments = [], isPending } = useQuery({
+    queryKey: commentsKey,
+    queryFn: () => listComments(postId),
+  })
+
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: commentsKey })
+    queryClient.invalidateQueries({ queryKey: ["feed"] })
+  }
+
+  const { mutate: submit, isPending: isSubmitting } = useMutation({
+    mutationFn: () => addComment(postId, newComment, replyingTo ?? undefined),
+    onSuccess: () => {
+      setNewComment("")
+      setReplyingTo(null)
+      refresh()
+    },
+  })
+
+  const { mutate: likeComment } = useMutation({
+    mutationFn: (commentId: string) => {
+      const comment = comments.find((c) => c.id === commentId)
+      if (!comment) throw new Error("Comment not found")
+      return toggleCommentLike(postId, comment)
+    },
+    onSettled: refresh,
+  })
+
+  const { mutate: removeComment } = useMutation({
+    mutationFn: (commentId: string) => deleteComment(postId, commentId),
+    onSettled: refresh,
+  })
 
   const handleSubmitComment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
     if (!newComment.trim()) return
-
-    setIsSubmitting(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      const comment = {
-        id: `comment-${Date.now()}`,
-        author: {
-          id: "student-123",
-          name: "Alex Johnson",
-          avatar: "/placeholder.svg?height=32&width=32",
-        },
-        content: newComment,
-        timestamp: new Date().toISOString(),
-        likes: 0,
-        isLiked: false,
-        replyTo: replyingTo ?? undefined,
-      }
-
-      setComments([...comments, comment])
-      setNewComment("")
-      setIsSubmitting(false)
-      setReplyingTo(null)
-    }, 500)
+    submit()
   }
 
-  const handleLikeComment = (commentId: string) => {
-    setComments(
-      comments.map((comment) => {
-        if (comment.id === commentId) {
-          const isLiked = !comment.isLiked
-          return {
-            ...comment,
-            isLiked,
-            likes: isLiked ? comment.likes + 1 : comment.likes - 1,
-          }
-        }
-        return comment
-      }),
-    )
-  }
-
-  const handleReply = (comment: PostComment) => {
-    setReplyingTo(comment.id)
-    setNewComment(`@${comment.author.name} `)
-
-    // Focus the comment input
+  const handleReply = (commentId: string, name: string) => {
+    setReplyingTo(commentId)
+    setNewComment(`@${name} `)
     const input = commentInputRef.current
-    if (input) {
-      setTimeout(() => input.focus(), 0)
-    }
+    if (input) setTimeout(() => input.focus(), 0)
   }
 
   const cancelReply = () => {
@@ -84,91 +80,112 @@ export function CommentSection({ postId, comments: initialComments }: CommentSec
     setNewComment("")
   }
 
+  const viewerInitials =
+    viewer?.name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "?"
+
+  if (isPending) {
+    return (
+      <div className="space-y-3">
+        <div className="h-12 animate-pulse rounded-xl bg-secondary" />
+        <div className="h-12 animate-pulse rounded-xl bg-secondary" />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4">
       {comments.length > 0 && (
         <div className="space-y-4">
-          {comments.map((comment) => (
-            <motion.div
-              key={comment.id}
-              className="flex gap-2"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Avatar className="h-8 w-8 border border-border">
-                <AvatarImage src={comment.author.avatar} alt={comment.author.name} />
-                <AvatarFallback className="text-xs">
-                  {comment.author.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
+          {comments.map((comment) => {
+            const replyingToName = comments.find((c) => c.id === comment.replyTo)?.author.name
+            const body = replyingToName
+              ? comment.content.replace(new RegExp(`^@${replyingToName} `), "")
+              : comment.content
 
-              <div className="flex-1">
-                <div className="group relative rounded-xl bg-card p-3 shadow-sm">
-                  <div className="font-medium text-foreground">{comment.author.name}</div>
-                  <div className="text-sm text-foreground">
-                    {comment.replyTo && (
-                      <span className="font-medium text-primary">
-                        @{comments.find((c) => c.id === comment.replyTo)?.author.name || "User"}{" "}
-                      </span>
-                    )}
-                    {comment.content.replace(
-                      new RegExp(`^@${comments.find((c) => c.id === comment.replyTo)?.author.name || ""} `),
-                      "",
-                    )}
+            return (
+              <motion.div
+                key={comment.id}
+                className="flex gap-2"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Avatar className="h-8 w-8 border border-border">
+                  <AvatarImage src={comment.author.avatar} alt={comment.author.name} />
+                  <AvatarFallback className="text-xs">
+                    {comment.author.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="flex-1">
+                  <div className="group relative rounded-xl bg-card p-3 shadow-sm">
+                    <div className="font-medium text-foreground">{comment.author.name}</div>
+                    <div className="text-sm text-foreground">
+                      {replyingToName && <span className="font-medium text-primary">@{replyingToName} </span>}
+                      {body}
+                    </div>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-1 top-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <MoreHorizontal className="h-3 w-3" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem className="text-destructive" onClick={() => removeComment(comment.id)}>
+                          <Trash2 className="mr-2 h-3 w-3" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
 
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-1 top-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <MoreHorizontal className="h-3 w-3" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40">
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <div className="mt-1 flex items-center gap-3 pl-2 text-xs">
+                    <button
+                      onClick={() => likeComment(comment.id)}
+                      className={`flex items-center gap-1 ${
+                        comment.isLiked ? "text-primary" : "text-muted-foreground hover:text-primary"
+                      }`}
+                    >
+                      <ThumbsUp className={`h-3 w-3 ${comment.isLiked ? "fill-primary" : ""}`} />
+                      {comment.likes > 0 && <span>{comment.likes}</span>}
+                      Like
+                    </button>
+
+                    <button
+                      className="text-muted-foreground hover:text-primary"
+                      onClick={() => handleReply(comment.id, comment.author.name)}
+                    >
+                      <Reply className="h-3 w-3" />
+                      Reply
+                    </button>
+
+                    <span className="text-muted-foreground">
+                      {formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true })}
+                    </span>
+                  </div>
                 </div>
-
-                <div className="mt-1 flex items-center gap-3 pl-2 text-xs">
-                  <button
-                    onClick={() => handleLikeComment(comment.id)}
-                    className={`flex items-center gap-1 ${
-                      comment.isLiked ? "text-primary" : "text-muted-foreground hover:text-primary"
-                    }`}
-                  >
-                    <ThumbsUp className={`h-3 w-3 ${comment.isLiked ? "fill-primary" : ""}`} />
-                    {comment.likes > 0 && <span>{comment.likes}</span>}
-                    Like
-                  </button>
-
-                  <button className="text-muted-foreground hover:text-primary" onClick={() => handleReply(comment)}>
-                    <Reply className="h-3 w-3" />
-                    Reply
-                  </button>
-
-                  <span className="text-muted-foreground">
-                    {formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true })}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            )
+          })}
         </div>
       )}
 
       <form onSubmit={handleSubmitComment} className="flex gap-2">
         <Avatar className="h-8 w-8 border border-border">
-          <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Your profile" />
-          <AvatarFallback className="text-xs">AJ</AvatarFallback>
+          <AvatarImage src={viewer?.avatar} alt={viewer?.name ?? "Your profile"} />
+          <AvatarFallback className="text-xs">{viewerInitials}</AvatarFallback>
         </Avatar>
 
         <div className="flex-1">

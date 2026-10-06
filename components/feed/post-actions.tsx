@@ -1,45 +1,54 @@
 "use client"
 
 import { useState } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
-import { ThumbsUp, MessageCircle, Share2, Bookmark } from "lucide-react"
+import { ThumbsUp, MessageCircle, Share2 } from "lucide-react"
 import { motion } from "framer-motion"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import type { Post } from "@/components/feed/types"
+import { recordShare, toggleLike, updatePostInFeed, type FeedPage, type Post } from "@/lib/feed-service"
+import type { InfiniteData } from "@tanstack/react-query"
 
 interface PostActionsProps {
   post: Post
   onToggleComments: () => void
 }
 
+type FeedCache = InfiniteData<FeedPage>
+
 export function PostActions({ post, onToggleComments }: PostActionsProps) {
-  const [isLiked, setIsLiked] = useState(post.isLiked)
-  const [likesCount, setLikesCount] = useState(post.likes)
-  const [isSaved, setIsSaved] = useState(false)
+  const queryClient = useQueryClient()
   const [isShared, setIsShared] = useState(false)
 
-  const handleLike = () => {
-    if (isLiked) {
-      setLikesCount(likesCount - 1)
-    } else {
-      setLikesCount(likesCount + 1)
-    }
-    setIsLiked(!isLiked)
-  }
+  const { mutate: like } = useMutation({
+    mutationFn: () => toggleLike(post),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["feed"] })
+      const previous = queryClient.getQueriesData<FeedCache>({ queryKey: ["feed"] })
+      queryClient.setQueriesData<FeedCache>({ queryKey: ["feed"] }, (cache) =>
+        updatePostInFeed(cache, post.id, (existing) => ({
+          ...existing,
+          likes: existing.likes + (existing.isLiked ? -1 : 1),
+          isLiked: !existing.isLiked,
+        })),
+      )
+      return { previous }
+    },
+    onError: (_error, _variables, context) => {
+      context?.previous.forEach(([key, cache]) => queryClient.setQueryData(key, cache))
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["feed"] }),
+  })
 
-  const handleSave = () => {
-    setIsSaved(!isSaved)
-  }
-
-  const handleShare = () => {
-    setIsShared(true)
-
-    // Reset after animation
-    setTimeout(() => {
-      setIsShared(false)
-    }, 2000)
-  }
+  const { mutate: share } = useMutation({
+    mutationFn: () => recordShare(post.id),
+    onSuccess: () => {
+      setIsShared(true)
+      setTimeout(() => setIsShared(false), 2000)
+      queryClient.invalidateQueries({ queryKey: ["feed"] })
+    },
+  })
 
   return (
     <TooltipProvider>
@@ -49,23 +58,23 @@ export function PostActions({ post, onToggleComments }: PostActionsProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleLike}
+              onClick={() => like()}
               className={`flex-1 gap-1 rounded-none ${
-                isLiked ? "text-primary" : "text-muted-foreground hover:text-primary"
+                post.isLiked ? "text-primary" : "text-muted-foreground hover:text-primary"
               }`}
             >
               <motion.div
                 initial={{ scale: 1 }}
-                animate={{ scale: isLiked ? [1, 1.3, 1] : 1 }}
+                animate={{ scale: post.isLiked ? [1, 1.3, 1] : 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <ThumbsUp className={`h-4 w-4 ${isLiked ? "fill-primary" : ""}`} />
+                <ThumbsUp className={`h-4 w-4 ${post.isLiked ? "fill-primary" : ""}`} />
               </motion.div>
-              <span>{likesCount > 0 ? likesCount : ""} Like</span>
+              <span>{post.likes > 0 ? post.likes : ""} Like</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{isLiked ? "Unlike this post" : "Like this post"}</p>
+            <p>{post.isLiked ? "Unlike this post" : "Like this post"}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -78,7 +87,7 @@ export function PostActions({ post, onToggleComments }: PostActionsProps) {
               className="flex-1 gap-1 rounded-none text-muted-foreground hover:text-primary"
             >
               <MessageCircle className="h-4 w-4" />
-              <span>{post.comments.length > 0 ? post.comments.length : ""} Comment</span>
+              <span>{post.commentCount > 0 ? post.commentCount : ""} Comment</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -102,33 +111,21 @@ export function PostActions({ post, onToggleComments }: PostActionsProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-56">
-                <DropdownMenuItem onClick={handleShare}>Share to your feed</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleShare}>Share via message</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleShare}>Copy link</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => share()}>Share to your feed</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => share()}>Share via message</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    navigator.clipboard?.writeText(`${window.location.origin}/feed`)
+                    share()
+                  }}
+                >
+                  Copy link
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </TooltipTrigger>
           <TooltipContent>
             <p>Share this post</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSave}
-              className={`flex-1 gap-1 rounded-none ${
-                isSaved ? "text-primary" : "text-muted-foreground hover:text-primary"
-              }`}
-            >
-              <Bookmark className={`h-4 w-4 ${isSaved ? "fill-primary" : ""}`} />
-              <span>Save</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{isSaved ? "Remove from saved" : "Save for later"}</p>
           </TooltipContent>
         </Tooltip>
       </div>

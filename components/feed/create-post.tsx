@@ -1,25 +1,44 @@
 "use client"
 
 import { useState, useRef } from "react"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Image as ImageIcon, Link, FileText, Video, X, Upload, Users, MapPin } from "lucide-react"
+import { Image as ImageIcon, Link, FileText, Video, X, Upload, MapPin } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { motion, AnimatePresence } from "framer-motion"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import type { Post } from "@/components/feed/types"
+import { createPost, getViewerIdentity } from "@/lib/feed-service"
 
-export function CreatePost({ onPostCreated }: { onPostCreated: (post: Post) => void }) {
+export function CreatePost({ onPostCreated }: { onPostCreated: () => void }) {
   const [content, setContent] = useState("")
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [privacy, setPrivacy] = useState("public")
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const { toast } = useToast()
+
+  const { data: viewer } = useQuery({
+    queryKey: ["viewer-identity"],
+    queryFn: getViewerIdentity,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: () => createPost({ content, image: selectedImage }),
+    onSuccess: () => {
+      setContent("")
+      setIsExpanded(false)
+      removeImage()
+      onPostCreated()
+      toast({ title: "Post created", description: "Your post has been published successfully" })
+    },
+    onError: (error: Error) => {
+      toast({ title: "Could not publish", description: error.message, variant: "destructive" })
+    },
+  })
 
   const handleFocus = () => {
     setIsExpanded(true)
@@ -33,8 +52,7 @@ export function CreatePost({ onPostCreated }: { onPostCreated: (post: Post) => v
     const file = e.target.files?.[0]
     if (file) {
       setSelectedImage(file)
-      const url = URL.createObjectURL(file)
-      setPreviewUrl(url)
+      setPreviewUrl(URL.createObjectURL(file))
     }
   }
 
@@ -59,40 +77,16 @@ export function CreatePost({ onPostCreated }: { onPostCreated: (post: Post) => v
       return
     }
 
-    setIsSubmitting(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      const newPost = {
-        id: `post-${Date.now()}`,
-        author: {
-          id: "student-123",
-          name: "Alex Johnson",
-          role: "Computer Science Student",
-          avatar: "/placeholder.svg?height=40&width=40",
-        },
-        content,
-        image: previewUrl ?? undefined,
-        imageAlt: selectedImage ? selectedImage.name : undefined,
-        timestamp: new Date().toISOString(),
-        likes: 0,
-        comments: [],
-        shares: 0,
-        isLiked: false,
-      }
-
-      onPostCreated(newPost)
-      setContent("")
-      setIsExpanded(false)
-      setIsSubmitting(false)
-      removeImage()
-
-      toast({
-        title: "Post created",
-        description: "Your post has been published successfully",
-      })
-    }, 1000)
+    mutate()
   }
+
+  const initials =
+    viewer?.name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "?"
 
   return (
     <TooltipProvider>
@@ -100,8 +94,8 @@ export function CreatePost({ onPostCreated }: { onPostCreated: (post: Post) => v
         <CardContent className="p-4 pt-4">
           <div className="flex gap-3">
             <Avatar className="h-10 w-10 border border-border">
-              <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Profile" />
-              <AvatarFallback>AJ</AvatarFallback>
+              <AvatarImage src={viewer?.avatar} alt={viewer?.name ?? "Your profile"} />
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
 
             <div className="flex-1">
@@ -148,24 +142,8 @@ export function CreatePost({ onPostCreated }: { onPostCreated: (post: Post) => v
             >
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span>Posting as:</span>
-                <span className="font-medium text-foreground">Alex Johnson</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="h-7 gap-1 text-xs" onClick={() => setPrivacy("public")}>
-                  <Users className="h-3 w-3" />
-                  {privacy === "public" ? "Public" : "Make Public"}
-                </Button>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 gap-1 text-xs"
-                  onClick={() => setPrivacy("connections")}
-                >
-                  <Users className="h-3 w-3" />
-                  {privacy === "connections" ? "Connections Only" : "Connections Only"}
-                </Button>
+                <span className="font-medium text-foreground">{viewer?.name ?? "…"}</span>
+                {viewer?.role && <span className="text-muted-foreground">· {viewer.role}</span>}
               </div>
             </motion.div>
           )}
@@ -245,10 +223,10 @@ export function CreatePost({ onPostCreated }: { onPostCreated: (post: Post) => v
 
               <Button
                 onClick={handleSubmit}
-                disabled={isSubmitting || (!content.trim() && !selectedImage)}
+                disabled={isPending || (!content.trim() && !selectedImage)}
                 className="ml-auto"
               >
-                {isSubmitting ? (
+                {isPending ? (
                   <>
                     <Upload className="mr-2 h-4 w-4 animate-spin" />
                     Posting...

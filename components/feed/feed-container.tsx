@@ -1,72 +1,48 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useMemo, useState } from "react"
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
 import { CreatePost } from "@/components/feed/create-post"
 import { PostCard, PostSkeleton } from "@/components/feed/post-card"
 import { FeedSidebar } from "@/components/feed/feed-sidebar"
-import { mockFeedData } from "@/components/feed/mock-data"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { Sparkles, TrendingUp, Clock, Users, Filter, Search } from "lucide-react"
+import { Sparkles, TrendingUp, User, Filter, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { motion, AnimatePresence } from "framer-motion"
-import type { Post } from "@/components/feed/types"
+import type { DocumentSnapshot } from "firebase/firestore"
+import { getFeedPage, type FeedSort } from "@/lib/feed-service"
+
+const TABS: { value: FeedSort; label: string; short: string; icon: typeof Sparkles }[] = [
+  { value: "recent", label: "For You", short: "You", icon: Sparkles },
+  { value: "trending", label: "Trending", short: "Trend", icon: TrendingUp },
+  { value: "mine", label: "My Posts", short: "Mine", icon: User },
+]
 
 export function FeedContainer() {
-  const [posts, setPosts] = useState<Post[]>([])
-  const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState("for-you")
+  const queryClient = useQueryClient()
+  const [sort, setSort] = useState<FeedSort>("recent")
   const [showFilters, setShowFilters] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
-  useEffect(() => {
-    // Simulate loading data from an API
-    const timer = setTimeout(() => {
-      setPosts(mockFeedData)
-      setLoading(false)
-    }, 1000)
+  const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ["feed", sort],
+    queryFn: ({ pageParam }) => getFeedPage(sort, pageParam),
+    initialPageParam: null as DocumentSnapshot | null,
+    getNextPageParam: (last) => (last.hasMore ? last.cursor : undefined),
+  })
 
-    return () => clearTimeout(timer)
-  }, [])
+  const posts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data])
 
-  const handleCreatePost = (newPost: Post) => {
-    setPosts([newPost, ...posts])
-  }
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery) return posts
+    const needle = searchQuery.toLowerCase()
+    return posts.filter(
+      (post) => post.content.toLowerCase().includes(needle) || post.author.name.toLowerCase().includes(needle),
+    )
+  }, [posts, searchQuery])
 
-  const filterPosts = (tab: string) => {
-    setActiveTab(tab)
-    setLoading(true)
-
-    // Simulate API call for different tabs
-    setTimeout(() => {
-      if (tab === "trending") {
-        // Sort by most likes and shares
-        setPosts([...mockFeedData].sort((a, b) => b.likes + b.shares - (a.likes + a.shares)))
-      } else if (tab === "recent") {
-        // Sort by timestamp (newest first)
-        setPosts([...mockFeedData].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()))
-      } else if (tab === "network") {
-        // Filter to show only posts from your network (for demo, we'll show fewer posts)
-        setPosts(mockFeedData.filter((_, index) => index % 2 === 0))
-      } else {
-        // "for-you" tab - default order
-        setPosts(mockFeedData)
-      }
-      setLoading(false)
-    }, 500)
-  }
-
-  const toggleFilters = () => {
-    setShowFilters(!showFilters)
-  }
-
-  const filteredPosts = searchQuery
-    ? posts.filter(
-        (post) =>
-          post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          post.author.name.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-    : posts
+  const handlePostCreated = () => queryClient.invalidateQueries({ queryKey: ["feed"] })
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -88,7 +64,7 @@ export function FeedContainer() {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={toggleFilters}
+                  onClick={() => setShowFilters((open) => !open)}
                   className={showFilters ? "bg-secondary" : ""}
                 >
                   <Filter className="h-4 w-4" />
@@ -105,13 +81,10 @@ export function FeedContainer() {
                   >
                     <div className="flex flex-wrap gap-2">
                       <Button variant="outline" size="sm">
-                        Date: Any time
+                        Sort by: {sort === "trending" ? "Engagement" : "Newest first"}
                       </Button>
-                      <Button variant="outline" size="sm">
-                        Sort by: Relevance
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        Content type: All
+                      <Button variant="outline" size="sm" onClick={() => setSearchQuery("")}>
+                        Clear search
                       </Button>
                     </div>
                   </motion.div>
@@ -119,108 +92,62 @@ export function FeedContainer() {
               </AnimatePresence>
             </div>
 
-            <Tabs defaultValue="for-you" className="w-full" onValueChange={filterPosts}>
-              <TabsList className="grid w-full grid-cols-4 bg-secondary">
-                <TabsTrigger
-                  value="for-you"
-                  className="data-[state=active]:bg-background data-[state=active]:text-primary"
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">For You</span>
-                  <span className="sm:hidden">You</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="trending"
-                  className="data-[state=active]:bg-background data-[state=active]:text-primary"
-                >
-                  <TrendingUp className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Trending</span>
-                  <span className="sm:hidden">Trend</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="recent"
-                  className="data-[state=active]:bg-background data-[state=active]:text-primary"
-                >
-                  <Clock className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Recent</span>
-                  <span className="sm:hidden">New</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="network"
-                  className="data-[state=active]:bg-background data-[state=active]:text-primary"
-                >
-                  <Users className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Network</span>
-                  <span className="sm:hidden">Net</span>
-                </TabsTrigger>
+            <Tabs value={sort} onValueChange={(value) => setSort(value as FeedSort)} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 bg-secondary">
+                {TABS.map(({ value, label, short, icon: Icon }) => (
+                  <TabsTrigger
+                    key={value}
+                    value={value}
+                    className="data-[state=active]:bg-background data-[state=active]:text-primary"
+                  >
+                    <Icon className="mr-2 h-4 w-4" />
+                    <span className="hidden sm:inline">{label}</span>
+                    <span className="sm:hidden">{short}</span>
+                  </TabsTrigger>
+                ))}
               </TabsList>
 
-              <TabsContent value="for-you" className="mt-0">
-                <CreatePost onPostCreated={handleCreatePost} />
+              <div className="mt-4 space-y-6 px-1 pb-1">
+                <CreatePost onPostCreated={handlePostCreated} />
 
-                <div className="mt-6 space-y-6">
-                  {loading ? (
-                    Array(3)
-                      .fill(0)
-                      .map((_, i) => <PostSkeleton key={i} />)
-                  ) : filteredPosts.length > 0 ? (
-                    filteredPosts.map((post) => <PostCard key={post.id} post={post} />)
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <Search className="h-12 w-12 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium">No posts found</h3>
-                      <p className="text-muted-foreground">
-                        {searchQuery ? `No posts matching "${searchQuery}"` : "There are no posts in your feed yet"}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
+                {isPending ? (
+                  Array(3)
+                    .fill(0)
+                    .map((_, i) => <PostSkeleton key={i} />)
+                ) : filteredPosts.length > 0 ? (
+                  filteredPosts.map((post) => <PostCard key={post.id} post={post} />)
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <Search className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium">No posts found</h3>
+                    <p className="text-muted-foreground">
+                      {searchQuery
+                        ? `No posts matching "${searchQuery}"`
+                        : sort === "mine"
+                          ? "You haven't posted anything yet"
+                          : "There are no posts in your feed yet"}
+                    </p>
+                  </div>
+                )}
 
-              <TabsContent value="trending" className="mt-0">
-                <div className="mt-6 space-y-6">
-                  {loading
-                    ? Array(3)
-                        .fill(0)
-                        .map((_, i) => <PostSkeleton key={i} />)
-                    : filteredPosts.map((post) => <PostCard key={post.id} post={post} />)}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="recent" className="mt-0">
-                <div className="mt-6 space-y-6">
-                  {loading
-                    ? Array(3)
-                        .fill(0)
-                        .map((_, i) => <PostSkeleton key={i} />)
-                    : filteredPosts.map((post) => <PostCard key={post.id} post={post} />)}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="network" className="mt-0">
-                <div className="mt-6 space-y-6">
-                  {loading
-                    ? Array(3)
-                        .fill(0)
-                        .map((_, i) => <PostSkeleton key={i} />)
-                    : filteredPosts.map((post) => <PostCard key={post.id} post={post} />)}
-                </div>
-              </TabsContent>
+                {hasNextPage && !searchQuery && (
+                  <div className="flex justify-center">
+                    <Button variant="outline" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+                      {isFetchingNextPage && (
+                        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      )}
+                      Load More
+                    </Button>
+                  </div>
+                )}
+              </div>
             </Tabs>
           </div>
-
-          {!loading && filteredPosts.length > 5 && (
-            <div className="mt-8 flex justify-center">
-              <Button variant="outline" className="px-8">
-                Load More
-              </Button>
-            </div>
-          )}
         </div>
 
         {/* Sidebar */}
         <div className="hidden lg:col-span-4 lg:block">
-          <FeedSidebar />
+          <FeedSidebar posts={posts} />
         </div>
       </div>
     </div>

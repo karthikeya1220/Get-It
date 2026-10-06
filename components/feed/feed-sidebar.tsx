@@ -1,12 +1,50 @@
+"use client"
+
+import { useQuery } from "@tanstack/react-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { TrendingUp, Users, ChevronRight, Calendar, BookOpen, Star, Bell, Plus } from "lucide-react"
-import { trendingTopics, suggestedConnections, upcomingEvents, learningResources } from "@/components/feed/mock-data"
+import { TrendingUp, Users, ChevronRight, Calendar, BookOpen, Star, Hash } from "lucide-react"
+import { upcomingEvents, learningResources } from "@/components/feed/sidebar-content"
+import { deriveTrendingTopics, getFeedPage, getViewerIdentity, type Post } from "@/lib/feed-service"
+import { getAllStudents } from "@/lib/firebase-service"
 
-export function FeedSidebar() {
+interface FeedSidebarProps {
+  posts: Post[]
+}
+
+export function FeedSidebar({ posts }: FeedSidebarProps) {
+  const { data: viewer } = useQuery({
+    queryKey: ["viewer-identity"],
+    queryFn: getViewerIdentity,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const { data: students = [] } = useQuery({
+    queryKey: ["students", "all"],
+    queryFn: getAllStudents,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const { data: myPosts } = useQuery({
+    queryKey: ["feed", "mine", "count"],
+    queryFn: async () => (await getFeedPage("mine", null, 100)).posts.length,
+    enabled: !!viewer,
+  })
+
+  const trendingTopics = deriveTrendingTopics(posts.map((post) => post.content))
+  const suggestions = students.filter((student) => student.id !== viewer?.id).slice(0, 4)
+
+  const viewerInitials =
+    viewer?.name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "?"
+
   return (
     <div className="space-y-6 sticky top-20">
       {/* Profile Summary */}
@@ -15,41 +53,24 @@ export function FeedSidebar() {
           <div className="h-20 w-full rounded-t-lg bg-gradient-to-r from-primary to-primary/60"></div>
           <div className="absolute -bottom-12 left-4">
             <Avatar className="h-24 w-24 border-4 border-background">
-              <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Your profile" />
-              <AvatarFallback>AJ</AvatarFallback>
+              <AvatarImage src={viewer?.avatar} alt={viewer?.name ?? "Your profile"} />
+              <AvatarFallback>{viewerInitials}</AvatarFallback>
             </Avatar>
           </div>
         </div>
         <CardContent className="pt-14">
-          <h3 className="text-lg font-semibold text-foreground">Alex Johnson</h3>
-          <p className="text-sm text-muted-foreground">Computer Science Student</p>
+          <h3 className="text-lg font-semibold text-foreground">{viewer?.name ?? "…"}</h3>
+          <p className="text-sm text-muted-foreground">{viewer?.role ?? ""}</p>
 
-          <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
+          <div className="mt-3 grid grid-cols-2 gap-2 text-center text-xs">
             <div className="rounded-md bg-secondary p-2">
-              <p className="font-medium text-foreground">142</p>
+              <p className="font-medium text-foreground">{Math.max(students.length - 1, 0)}</p>
               <p className="text-muted-foreground">Connections</p>
             </div>
             <div className="rounded-md bg-secondary p-2">
-              <p className="font-medium text-foreground">28</p>
+              <p className="font-medium text-foreground">{myPosts ?? "—"}</p>
               <p className="text-muted-foreground">Posts</p>
             </div>
-            <div className="rounded-md bg-secondary p-2">
-              <p className="font-medium text-foreground">4.8</p>
-              <p className="text-muted-foreground">Rating</p>
-            </div>
-          </div>
-
-          <div className="mt-4 flex gap-2">
-            <Button variant="outline" className="flex-1">
-              <Bell className="mr-2 h-4 w-4" />
-              Notifications
-              <Badge className="ml-2">3</Badge>
-            </Button>
-
-            <Button variant="outline" className="flex-1">
-              <Plus className="mr-2 h-4 w-4" />
-              Create
-            </Button>
           </div>
         </CardContent>
       </Card>
@@ -63,21 +84,25 @@ export function FeedSidebar() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pb-3">
-          <ul className="space-y-2">
-            {trendingTopics.map((topic) => (
-              <li key={topic.id}>
-                <Button variant="ghost" className="w-full justify-start px-2 py-1 text-left">
-                  <span className="flex-1 truncate">#{topic.name}</span>
-                  <Badge variant="outline" className="ml-2 bg-secondary text-primary">
-                    {topic.count}
-                  </Badge>
-                </Button>
-              </li>
-            ))}
-          </ul>
-          <Button variant="link" className="mt-2 h-auto p-0 text-sm text-primary hover:text-primary/80">
-            See all trending topics
-          </Button>
+          {trendingTopics.length > 0 ? (
+            <ul className="space-y-2">
+              {trendingTopics.map((topic) => (
+                <li key={topic.name}>
+                  <Button variant="ghost" className="w-full justify-start px-2 py-1 text-left">
+                    <span className="flex-1 truncate">#{topic.name}</span>
+                    <Badge variant="outline" className="ml-2 bg-secondary text-primary">
+                      {topic.count}
+                    </Badge>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Hash className="h-4 w-4" />
+              Add #hashtags to your posts to see them here.
+            </p>
+          )}
         </CardContent>
       </Card>
 
@@ -90,32 +115,32 @@ export function FeedSidebar() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pb-3">
-          <ul className="space-y-3">
-            {suggestedConnections.map((connection) => (
-              <li key={connection.id} className="flex items-start gap-3">
-                <Avatar className="h-10 w-10 border border-border">
-                  <AvatarImage src={connection.avatar} alt={connection.name} />
-                  <AvatarFallback>
-                    {connection.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-foreground truncate">{connection.name}</h4>
-                  <p className="text-xs text-muted-foreground truncate">{connection.role}</p>
-                  <p className="text-xs text-muted-foreground">{connection.mutualConnections} mutual connections</p>
-                </div>
-                <Button size="sm" variant="outline" className="h-8">
-                  Connect
-                </Button>
-              </li>
-            ))}
-          </ul>
-          <Button variant="link" className="mt-2 h-auto p-0 text-sm text-primary hover:text-primary/80">
-            View all suggestions
-          </Button>
+          {suggestions.length > 0 ? (
+            <ul className="space-y-3">
+              {suggestions.map((connection) => (
+                <li key={connection.id} className="flex items-start gap-3">
+                  <Avatar className="h-10 w-10 border border-border">
+                    <AvatarImage src={connection.avatar} alt={connection.fullName} />
+                    <AvatarFallback>
+                      {connection.fullName
+                        .split(" ")
+                        .map((n: string) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-foreground truncate">{connection.fullName}</h4>
+                    <p className="text-xs text-muted-foreground truncate">{connection.university}</p>
+                  </div>
+                  <Button size="sm" variant="outline" className="h-8" asChild>
+                    <a href={`/profiles/students/${connection.id}`}>View</a>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted-foreground">No suggestions right now.</p>
+          )}
         </CardContent>
       </Card>
 
@@ -157,9 +182,6 @@ export function FeedSidebar() {
               </li>
             ))}
           </ul>
-          <Button variant="link" className="mt-2 h-auto p-0 text-sm text-primary hover:text-primary/80">
-            Browse all events
-          </Button>
         </CardContent>
       </Card>
 
@@ -207,10 +229,6 @@ export function FeedSidebar() {
               </div>
             ))}
           </div>
-
-          <Button variant="link" className="mt-2 h-auto p-0 text-sm text-primary hover:text-primary/80">
-            Explore all resources
-          </Button>
         </CardContent>
       </Card>
     </div>

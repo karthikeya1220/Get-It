@@ -140,6 +140,108 @@ service cloud.firestore {
       allow delete: if signedIn() && resource.data.studentId == request.auth.uid;
     }
 
+    // ── Feed posts ─────────────────────────────────────────────────────────
+    // Only the author may change the body. Signed-in strangers may touch the
+    // engagement counters, and only in the exact shape of a like/share/comment
+    // delta, so nobody can hand themselves a thousand likes.
+    match /posts/{postId} {
+      function affected(keys) {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+      }
+
+      function likeAdded() {
+        return affected(['likeCount', 'likedBy', 'engagement'])
+          && request.resource.data.get('likeCount', 0) == resource.data.get('likeCount', 0) + 1
+          && request.resource.data.get('likedBy', []).size()
+             == resource.data.get('likedBy', []).size() + 1
+          && request.resource.data.get('likedBy', []).hasAll(resource.data.get('likedBy', []))
+          && request.auth.uid in request.resource.data.get('likedBy', []);
+      }
+
+      function likeRemoved() {
+        return affected(['likeCount', 'likedBy', 'engagement'])
+          && request.resource.data.get('likeCount', 0) == resource.data.get('likeCount', 0) - 1
+          && request.resource.data.get('likedBy', []).size()
+             == resource.data.get('likedBy', []).size() - 1
+          && resource.data.get('likedBy', []).hasAll(request.resource.data.get('likedBy', []))
+          && request.auth.uid in resource.data.get('likedBy', [])
+          && !(request.auth.uid in request.resource.data.get('likedBy', []));
+      }
+
+      function counterBumped(field) {
+        return affected([field, 'engagement'])
+          && request.resource.data.get(field, 0) == resource.data.get(field, 0) + 1;
+      }
+
+      function counterDropped(field) {
+        return affected([field, 'engagement'])
+          && request.resource.data.get(field, 0) == resource.data.get(field, 0) - 1;
+      }
+
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.get('likeCount', 0) == 0
+        && request.resource.data.get('commentCount', 0) == 0
+        && request.resource.data.get('shareCount', 0) == 0
+        && request.resource.data.get('engagement', 0) == 0
+        && request.resource.data.get('likedBy', []).size() == 0;
+
+      allow update: if signedIn() && (
+        (resource.data.get('authorId', '') == request.auth.uid
+          && affected(['content', 'image', 'imageAlt', 'updatedAt']))
+        || likeAdded()
+        || likeRemoved()
+        || counterBumped('commentCount')
+        || counterDropped('commentCount')
+        || counterBumped('shareCount')
+      );
+
+      allow delete: if signedIn() && resource.data.get('authorId', '') == request.auth.uid;
+    }
+
+    match /posts/{postId}/comments/{commentId} {
+      function affected(keys) {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+      }
+
+      function commentLikeAdded() {
+        return affected(['likeCount', 'likedBy'])
+          && request.resource.data.get('likeCount', 0) == resource.data.get('likeCount', 0) + 1
+          && request.resource.data.get('likedBy', []).size()
+             == resource.data.get('likedBy', []).size() + 1
+          && request.resource.data.get('likedBy', []).hasAll(resource.data.get('likedBy', []))
+          && request.auth.uid in request.resource.data.get('likedBy', []);
+      }
+
+      function commentLikeRemoved() {
+        return affected(['likeCount', 'likedBy'])
+          && request.resource.data.get('likeCount', 0) == resource.data.get('likeCount', 0) - 1
+          && request.resource.data.get('likedBy', []).size()
+             == resource.data.get('likedBy', []).size() - 1
+          && resource.data.get('likedBy', []).hasAll(request.resource.data.get('likedBy', []))
+          && request.auth.uid in resource.data.get('likedBy', [])
+          && !(request.auth.uid in request.resource.data.get('likedBy', []));
+      }
+
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.get('likeCount', 0) == 0
+        && request.resource.data.get('likedBy', []).size() == 0;
+
+      allow update: if signedIn() && (
+        (resource.data.get('authorId', '') == request.auth.uid
+          && affected(['content', 'updatedAt']))
+        || commentLikeAdded()
+        || commentLikeRemoved()
+      );
+
+      allow delete: if signedIn() && resource.data.get('authorId', '') == request.auth.uid;
+    }
+
     // ── Payments: server-only. Written by /api/payments/* and the Razorpay
     //    webhook through the Admin SDK, which bypasses these rules. ──────────
     match /payments/{paymentId} {

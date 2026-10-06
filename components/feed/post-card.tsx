@@ -36,7 +36,7 @@ export function PostCard({ post }: { post: Post }) {
   }
 
   // Determine if this is a high-engagement post (for special styling)
-  const isHighEngagement = post.likes > 200 || post.comments.length > 10 || post.shares > 50
+  const isHighEngagement = post.likes > 200 || post.commentCount > 10 || post.shares > 50
 
   return (
     <Card
@@ -112,7 +112,7 @@ export function PostCard({ post }: { post: Post }) {
           </div>
         )}
 
-        {(post.likes > 0 || post.comments.length > 0 || post.shares > 0) && (
+        {(post.likes > 0 || post.commentCount > 0 || post.shares > 0) && (
           <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
             {post.likes > 0 && (
               <div className="flex items-center gap-1">
@@ -121,9 +121,9 @@ export function PostCard({ post }: { post: Post }) {
               </div>
             )}
             <div className="flex gap-3">
-              {post.comments.length > 0 && (
+              {post.commentCount > 0 && (
                 <button onClick={handleToggleComments} className="hover:text-primary">
-                  {post.comments.length} {post.comments.length === 1 ? "comment" : "comments"}
+                  {post.commentCount} {post.commentCount === 1 ? "comment" : "comments"}
                 </button>
               )}
               {post.shares > 0 && <span>{post.shares} shares</span>}
@@ -147,7 +147,7 @@ export function PostCard({ post }: { post: Post }) {
             transition={{ duration: 0.2 }}
             className="border-t border-border bg-secondary/50 p-4"
           >
-            <CommentSection postId={post.id} comments={post.comments} />
+            <CommentSection postId={post.id} />
           </motion.div>
         )}
       </AnimatePresence>
