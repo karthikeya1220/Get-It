@@ -1,0 +1,122 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Credentials live in Firebase Auth, and the role must not be
+    // self-assigned after the profile has been created.
+    function noCredentialOrRoleChange() {
+      return !request.resource.data.diff(resource.data).affectedKeys()
+        .hasAny(['password', 'Role']);
+    }
+
+    // `verified` may only ever be granted by the Admin SDK (payment API /
+    // webhook), which bypasses these rules. Clients may set it to false
+    // (profile bootstrap) but must never turn it on.
+    function verifiedNotGranted() {
+      return (request.resource.data.get('verified', false) != true
+              || resource.data.get('verified', false) == true)
+          && (request.resource.data.get('Verified', false) != true
+              || resource.data.get('Verified', false) == true);
+    }
+
+    function canEditOwnProfile() {
+      return noCredentialOrRoleChange() && verifiedNotGranted();
+    }
+
+    // ── Users ────────────────────────────────────────────────────────────────
+    // Legacy/flat doc: users/{uid}
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if isOwner(uid);
+      allow update: if isOwner(uid) && canEditOwnProfile();
+      allow delete: if isOwner(uid);
+    }
+
+    // Role docs: users/student/{uid}/user_details, users/recruiter/{uid}/user_details
+    match /users/{role}/{uid}/user_details {
+      allow read: if signedIn();
+      allow create: if isOwner(uid) && role in ['student', 'recruiter'];
+      allow update: if isOwner(uid) && canEditOwnProfile();
+      allow delete: if isOwner(uid);
+    }
+
+    // Per-user subcollections: users/{uid}/interview_analyses/{id}
+    match /users/{uid}/{subcollection}/{docId} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // Fallback profile paths still present in existing data
+    match /students/{uid} {
+      allow read: if signedIn();
+      allow write: if isOwner(uid) && canEditOwnProfile();
+    }
+    match /recruiters/{uid} {
+      allow read: if signedIn();
+      allow write: if isOwner(uid) && canEditOwnProfile();
+    }
+
+    // ── Jobs ─────────────────────────────────────────────────────────────────
+    match /jobs/{jobId} {
+      // The poster has full control...
+      allow update: if signedIn() && (
+        resource.data.get('postedBy', '') == request.auth.uid
+        // ...everyone else may only append themselves to `applicants`.
+        || (
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['applicants', 'updatedAt'])
+          && request.resource.data.get('applicants', []).size()
+             == resource.data.get('applicants', []).size() + 1
+          && request.resource.data.get('applicants', []).hasAll(resource.data.get('applicants', []))
+          && request.auth.uid in request.resource.data.get('applicants', [])
+        )
+      );
+
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.postedBy == request.auth.uid;
+      allow delete: if signedIn() && resource.data.get('postedBy', '') == request.auth.uid;
+    }
+
+    // ── Applications ─────────────────────────────────────────────────────────
+    match /applications/{applicationId} {
+      function job() {
+        return get(/databases/$(database)/documents/jobs/$(resource.data.jobId));
+      }
+      function jobPoster() {
+        return job().exists ? job().data.get('postedBy', '') : '';
+      }
+
+      allow read: if signedIn() &&
+        (resource.data.studentId == request.auth.uid || jobPoster() == request.auth.uid);
+
+      allow create: if signedIn()
+        && request.resource.data.studentId == request.auth.uid
+        && jobPoster() != request.auth.uid;
+
+      // The student may edit their own application without touching the status;
+      // the recruiter who posted the job owns status transitions.
+      allow update: if signedIn() && (
+        (resource.data.studentId == request.auth.uid
+          && request.resource.data.status == resource.data.status
+          && canEditOwnProfile())
+        || jobPoster() == request.auth.uid
+      );
+
+      allow delete: if signedIn() && resource.data.studentId == request.auth.uid;
+    }
+
+    // ── Payments: server-only. Written by /api/payments/* and the Razorpay
+    //    webhook through the Admin SDK, which bypasses these rules. ──────────
+    match /payments/{paymentId} {
+      allow read, write: if false;
+    }
+  }
+}

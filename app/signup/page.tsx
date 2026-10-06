@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { registerStudentUser as registerUser } from "@/lib/firebase-service"
 import { UserDetails } from "@/lib/firebase-service"
+import { createSessionCookie } from "@/lib/auth-session"
 
 export default function SignupPage() {
   const [step, setStep] = useState(1)
@@ -31,7 +32,7 @@ export default function SignupPage() {
 
   const [formData, setFormData] = useState({
     fullName: "",
-    Role : "Student",
+    Role: "Student",
     email: "",
     password: "",
     confirmPassword: "",
@@ -64,14 +65,11 @@ export default function SignupPage() {
     try {
       // Remove confirmPassword from data being sent to Firebase
       const { confirmPassword, ...userData } = formData
-      
-      const { success, userId } = await registerUser(
-        formData.email,
-        formData.password,
-        userData as UserDetails
-      )
+
+      const { success, userId } = await registerUser(formData.email, formData.password, userData as UserDetails)
 
       if (success) {
+        await createSessionCookie()
         toast.success("Registration successful!")
         router.push("/profile")
       }
@@ -409,4 +407,3 @@ export default function SignupPage() {
     </div>
   )
 }
-

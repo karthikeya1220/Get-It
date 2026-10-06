@@ -14,6 +14,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { useTheme } from "next-themes"
 import { auth } from "@/firebase" // Import auth from firebase.ts
 import { signInWithEmailAndPassword } from "firebase/auth"
+import { createSessionCookie } from "@/lib/auth-session"
 import { toast } from "sonner"
 
 export default function LoginPage() {
@@ -42,14 +43,18 @@ export default function LoginPage() {
     try {
       const result = await signInWithEmailAndPassword(auth, formData.email, formData.password)
       if (result.user) {
+        await createSessionCookie()
         toast.success("Successfully logged in!")
-        router.push("/profile")
+        // Honor ?next= set by middleware, but never leave the site root
+        const next = new URLSearchParams(window.location.search).get("next")
+        router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/profile")
+        router.refresh()
       }
     } catch (error: any) {
       let message = "Failed to login"
-      if (error.code === 'auth/user-not-found') {
+      if (error.code === "auth/user-not-found") {
         message = "User not found"
-      } else if (error.code === 'auth/wrong-password') {
+      } else if (error.code === "auth/wrong-password") {
         message = "Invalid password"
       }
       toast.error(message)
@@ -383,4 +388,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

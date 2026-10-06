@@ -14,6 +14,7 @@ import { RecruiterSignupComplete } from "@/components/recruiter-signup/recruiter
 import { useTheme } from "next-themes"
 import { registerRecruiter } from "@/lib/firebase-service"
 import type { RecruiterDetails } from "@/lib/firebase-service"
+import { createSessionCookie } from "@/lib/auth-session"
 import { useRouter } from "next/navigation" // Add this import
 import { toast } from "sonner" // Add this import - using sonner not react-toastify
 
@@ -22,6 +23,7 @@ export default function RecruiterSignupPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { resolvedTheme } = useTheme()
+  const router = useRouter()
 
   const [formData, setFormData] = useState({
     // Personal Information
@@ -31,7 +33,7 @@ export default function RecruiterSignupPage() {
     confirmPassword: "",
     jobTitle: "",
     phoneNumber: "",
-    Role : "Recruiter",
+    Role: "Recruiter",
 
     // Company Details
     companyName: "",
@@ -68,20 +70,21 @@ export default function RecruiterSignupPage() {
     try {
       // Remove confirmPassword from data being sent to Firebase
       const { confirmPassword, ...userData } = formData
-      
+
       const { success, userId } = await registerRecruiter(
         formData.email,
         formData.password,
-        userData as RecruiterDetails
+        userData as RecruiterDetails,
       )
 
       if (success) {
+        await createSessionCookie()
         // Change step to 6 (success screen) instead of redirecting immediately
         setStep(6)
         // Delay redirect until they've seen the success screen
         setTimeout(() => {
           router.push("/explore/recruiters")
-        }, 3000) 
+        }, 3000)
       }
     } catch (error: any) {
       toast.error(error.message)
@@ -425,4 +428,3 @@ export default function RecruiterSignupPage() {
     </div>
   )
 }
-

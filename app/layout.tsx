@@ -4,13 +4,13 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "sonner"
+import { AuthSessionSync } from "@/components/auth-session-sync"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "GetIT - Connect Students with Opportunities",
   description: "A premium marketplace for college students to showcase skills and find paid gigs",
-    generator: 'skill-hub.dev'
 }
 
 export default function RootLayout({
@@ -30,6 +30,7 @@ export default function RootLayout({
         >
           {children}
         </ThemeProvider>
+        <AuthSessionSync />
         <Toaster position="top-center" />
         <script
           dangerouslySetInnerHTML={{

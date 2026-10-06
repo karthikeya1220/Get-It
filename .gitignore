@@ -16,8 +16,16 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env files (keep the template)
 .env*
+!.env.example
+
+# uploaded videos (see /api/upload-video)
+/public/video/
+
+# local tooling artifacts
+.streak_temp
+.freebuff/
 
 # vercel
 .vercel

@@ -1,25 +1,28 @@
-import * as admin from 'firebase-admin';
+import * as admin from "firebase-admin"
 
-// Initialize Firebase Admin SDK
+let initError: Error | null = null
+
+// Initialize Firebase Admin SDK. Throws on misconfiguration so routes fail
+// loudly instead of silently returning unauthenticated results.
 export function initAdmin() {
-  if (!admin.apps.length) {
-    try {
-      admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-        }),
-        storageBucket: process.env.FIREBASE_STORAGE_BUCKET
-      });
-      
-      console.log('Firebase Admin initialized successfully');
-    } catch (error) {
-      console.error('Firebase admin initialization error:', error);
-    }
+  if (admin.apps.length) return admin
+
+  const { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } = process.env
+  if (!FIREBASE_PROJECT_ID || !FIREBASE_CLIENT_EMAIL || !FIREBASE_PRIVATE_KEY) {
+    initError = new Error("Missing FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY env vars")
+    throw initError
   }
-  
-  return admin;
+
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: FIREBASE_PROJECT_ID,
+      clientEmail: FIREBASE_CLIENT_EMAIL,
+      privateKey: FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    }),
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  })
+
+  return admin
 }
 
-export { admin }; 
+export { admin }
