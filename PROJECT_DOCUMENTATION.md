@@ -1,6 +1,7 @@
 # GetIt - Comprehensive Project Documentation
 
 ## Table of Contents
+
 1. [Problem Statement](#problem-statement)
 2. [Tech Stack Rationale](#tech-stack-rationale)
 3. [System Architecture](#system-architecture)
@@ -17,6 +18,7 @@
 **Primary Problem:** College students struggle to find legitimate freelancing opportunities that match their skills, academic schedules, and career goals. Traditional freelancing platforms are saturated with experienced professionals, making it difficult for students to compete and build their portfolios.
 
 **Secondary Problems:**
+
 1. **Trust & Safety**: Students lack protection against fraudulent job postings and unfair payment practices
 2. **Skill-Job Mismatch**: Generic job boards don't understand student skill levels or academic constraints
 3. **Portfolio Building**: Students need a platform to showcase work and build professional reputation
@@ -24,6 +26,7 @@
 5. **Professional Development**: Limited access to interview preparation and career development tools
 
 **Solution Approach:**
+
 - **Curated Marketplace**: Student-focused platform with verified recruiters and companies
 - **AI-Powered Matching**: Intelligent recommendation system matching student skills with relevant opportunities
 - **Secure Agreements**: Digital contract system protecting both parties
@@ -38,7 +41,9 @@
 ### Why this specific tech stack?
 
 #### **Frontend Framework: Next.js 15.1.0**
+
 **Rationale:**
+
 - **Server-Side Rendering (SSR)**: Improves SEO for job listings and student profiles, critical for discoverability
 - **App Router**: Modern routing with built-in layouts, loading states, and error boundaries
 - **API Routes**: Serverless functions for backend logic without separate server infrastructure
@@ -49,7 +54,9 @@
 **Alternative Considered:** Create React App - Rejected due to lack of SSR and built-in API routes
 
 #### **Language: TypeScript**
+
 **Rationale:**
+
 - **Type Safety**: Critical for complex data structures (UserDetails, RecruiterDetails, JobData, JobApplication)
 - **Developer Experience**: IntelliSense and autocomplete reduce development time
 - **Refactoring**: Safe refactoring with compile-time error detection
@@ -59,7 +66,9 @@
 **Alternative Considered:** JavaScript - Rejected due to lack of type safety in complex application
 
 #### **Styling: Tailwind CSS + shadcn/ui**
+
 **Rationale:**
+
 - **Rapid Development**: Utility-first approach speeds up UI development
 - **Consistency**: Design system ensures consistent spacing, colors, and typography
 - **Component Library (shadcn/ui)**: Pre-built, accessible components based on Radix UI
@@ -70,7 +79,9 @@
 **Alternative Considered:** Material-UI - Rejected due to larger bundle size and less customization flexibility
 
 #### **Backend: Firebase**
+
 **Rationale:**
+
 - **Real-time Database**: Firestore provides real-time updates for job applications and notifications
 - **Authentication**: Built-in auth with email/password, social logins
 - **Scalability**: Automatic scaling without infrastructure management
@@ -81,7 +92,9 @@
 **Alternative Considered:** Node.js + PostgreSQL - Rejected for MVP due to infrastructure complexity and slower development
 
 #### **AI Integration: Google Generative AI (Gemini)**
+
 **Rationale:**
+
 - **Multimodal Capabilities**: Analyzes video interviews (vision + audio)
 - **Structured Output**: Generates JSON responses for interview feedback
 - **Cost-Effective**: Competitive pricing compared to OpenAI
@@ -91,7 +104,9 @@
 **Alternative Considered:** OpenAI GPT-4 - Rejected due to higher cost and limited multimodal capabilities at the time
 
 #### **Payment Processing: Razorpay**
+
 **Rationale:**
+
 - **Indian Market Focus**: Optimized for Indian students and companies (primary market)
 - **Multiple Payment Methods**: UPI, cards, net banking, wallets
 - **Student-Friendly**: Lower transaction fees compared to international processors
@@ -101,7 +116,9 @@
 **Alternative Considered:** Stripe - Rejected due to higher fees for Indian transactions and complex setup
 
 #### **Animation: Framer Motion**
+
 **Rationale:**
+
 - **Declarative API**: Easy to create complex animations
 - **Performance**: GPU-accelerated animations
 - **Gestures**: Built-in drag, hover, tap interactions
@@ -111,7 +128,9 @@
 **Alternative Considered:** React Spring - Rejected due to steeper learning curve
 
 #### **Form Handling: React Hook Form + Zod**
+
 **Rationale:**
+
 - **Performance**: Minimal re-renders compared to Formik
 - **Validation**: Zod provides runtime type validation matching TypeScript types
 - **Developer Experience**: Simple API with TypeScript inference
@@ -241,7 +260,7 @@ users/
         - verified: boolean
         - createdAt: Timestamp
         - updatedAt: Timestamp
-  
+
   recruiter/
     {userId}/
       user_details/
@@ -307,6 +326,7 @@ applications/
 #### **1. Registration Flow**
 
 **Student Registration:**
+
 ```typescript
 // File: lib/firebase-service.ts - registerStudentUser()
 
@@ -335,6 +355,7 @@ applications/
 ```
 
 **Recruiter Registration:**
+
 ```typescript
 // File: lib/firebase-service.ts - registerRecruiter()
 
@@ -389,6 +410,7 @@ applications/
 #### **3. Session Management**
 
 **Client-Side:**
+
 ```typescript
 // Firebase Auth automatically handles:
 - Token storage in IndexedDB
@@ -412,6 +434,7 @@ onAuthStateChanged(auth, (user) => {
 ```
 
 **Server-Side (API Routes):**
+
 ```typescript
 // File: app/api/analyze-interview/route.ts
 
@@ -433,6 +456,7 @@ onAuthStateChanged(auth, (user) => {
 #### **4. Authorization & Access Control**
 
 **Firestore Security Rules (Conceptual):**
+
 ```javascript
 // Students can only read/write their own data
 match /users/student/{userId}/user_details {
@@ -447,7 +471,7 @@ match /users/recruiter/{userId}/user_details {
 // Jobs: Recruiters can create, anyone can read open jobs
 match /jobs/{jobId} {
   allow read: if resource.data.status == "open";
-  allow create: if request.auth != null && 
+  allow create: if request.auth != null &&
                    get(/databases/$(database)/documents/users/recruiter/$(request.auth.uid)/user_details).data.Role == "Recruiter";
   allow update, delete: if request.auth.uid == resource.data.postedBy;
 }
@@ -463,28 +487,29 @@ match /applications/{applicationId} {
 #### **5. Protected Routes**
 
 **Client-Side Protection:**
+
 ```typescript
 // Pattern used in protected pages
 "use client"
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { auth } from '@/firebase'
-import { onAuthStateChanged } from 'firebase/auth'
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { auth } from "@/firebase"
+import { onAuthStateChanged } from "firebase/auth"
 
 export default function ProtectedPage() {
   const router = useRouter()
-  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        router.push('/login')
+        router.push("/login")
       }
     })
-    
+
     return () => unsubscribe()
   }, [router])
-  
+
   // Page content
 }
 ```
@@ -513,7 +538,7 @@ export default function ProtectedPage() {
 
 ```typescript
 // Firebase provides built-in password reset
-import { sendPasswordResetEmail } from 'firebase/auth'
+import { sendPasswordResetEmail } from "firebase/auth"
 
 await sendPasswordResetEmail(auth, email)
 // Sends email with reset link
@@ -879,6 +904,7 @@ await sendPasswordResetEmail(auth, email)
 #### **1. Database Architecture**
 
 **Current Issue:**
+
 - Nested document structure: `users/student/{userId}/user_details`
 - Requires multiple reads to fetch student data
 - Difficult to query across all students
@@ -907,6 +933,7 @@ recruiters/{userId}
 ```
 
 **Benefits:**
+
 - 50% reduction in read operations
 - Simpler queries
 - Better indexing performance
@@ -915,6 +942,7 @@ recruiters/{userId}
 #### **2. Search & Filtering**
 
 **Current Issue:**
+
 - Client-side filtering of jobs/students
 - All data loaded before filtering
 - Slow with large datasets
@@ -923,10 +951,10 @@ recruiters/{userId}
 
 ```typescript
 // Option 1: Algolia Integration
-import algoliasearch from 'algoliasearch'
+import algoliasearch from "algoliasearch"
 
-const client = algoliasearch('APP_ID', 'API_KEY')
-const jobsIndex = client.initIndex('jobs')
+const client = algoliasearch("APP_ID", "API_KEY")
+const jobsIndex = client.initIndex("jobs")
 
 // Index jobs on creation
 await jobsIndex.saveObject({
@@ -936,14 +964,14 @@ await jobsIndex.saveObject({
   skills: job.requirements,
   payment: job.payment,
   location: job.location,
-  createdAt: job.createdAt.getTime()
+  createdAt: job.createdAt.getTime(),
 })
 
 // Search with filters
-const { hits } = await jobsIndex.search('developer', {
-  filters: 'payment > 5000 AND location:Remote',
-  facets: ['skills', 'location'],
-  hitsPerPage: 20
+const { hits } = await jobsIndex.search("developer", {
+  filters: "payment > 5000 AND location:Remote",
+  facets: ["skills", "location"],
+  hitsPerPage: 20,
 })
 
 // Option 2: Elasticsearch
@@ -958,6 +986,7 @@ const { hits } = await jobsIndex.search('developer', {
 ```
 
 **Benefits:**
+
 - Sub-100ms search response times
 - Typo tolerance
 - Faceted search (filter by multiple criteria)
@@ -967,6 +996,7 @@ const { hits } = await jobsIndex.search('developer', {
 #### **3. File Storage & CDN**
 
 **Current Issue:**
+
 - Videos stored in Firebase Storage
 - No CDN for global distribution
 - Slow video loading for international users
@@ -1015,6 +1045,7 @@ const { uid, thumbnail, preview } = await response.json()
 ```
 
 **Benefits:**
+
 - 80% faster video loading globally
 - Reduced Firebase Storage costs
 - Better user experience
@@ -1023,6 +1054,7 @@ const { uid, thumbnail, preview } = await response.json()
 #### **4. Caching Strategy**
 
 **Current Issue:**
+
 - Every page load fetches from Firestore
 - Repeated queries for same data
 - High read costs
@@ -1040,30 +1072,30 @@ const redis = createClient({
 // Cache job listings
 export async function getAllJobs() {
   const cacheKey = 'jobs:open:page:1'
-  
+
   // Try cache first
   const cached = await redis.get(cacheKey)
   if (cached) {
     return JSON.parse(cached)
   }
-  
+
   // Fetch from Firestore
   const jobs = await fetchJobsFromFirestore()
-  
+
   // Cache for 5 minutes
   await redis.setEx(cacheKey, 300, JSON.stringify(jobs))
-  
+
   return jobs
 }
 
 // Invalidate cache on job creation
 export async function createJob(jobData) {
   const job = await createJobInFirestore(jobData)
-  
+
   // Invalidate relevant caches
   await redis.del('jobs:open:page:1')
   await redis.del(`recruiter:${jobData.postedBy}:jobs`)
-  
+
   return job
 }
 
@@ -1092,15 +1124,16 @@ function JobsList() {
     revalidateOnReconnect: false,
     refreshInterval: 300000 // 5 minutes
   })
-  
+
   if (error) return <div>Failed to load</div>
   if (!data) return <div>Loading...</div>
-  
+
   return <JobCards jobs={data} />
 }
 ```
 
 **Benefits:**
+
 - 90% reduction in database reads
 - Sub-10ms response times for cached data
 - Lower Firestore costs
@@ -1109,6 +1142,7 @@ function JobsList() {
 #### **5. API Rate Limiting**
 
 **Current Issue:**
+
 - No rate limiting on API routes
 - Vulnerable to abuse
 - Potential for high Gemini AI costs
@@ -1117,33 +1151,33 @@ function JobsList() {
 
 ```typescript
 // Option 1: Upstash Rate Limit
-import { Ratelimit } from '@upstash/ratelimit'
-import { Redis } from '@upstash/redis'
+import { Ratelimit } from "@upstash/ratelimit"
+import { Redis } from "@upstash/redis"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, '1 h'), // 10 requests per hour
+  limiter: Ratelimit.slidingWindow(10, "1 h"), // 10 requests per hour
   analytics: true,
 })
 
 export async function POST(request: NextRequest) {
-  const ip = request.ip ?? '127.0.0.1'
+  const ip = request.ip ?? "127.0.0.1"
   const { success, limit, reset, remaining } = await ratelimit.limit(ip)
-  
+
   if (!success) {
     return NextResponse.json(
-      { error: 'Rate limit exceeded' },
-      { 
+      { error: "Rate limit exceeded" },
+      {
         status: 429,
         headers: {
-          'X-RateLimit-Limit': limit.toString(),
-          'X-RateLimit-Remaining': remaining.toString(),
-          'X-RateLimit-Reset': reset.toString(),
-        }
-      }
+          "X-RateLimit-Limit": limit.toString(),
+          "X-RateLimit-Remaining": remaining.toString(),
+          "X-RateLimit-Reset": reset.toString(),
+        },
+      },
     )
   }
-  
+
   // Process request
 }
 
@@ -1157,16 +1191,14 @@ const userRateLimits = new Map()
 function checkUserRateLimit(userId: string, maxRequests: number, windowMs: number) {
   const now = Date.now()
   const userRequests = userRateLimits.get(userId) || []
-  
+
   // Remove old requests outside window
-  const recentRequests = userRequests.filter(
-    (timestamp: number) => now - timestamp < windowMs
-  )
-  
+  const recentRequests = userRequests.filter((timestamp: number) => now - timestamp < windowMs)
+
   if (recentRequests.length >= maxRequests) {
     return false // Rate limit exceeded
   }
-  
+
   recentRequests.push(now)
   userRateLimits.set(userId, recentRequests)
   return true
@@ -1174,6 +1206,7 @@ function checkUserRateLimit(userId: string, maxRequests: number, windowMs: numbe
 ```
 
 **Benefits:**
+
 - Prevent API abuse
 - Control AI analysis costs
 - Fair usage across users
@@ -1182,6 +1215,7 @@ function checkUserRateLimit(userId: string, maxRequests: number, windowMs: numbe
 #### **6. Background Job Processing**
 
 **Current Issue:**
+
 - Video analysis blocks API response
 - User waits for Gemini AI processing
 - Poor UX for long-running tasks
@@ -1190,83 +1224,82 @@ function checkUserRateLimit(userId: string, maxRequests: number, windowMs: numbe
 
 ```typescript
 // Option 1: Firebase Cloud Functions + Pub/Sub
-import { onDocumentCreated } from 'firebase-functions/v2/firestore'
-import { PubSub } from '@google-cloud/pubsub'
+import { onDocumentCreated } from "firebase-functions/v2/firestore"
+import { PubSub } from "@google-cloud/pubsub"
 
 const pubsub = new PubSub()
 
 // API route: Queue job instead of processing
 export async function POST(request: NextRequest) {
   const formData = await request.formData()
-  const videoFile = formData.get('video')
-  
+  const videoFile = formData.get("video")
+
   // Upload video to Storage
   const videoUrl = await uploadToStorage(videoFile)
-  
+
   // Create pending analysis document
-  const analysisRef = await addDoc(collection(db, 'analyses'), {
-    studentId: formData.get('studentId'),
+  const analysisRef = await addDoc(collection(db, "analyses"), {
+    studentId: formData.get("studentId"),
     videoUrl,
-    status: 'pending',
-    createdAt: new Date()
+    status: "pending",
+    createdAt: new Date(),
   })
-  
+
   // Publish to Pub/Sub topic
-  await pubsub.topic('video-analysis').publish(
-    Buffer.from(JSON.stringify({
-      analysisId: analysisRef.id,
-      videoUrl,
-      studentId: formData.get('studentId')
-    }))
+  await pubsub.topic("video-analysis").publish(
+    Buffer.from(
+      JSON.stringify({
+        analysisId: analysisRef.id,
+        videoUrl,
+        studentId: formData.get("studentId"),
+      }),
+    ),
   )
-  
+
   // Return immediately
   return NextResponse.json({
     success: true,
     analysisId: analysisRef.id,
-    status: 'pending'
+    status: "pending",
   })
 }
 
 // Cloud Function: Process in background
-export const processVideoAnalysis = onDocumentCreated(
-  'analyses/{analysisId}',
-  async (event) => {
-    const data = event.data.data()
-    
-    try {
-      // Download video from Storage
-      const videoBytes = await downloadVideo(data.videoUrl)
-      
-      // Call Gemini AI
-      const analysis = await analyzeWithGemini(videoBytes)
-      
-      // Update document with results
-      await updateDoc(doc(db, 'analyses', event.params.analysisId), {
-        status: 'completed',
-        analysis,
-        completedAt: new Date()
-      })
-      
-      // Send notification to user
-      await sendNotification(data.studentId, 'Analysis complete!')
-    } catch (error) {
-      await updateDoc(doc(db, 'analyses', event.params.analysisId), {
-        status: 'failed',
-        error: error.message
-      })
-    }
+export const processVideoAnalysis = onDocumentCreated("analyses/{analysisId}", async (event) => {
+  const data = event.data.data()
+
+  try {
+    // Download video from Storage
+    const videoBytes = await downloadVideo(data.videoUrl)
+
+    // Call Gemini AI
+    const analysis = await analyzeWithGemini(videoBytes)
+
+    // Update document with results
+    await updateDoc(doc(db, "analyses", event.params.analysisId), {
+      status: "completed",
+      analysis,
+      completedAt: new Date(),
+    })
+
+    // Send notification to user
+    await sendNotification(data.studentId, "Analysis complete!")
+  } catch (error) {
+    await updateDoc(doc(db, "analyses", event.params.analysisId), {
+      status: "failed",
+      error: error.message,
+    })
   }
-)
+})
 
 // Client: Poll for results
 function useAnalysisStatus(analysisId: string) {
   const { data } = useSWR(
     analysisId ? `/api/analysis/${analysisId}` : null,
     fetcher,
-    { refreshInterval: 2000 } // Poll every 2 seconds
+    { refreshInterval: 2000 }, // Poll every 2 seconds
   )
-  
+
   return data
 }
 
@@ -1277,6 +1310,7 @@ function useAnalysisStatus(analysisId: string) {
 ```
 
 **Benefits:**
+
 - Instant API responses
 - Better error handling
 - Retry failed jobs
@@ -1286,6 +1320,7 @@ function useAnalysisStatus(analysisId: string) {
 #### **7. Database Sharding**
 
 **Current Issue:**
+
 - All data in single Firestore instance
 - Limited to 10,000 writes/second per database
 
@@ -1305,7 +1340,7 @@ function getDatabaseForUser(userId: string) {
 const databases = {}
 for (let i = 0; i < 10; i++) {
   databases[`getit-shard-${i}`] = initializeFirestore(app, {
-    databaseId: `getit-shard-${i}`
+    databaseId: `getit-shard-${i}`,
   })
 }
 
@@ -1313,8 +1348,8 @@ for (let i = 0; i < 10; i++) {
 export async function getStudentData(studentId: string) {
   const dbName = getDatabaseForUser(studentId)
   const db = databases[dbName]
-  
-  const docRef = doc(db, 'students', studentId)
+
+  const docRef = doc(db, "students", studentId)
   return await getDoc(docRef)
 }
 
@@ -1325,6 +1360,7 @@ export async function getStudentData(studentId: string) {
 ```
 
 **Benefits:**
+
 - 10x write capacity
 - Better geographic distribution
 - Isolated failure domains
@@ -1333,6 +1369,7 @@ export async function getStudentData(studentId: string) {
 #### **8. Monitoring & Observability**
 
 **Current Issue:**
+
 - No performance monitoring
 - No error tracking
 - Difficult to debug production issues
@@ -1341,7 +1378,7 @@ export async function getStudentData(studentId: string) {
 
 ```typescript
 // Option 1: Sentry for Error Tracking
-import * as Sentry from '@sentry/nextjs'
+import * as Sentry from "@sentry/nextjs"
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -1355,58 +1392,59 @@ try {
 } catch (error) {
   Sentry.captureException(error, {
     tags: {
-      feature: 'job-application',
-      userId: auth.currentUser?.uid
-    }
+      feature: "job-application",
+      userId: auth.currentUser?.uid,
+    },
   })
   throw error
 }
 
 // Option 2: Firebase Performance Monitoring
-import { getPerformance, trace } from 'firebase/performance'
+import { getPerformance, trace } from "firebase/performance"
 
 const perf = getPerformance()
 
 async function loadJobs() {
-  const t = trace(perf, 'load_jobs')
+  const t = trace(perf, "load_jobs")
   t.start()
-  
+
   const jobs = await getAllJobs()
-  
-  t.putMetric('job_count', jobs.length)
+
+  t.putMetric("job_count", jobs.length)
   t.stop()
-  
+
   return jobs
 }
 
 // Option 3: Custom Analytics
-import { logEvent } from 'firebase/analytics'
+import { logEvent } from "firebase/analytics"
 
-logEvent(analytics, 'job_application_submitted', {
+logEvent(analytics, "job_application_submitted", {
   job_id: jobId,
   student_id: studentId,
-  application_time: Date.now()
+  application_time: Date.now(),
 })
 
 // Option 4: Logging with structured data
-import winston from 'winston'
+import winston from "winston"
 
 const logger = winston.createLogger({
   format: winston.format.json(),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: "error.log", level: "error" }),
   ],
 })
 
-logger.info('Job application submitted', {
+logger.info("Job application submitted", {
   jobId,
   studentId,
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
 })
 ```
 
 **Benefits:**
+
 - Real-time error alerts
 - Performance bottleneck identification
 - User behavior insights
@@ -1445,21 +1483,21 @@ const cache = new Map()
 
 export async function getCachedJobs() {
   const now = Date.now()
-  const cached = cache.get('jobs')
-  
+  const cached = cache.get("jobs")
+
   if (cached && now - cached.timestamp < CACHE_DURATION) {
-    console.log('Returning cached jobs (no Firestore read)')
+    console.log("Returning cached jobs (no Firestore read)")
     return cached.data
   }
-  
-  console.log('Fetching from Firestore')
+
+  console.log("Fetching from Firestore")
   const jobs = await getAllJobs()
-  
-  cache.set('jobs', {
+
+  cache.set("jobs", {
     data: jobs,
-    timestamp: now
+    timestamp: now,
   })
-  
+
   return jobs
 }
 
@@ -1470,6 +1508,7 @@ export async function getCachedJobs() {
 ```
 
 **Projected Savings:**
+
 - 70% reduction in Firestore reads with caching
 - 50% reduction in Storage costs with compression
 - 40% reduction in AI costs with rate limiting
@@ -1507,6 +1546,7 @@ export async function getCachedJobs() {
 ```
 
 **Key Components:**
+
 1. **Multi-region deployment**: Serve users from nearest region
 2. **Global CDN**: Cache static assets and videos
 3. **Distributed cache**: Redis cluster for session and data caching
@@ -1516,6 +1556,7 @@ export async function getCachedJobs() {
 7. **Database replication**: Read replicas for high-traffic queries
 
 **Expected Performance:**
+
 - < 100ms API response times globally
 - 99.99% uptime
 - Support for 10,000+ concurrent users
