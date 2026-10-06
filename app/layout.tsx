@@ -1,13 +1,24 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Archivo, IBM_Plex_Mono } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "sonner"
 import { AuthSessionSync } from "@/components/auth-session-sync"
 import { QueryProvider } from "@/components/query-provider"
 
-const inter = Inter({ subsets: ["latin"] })
+const archivo = Archivo({
+  subsets: ["latin"],
+  variable: "--font-archivo",
+  display: "swap",
+})
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-plex-mono",
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   title: "GetIT - Connect Students with Opportunities",
@@ -21,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${archivo.variable} ${plexMono.variable} ${archivo.className}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

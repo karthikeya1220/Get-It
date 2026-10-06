@@ -2,50 +2,88 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Get-It design tokens — "Payslip" system.
+  Cool paper, ink blue, one electric blue primary. A warm money accent is
+  spent only on the figures that matter; status colours carry the product's
+  real states (paid / pending / accepted / declined).
+  Every colour is a token, so dark mode costs zero extra utility classes.
+*/
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 220 43% 11%;
+
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 220 43% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 255 92% 76%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 255 92% 76%;
+    --popover-foreground: 220 43% 11%;
+
+    --primary: 227 100% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 216 24% 96%;
+    --secondary-foreground: 220 43% 11%;
+    --muted: 216 24% 96%;
+    --muted-foreground: 221 13% 46%;
+    --accent: 222 71% 95%;
+    --accent-foreground: 220 43% 11%;
+
+    --destructive: 4 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 154 70% 28%;
+    --success-foreground: 0 0% 100%;
+    --warning: 32 92% 44%;
+    --warning-foreground: 220 43% 11%;
+
+    /* Spent once: the hero payout figure and "you got paid" moments. */
+    --money: 12 83% 46%;
+
+    --border: 218 17% 91%;
+    --input: 218 17% 91%;
+    --ring: 227 100% 55%;
+
+    /* Radius hierarchy: controls 10px, cards 16px, sheets 20px, pills. */
     --radius: 0.75rem;
+
+    --surface-raised: 0 0% 100%;
+    --surface-sunken: 216 30% 97%;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 255 92% 76%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 255 92% 76%;
+    --background: 220 38% 8%;
+    --foreground: 220 37% 94%;
+
+    --card: 220 38% 11%;
+    --card-foreground: 220 37% 94%;
+    --popover: 220 38% 11%;
+    --popover-foreground: 220 37% 94%;
+
+    --primary: 227 100% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 219 31% 15%;
+    --secondary-foreground: 220 37% 94%;
+    --muted: 219 31% 15%;
+    --muted-foreground: 218 15% 65%;
+    --accent: 224 41% 18%;
+    --accent-foreground: 220 37% 94%;
+
+    --destructive: 4 84% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 154 65% 40%;
+    --success-foreground: 220 38% 8%;
+    --warning: 34 96% 58%;
+    --warning-foreground: 220 43% 11%;
+
+    --money: 18 92% 60%;
+
+    --border: 218 28% 19%;
+    --input: 218 28% 19%;
+    --ring: 227 100% 55%;
+
+    --surface-raised: 220 38% 12%;
+    --surface-sunken: 220 40% 6%;
   }
 }
 
@@ -53,67 +91,92 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
+    text-rendering: optimizeLegibility;
   }
 
-  /* Improved focus styles */
+  /* One focus treatment, driven by the ring token — not a fixed violet. */
   :focus-visible {
-    @apply outline-none ring-2 ring-violet-500 ring-offset-2 ring-offset-white dark:ring-offset-black;
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 
-  /* Smooth scrolling */
   html {
     scroll-behavior: smooth;
   }
 
-  /* Custom scrollbar */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   ::-webkit-scrollbar {
     width: 10px;
+    height: 10px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-zinc-100 dark:bg-zinc-900;
+    background: hsl(var(--surface-sunken));
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-zinc-300 dark:bg-zinc-700;
+    @apply rounded-full;
+    background: hsl(var(--muted-foreground) / 0.35);
+    border: 2px solid hsl(var(--surface-sunken));
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-zinc-400 dark:bg-zinc-600;
+    background: hsl(var(--muted-foreground) / 0.6);
+  }
+
+  /* Figures are set in IBM Plex Mono and always align on the decimal. */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
   }
 }
 
 @layer components {
-  /* Custom animations */
-  .animate-gradient {
-    background-size: 200% 200%;
-    animation: gradient 8s ease infinite;
+  /* Full-bleed rule that separates bands on the landing page. */
+  .rule-bleed {
+    border-top: 1px solid hsl(var(--border));
   }
 
-  @keyframes gradient {
-    0% {
-      background-position: 0% 50%;
+  /* Kilner-safe marquee track: content is duplicated and translated. */
+  .marquee-track {
+    animation: marquee 40s linear infinite;
+  }
+
+  .marquee-paused:hover .marquee-track,
+  .marquee-paused:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
     }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
+    to {
+      transform: translate3d(-50%, 0, 0);
     }
   }
 
-  /* Improved form elements */
-  .form-input-shadow {
-    @apply transition-all duration-300;
-    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
-  }
-
-  .form-input-shadow:focus {
-    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
   }
 }

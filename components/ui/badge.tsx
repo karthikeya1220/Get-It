@@ -4,16 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background",
   {
     variants: {
       variant: {
         default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
         secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        success: "border-transparent bg-emerald-600 text-white hover:bg-emerald-600/80",
-        error: "border-transparent bg-rose-600 text-white hover:bg-rose-600/80",
-        outline: "text-foreground",
+        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        success: "border-transparent bg-success text-success-foreground hover:bg-success/90",
+        warning: "border-transparent bg-warning text-warning-foreground hover:bg-warning/90",
+        // Errors read as destructive; both names kept for existing callers.
+        error: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        // Amounts: mono figure on a tinted money wash.
+        amount: "border-money/25 bg-money/10 font-mono text-money",
+        outline: "border-border text-foreground",
       },
     },
     defaultVariants: {
