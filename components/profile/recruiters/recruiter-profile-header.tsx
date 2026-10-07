@@ -77,12 +77,12 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
       <Card className="overflow-hidden border-0 shadow-lg">
-        <div className="h-48 bg-gradient-to-r from-amber-500 to-orange-600 relative">
+        <div className="h-48 bg-primary relative">
           <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-black/40 to-transparent"></div>
 
           {isEditable && (
             <motion.button
-              className="absolute bottom-4 right-4 rounded-full bg-white/80 p-2 text-amber-800 backdrop-blur-sm transition-all hover:bg-white hover:text-amber-900 dark:bg-zinc-900/80 dark:text-amber-300 dark:hover:bg-zinc-800/80 dark:hover:text-amber-200"
+              className="absolute bottom-4 right-4 rounded-full bg-background/80 p-2 text-primary backdrop-blur-sm transition-all hover:bg-background"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -96,16 +96,16 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
           <div className="px-6 pb-6 pt-0 relative">
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-end -mt-12 md:-mt-16">
               <div className="relative">
-                <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-white shadow-md">
+                <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-card shadow-md">
                   <AvatarImage src={`/placeholder.svg?height=128&width=128`} alt={recruiter.fullName} />
-                  <AvatarFallback className="text-2xl md:text-3xl bg-amber-100 text-amber-800">
+                  <AvatarFallback className="text-2xl md:text-3xl bg-primary/10 text-primary">
                     {getInitials(recruiter.fullName)}
                   </AvatarFallback>
                 </Avatar>
 
                 {isEditable && (
                   <motion.button
-                    className="absolute bottom-2 right-2 rounded-full bg-white/80 p-1.5 text-amber-800 backdrop-blur-sm transition-all hover:bg-white hover:text-amber-900 dark:bg-zinc-900/80 dark:text-amber-300 dark:hover:bg-zinc-800/80 dark:hover:text-amber-200"
+                    className="absolute bottom-2 right-2 rounded-full bg-background/80 p-1.5 text-primary backdrop-blur-sm transition-all hover:bg-background"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -124,7 +124,7 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
                         <TooltipTrigger asChild>
                           <Badge
                             variant="outline"
-                            className="h-6 gap-1 px-2 border-amber-500 text-amber-700 bg-amber-50 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800 w-fit"
+                            className="h-6 gap-1 px-2 border-border text-primary bg-primary/5 w-fit"
                           >
                             <Icons.checkCircle className="h-3.5 w-3.5" />
                             <span>Verified</span>
@@ -156,25 +156,15 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
                 </div>
 
                 <div className="flex flex-wrap gap-2 mt-2">
-                  <Badge
-                    variant="secondary"
-                    className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
-                  >
+                  <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
                     {getIndustryLabel(recruiter.industry)}
                   </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
-                  >
+                  <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
                     {recruiter.companySize} employees
                   </Badge>
                   {recruiter.specializations &&
                     recruiter.specializations.map((specialization: string, index: number) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
-                      >
+                      <Badge key={index} variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
                         {specialization}
                       </Badge>
                     ))}
@@ -182,7 +172,7 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0 w-full md:w-auto">
-                <Button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700">
+                <Button className="bg-primary hover:bg-primary/90">
                   <Icons.mail className="mr-2 h-4 w-4" />
                   Contact
                 </Button>
@@ -237,7 +227,7 @@ export function RecruiterProfileHeader({ recruiter, isEditable = false, onUpdate
                         <Button variant="outline" onClick={() => setIsEditProfileOpen(false)}>
                           Cancel
                         </Button>
-                        <Button onClick={handleSaveProfile} className="bg-gradient-to-r from-amber-600 to-orange-600">
+                        <Button onClick={handleSaveProfile} className="bg-primary">
                           Save Changes
                         </Button>
                       </DialogFooter>

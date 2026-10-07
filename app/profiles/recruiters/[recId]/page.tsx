@@ -174,15 +174,15 @@ export default function RecruiterProfilePage() {
 
   if (isPending) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-b from-white via-amber-50/30 to-white text-amber-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
-        <div className="h-16 w-16 animate-spin rounded-full border-4 border-amber-200 border-t-amber-600"></div>
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
+        <div className="h-16 w-16 animate-spin rounded-full border-4 border-muted border-t-primary"></div>
         <p className="mt-4 text-lg font-medium">Loading profile...</p>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-white via-amber-50/30 to-white text-amber-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
+    <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
       <PremiumNavbar />
       <motion.main className="flex-1 pt-20" variants={pageVariants} initial="initial" animate="animate" exit="exit">
         <RecruiterProfilePageComponent

@@ -146,16 +146,14 @@ export default function StudentJobsPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
+    <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
       <PremiumNavbar />
 
       <main className="flex-1 pt-16">
         <div className="container px-4 py-8 md:px-8 lg:px-12">
           <div className="flex flex-col space-y-4">
             <h1 className="text-3xl font-bold">Explore Job Opportunities</h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Find and apply to jobs that match your skills and interests
-            </p>
+            <p className="text-muted-foreground">Find and apply to jobs that match your skills and interests</p>
 
             {/* Search and Filter */}
             <div className="flex flex-col md:flex-row gap-4 my-4">
@@ -185,9 +183,7 @@ export default function StudentJobsPage() {
                   key={skill}
                   onClick={() => toggleSkillFilter(skill)}
                   className={`rounded-full px-3 py-1 text-sm ${
-                    selectedSkills.includes(skill)
-                      ? "bg-violet-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                    selectedSkills.includes(skill) ? "bg-primary text-white" : "bg-muted text-foreground"
                   }`}
                 >
                   {skill}
@@ -207,7 +203,7 @@ export default function StudentJobsPage() {
               <TabsContent value={activeTab} className="animate-in fade-in-50">
                 {isLoading && filteredJobs.length === 0 ? (
                   <div className="flex justify-center items-center h-64">
-                    <Icons.spinner className="h-8 w-8 animate-spin text-violet-600" />
+                    <Icons.spinner className="h-8 w-8 animate-spin text-primary" />
                   </div>
                 ) : filteredJobs.length > 0 ? (
                   <>
@@ -215,42 +211,39 @@ export default function StudentJobsPage() {
                       {filteredJobs.map((job) => (
                         <div
                           key={job.jobId}
-                          className="border border-violet-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+                          className="border border-border bg-card rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden"
                         >
                           <div className="p-6">
                             <div className="flex justify-between items-start mb-2">
                               <h3
-                                className="text-xl font-semibold text-violet-800 dark:text-violet-300 cursor-pointer hover:text-violet-600 dark:hover:text-violet-400"
+                                className="text-xl font-semibold text-foreground cursor-pointer hover:text-primary"
                                 onClick={() => router.push(`/explore/students/${job.jobId}`)}
                               >
                                 {job.title}
                               </h3>
                               <span
                                 className={`text-xs px-2 py-1 rounded-full ${
-                                  job.status === "open" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                  job.status === "open"
+                                    ? "bg-success/10 text-success"
+                                    : "bg-destructive/10 text-destructive"
                                 }`}
                               >
                                 {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
                               </span>
                             </div>
 
-                            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
-                              {job.description}
-                            </p>
+                            <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{job.description}</p>
 
                             {/* Requirements/Skills */}
                             <div className="mb-4">
                               <div className="flex flex-wrap gap-1">
                                 {job.requirements.slice(0, 3).map((req, i) => (
-                                  <span
-                                    key={i}
-                                    className="bg-violet-100 dark:bg-violet-900/30 text-violet-800 dark:text-violet-300 text-xs px-2 py-1 rounded-full"
-                                  >
+                                  <span key={i} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
                                     {req}
                                   </span>
                                 ))}
                                 {job.requirements.length > 3 && (
-                                  <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-full">
+                                  <span className="bg-muted text-muted-foreground text-xs px-2 py-1 rounded-full">
                                     +{job.requirements.length - 3} more
                                   </span>
                                 )}
@@ -258,16 +251,16 @@ export default function StudentJobsPage() {
                             </div>
 
                             {/* Payment */}
-                            <div className="text-lg font-medium text-violet-800 dark:text-violet-300">
+                            <div className="text-lg font-medium text-foreground">
                               {job.payment} {job.currency}
                             </div>
                           </div>
 
                           {/* Action buttons */}
-                          <div className="flex border-t border-violet-100 dark:border-zinc-800">
+                          <div className="flex border-t border-border">
                             <Button
                               variant="ghost"
-                              className="flex-1 rounded-none text-violet-700 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20"
+                              className="flex-1 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted"
                               onClick={(e) => {
                                 e.stopPropagation()
                                 saveJob(job.jobId || "")
@@ -286,11 +279,11 @@ export default function StudentJobsPage() {
                               )}
                             </Button>
 
-                            <div className="w-px bg-violet-100 dark:bg-zinc-800" />
+                            <div className="w-px bg-primary/10" />
 
                             <Button
                               variant="ghost"
-                              className="flex-1 rounded-none text-violet-700 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20"
+                              className="flex-1 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted"
                               onClick={() => router.push(`/explore/students/${job.jobId}`)}
                             >
                               <Icons.externalLink className="mr-2 h-4 w-4" />
@@ -318,9 +311,9 @@ export default function StudentJobsPage() {
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-64 text-center">
-                    <Icons.search className="h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" />
+                    <Icons.search className="h-12 w-12 text-muted-foreground mb-4" />
                     <h3 className="text-xl font-medium mb-2">No jobs found</h3>
-                    <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                    <p className="text-muted-foreground max-w-md">
                       {activeTab === "all"
                         ? "Try adjusting your search or filter criteria."
                         : activeTab === "saved"

@@ -195,14 +195,14 @@ export default function JobDetailPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
+    <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
       <PremiumNavbar recruiterId={recruiterId || ""} />
 
       <main className="flex-1 pt-16">
         <div className="container px-4 py-8 md:px-8 lg:px-12">
           {isLoading ? (
             <div className="flex h-64 items-center justify-center">
-              <div className="animate-spin text-violet-600">
+              <div className="animate-spin text-primary">
                 <Icons.spinner className="h-8 w-8" />
               </div>
             </div>
@@ -222,7 +222,7 @@ export default function JobDetailPage() {
                     </Button>
                     <span
                       className={`text-xs px-2 py-1 rounded-full ${
-                        job.status === "open" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        job.status === "open" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
                       }`}
                     >
                       {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
@@ -246,7 +246,7 @@ export default function JobDetailPage() {
                   {job.status === "open" ? (
                     <Button
                       variant="outline"
-                      className="border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600"
+                      className="border-destructive/30 hover:border-destructive/30 hover:bg-destructive/5 text-destructive"
                       onClick={() => handleStatusChange("closed")}
                     >
                       <Icons.x className="h-4 w-4 mr-2" />
@@ -255,7 +255,7 @@ export default function JobDetailPage() {
                   ) : (
                     <Button
                       variant="outline"
-                      className="border-green-200 hover:border-green-300 hover:bg-green-50 text-green-600"
+                      className="border-success/30 hover:border-success/30 hover:bg-success/5 text-success"
                       onClick={() => handleStatusChange("open")}
                     >
                       <Icons.check className="h-4 w-4 mr-2" />
@@ -271,60 +271,57 @@ export default function JobDetailPage() {
                   <TabsTrigger value="applicants">Applicants ({applicants.length})</TabsTrigger>
                 </TabsList>
 
-                <TabsContent
-                  value="details"
-                  className="p-6 bg-white dark:bg-zinc-950 rounded-lg border border-violet-200 dark:border-zinc-800 shadow-sm"
-                >
+                <TabsContent value="details" className="p-6 bg-card rounded-lg border border-border shadow-sm">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2">
                       <h3 className="text-lg font-semibold mb-3">Description</h3>
-                      <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line mb-6">{job.description}</p>
+                      <p className="text-foreground whitespace-pre-line mb-6">{job.description}</p>
 
                       <h3 className="text-lg font-semibold mb-3">Requirements</h3>
                       {job.requirements.length > 0 ? (
                         <ul className="list-disc pl-5 mb-6 space-y-1">
                           {job.requirements.map((req, index) => (
-                            <li key={index} className="text-gray-700 dark:text-gray-300">
+                            <li key={index} className="text-foreground">
                               {req}
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-gray-500 dark:text-gray-400 mb-6">No specific requirements listed.</p>
+                        <p className="text-muted-foreground mb-6">No specific requirements listed.</p>
                       )}
                     </div>
 
                     <div>
-                      <div className="bg-violet-50 dark:bg-violet-900/20 rounded-lg p-4 mb-6">
+                      <div className="bg-primary/5 rounded-lg p-4 mb-6">
                         <h3 className="text-lg font-semibold mb-3">Job Details</h3>
 
                         <div className="space-y-3">
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Payment</p>
+                            <p className="text-sm text-muted-foreground">Payment</p>
                             <p className="font-medium text-lg">
                               {job.payment} {job.currency}
                             </p>
                           </div>
 
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
-                            <p className={`font-medium ${job.status === "open" ? "text-green-600" : "text-red-600"}`}>
+                            <p className="text-sm text-muted-foreground">Status</p>
+                            <p className={`font-medium ${job.status === "open" ? "text-success" : "text-destructive"}`}>
                               {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
                             </p>
                           </div>
 
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Posted on</p>
+                            <p className="text-sm text-muted-foreground">Posted on</p>
                             <p className="font-medium">{format(job.createdAt, "MMMM d, yyyy")}</p>
                           </div>
 
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Last updated</p>
+                            <p className="text-sm text-muted-foreground">Last updated</p>
                             <p className="font-medium">{format(job.updatedAt, "MMMM d, yyyy")}</p>
                           </div>
 
                           <div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Applicants</p>
+                            <p className="text-sm text-muted-foreground">Applicants</p>
                             <p className="font-medium">{job.applicants.length}</p>
                           </div>
                         </div>
@@ -336,7 +333,7 @@ export default function JobDetailPage() {
                 <TabsContent value="applicants">
                   {isLoading ? (
                     <div className="flex justify-center items-center h-64">
-                      <Icons.spinner className="h-8 w-8 animate-spin text-violet-600" />
+                      <Icons.spinner className="h-8 w-8 animate-spin text-primary" />
                     </div>
                   ) : job?.applicants && job.applicants.length > 0 ? (
                     <>
@@ -344,7 +341,7 @@ export default function JobDetailPage() {
                         <h3 className="text-lg font-medium mb-2">
                           {job.applicants.length} {job.applicants.length === 1 ? "Applicant" : "Applicants"}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <p className="text-muted-foreground">
                           Review applicant profiles and contact qualified candidates.
                         </p>
                       </div>
@@ -352,22 +349,19 @@ export default function JobDetailPage() {
                       {applicants.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {applicants.map((applicant) => (
-                            <div
-                              key={applicant.id}
-                              className="border border-violet-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-lg shadow-sm p-6"
-                            >
+                            <div key={applicant.id} className="border border-border bg-card rounded-lg shadow-sm p-6">
                               <div className="flex justify-between items-start mb-4">
                                 <div>
                                   <h3 className="text-lg font-semibold mb-1">
                                     {applicant.fullName || "Unnamed Student"}
                                   </h3>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  <p className="text-sm text-muted-foreground">
                                     {applicant.university || "University not specified"}
                                   </p>
                                 </div>
                                 <div className="flex items-center">
                                   {applicant.matchScore !== undefined && (
-                                    <div className="flex items-center gap-1 bg-violet-100 dark:bg-violet-900/30 text-violet-800 dark:text-violet-300 text-xs px-2 py-1 rounded-full">
+                                    <div className="flex items-center gap-1 bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
                                       <Icons.star className="h-3 w-3" />
                                       <span>{applicant.matchScore}%</span>
                                     </div>
@@ -376,26 +370,26 @@ export default function JobDetailPage() {
                               </div>
 
                               <div className="mb-4">
-                                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">Skills</p>
+                                <p className="text-sm text-foreground font-medium">Skills</p>
                                 <div className="mt-1 flex flex-wrap gap-1">
                                   {applicant.skills && applicant.skills.length > 0 ? (
                                     <>
                                       {applicant.skills.slice(0, 5).map((skill, index) => (
                                         <span
                                           key={index}
-                                          className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full"
+                                          className="bg-muted text-foreground text-xs px-2 py-1 rounded-full"
                                         >
                                           {skill.name}
                                         </span>
                                       ))}
                                       {applicant.skills.length > 5 && (
-                                        <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-full">
+                                        <span className="bg-muted text-muted-foreground text-xs px-2 py-1 rounded-full">
                                           +{applicant.skills.length - 5} more
                                         </span>
                                       )}
                                     </>
                                   ) : (
-                                    <span className="text-gray-500 dark:text-gray-400 text-xs">No skills listed</span>
+                                    <span className="text-muted-foreground text-xs">No skills listed</span>
                                   )}
                                 </div>
                               </div>
@@ -427,12 +421,10 @@ export default function JobDetailPage() {
                           ))}
                         </div>
                       ) : (
-                        <div className="flex flex-col items-center justify-center p-8 bg-amber-50/50 dark:bg-amber-900/10 rounded-lg border border-amber-200 dark:border-amber-900/30">
-                          <Icons.alertTriangle className="h-8 w-8 text-amber-500 mb-4" />
-                          <h3 className="text-xl font-medium text-amber-700 dark:text-amber-500 mb-2">
-                            Applicant Details Unavailable
-                          </h3>
-                          <p className="text-amber-600 dark:text-amber-400 text-center mb-4">
+                        <div className="flex flex-col items-center justify-center p-8 bg-primary/5 rounded-lg border border-border">
+                          <Icons.alertTriangle className="h-8 w-8 text-primary mb-4" />
+                          <h3 className="text-xl font-medium text-primary mb-2">Applicant Details Unavailable</h3>
+                          <p className="text-primary text-center mb-4">
                             There are {job.applicants.length} applicant(s), but we couldn't load their details.
                           </p>
                           <Button variant="outline" onClick={() => window.location.reload()}>
@@ -443,10 +435,10 @@ export default function JobDetailPage() {
                       )}
                     </>
                   ) : (
-                    <div className="flex flex-col items-center justify-center h-64 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center">
-                      <Icons.users className="h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" />
-                      <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">No applicants yet</h3>
-                      <p className="text-gray-500 dark:text-gray-500 mb-6">
+                    <div className="flex flex-col items-center justify-center h-64 border border-dashed border-border rounded-lg p-8 text-center">
+                      <Icons.users className="h-12 w-12 text-muted-foreground mb-4" />
+                      <h3 className="text-xl font-medium text-foreground mb-2">No applicants yet</h3>
+                      <p className="text-muted-foreground mb-6">
                         {job?.status === "open"
                           ? "When students apply for this job, they'll appear here."
                           : "This job is currently closed. Reopen it to receive more applications."}
@@ -454,7 +446,7 @@ export default function JobDetailPage() {
                       {job?.status === "closed" && (
                         <Button
                           onClick={() => handleStatusChange("open")}
-                          className="bg-violet-600 hover:bg-violet-700 text-white"
+                          className="bg-primary hover:bg-primary text-white"
                         >
                           <Icons.check className="mr-2 h-4 w-4" /> Reopen Job
                         </Button>
@@ -466,9 +458,9 @@ export default function JobDetailPage() {
             </>
           ) : (
             <div className="flex flex-col items-center justify-center h-64 text-center">
-              <Icons.warning className="h-12 w-12 text-yellow-500 mb-4" />
+              <Icons.warning className="mb-4 h-12 w-12 text-warning" />
               <h3 className="text-xl font-medium mb-2">Job not found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">
+              <p className="text-muted-foreground mb-6">
                 The job you're looking for doesn't exist or you don't have permission to view it.
               </p>
               <Button onClick={() => router.push("/explore/recruiters/job")}>Go to My Jobs</Button>
@@ -588,13 +580,13 @@ export default function JobDetailPage() {
                       {editedJob.requirements.map((req, index) => (
                         <div
                           key={index}
-                          className="flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-sm text-violet-800"
+                          className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
                         >
                           {req}
                           <button
                             type="button"
                             onClick={() => handleRemoveRequirement(index)}
-                            className="ml-1 rounded-full hover:bg-violet-200 p-1"
+                            className="ml-1 rounded-full hover:bg-primary/20 p-1"
                           >
                             <Icons.close className="h-3 w-3" />
                           </button>

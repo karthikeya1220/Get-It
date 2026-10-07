@@ -82,7 +82,7 @@ export function RecruiterHiringNeeds({ recruiter }: RecruiterHiringNeedsProps) {
             <div className="space-y-4">
               <div>
                 <h3 className="font-medium mb-2">Hiring Timeline</h3>
-                <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400">
+                <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
                   {timelineMap[recruiter.hiringTimeline] || recruiter.hiringTimeline}
                 </Badge>
               </div>
@@ -94,7 +94,7 @@ export function RecruiterHiringNeeds({ recruiter }: RecruiterHiringNeedsProps) {
                     const role = roleOptions.find((r) => r.id === roleId)
                     return role ? (
                       <div key={roleId} className="flex items-center gap-2">
-                        <Icons.briefcase className="h-4 w-4 text-amber-600" />
+                        <Icons.briefcase className="h-4 w-4 text-primary" />
                         <span className="text-sm">{role.label}</span>
                       </div>
                     ) : null
@@ -109,7 +109,7 @@ export function RecruiterHiringNeeds({ recruiter }: RecruiterHiringNeedsProps) {
                     <Badge
                       key={typeId}
                       variant="outline"
-                      className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800"
+                      className="bg-primary/5 text-primary border-border hover:bg-primary/10"
                     >
                       {employmentTypeMap[typeId] || typeId}
                     </Badge>
@@ -124,7 +124,7 @@ export function RecruiterHiringNeeds({ recruiter }: RecruiterHiringNeedsProps) {
                     <Badge
                       key={optionId}
                       variant="outline"
-                      className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800"
+                      className="bg-primary/5 text-primary border-border hover:bg-primary/10"
                     >
                       {remoteOptionMap[optionId] || optionId}
                     </Badge>
@@ -148,10 +148,7 @@ export function RecruiterHiringNeeds({ recruiter }: RecruiterHiringNeedsProps) {
                 <h3 className="font-medium mb-2">Skills Needed</h3>
                 <div className="flex flex-wrap gap-2">
                   {recruiter.skillsNeeded.map((skill: string, index: number) => (
-                    <Badge
-                      key={index}
-                      className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
-                    >
+                    <Badge key={index} className="bg-primary/10 text-primary hover:bg-primary/20">
                       {skill}
                     </Badge>
                   ))}
@@ -159,9 +156,9 @@ export function RecruiterHiringNeeds({ recruiter }: RecruiterHiringNeedsProps) {
               </div>
 
               <div className="pt-4 border-t">
-                <div className="flex items-center gap-4 p-4 bg-amber-50 dark:bg-amber-950/30 rounded-lg">
-                  <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center">
-                    <Icons.lightbulb className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-lg">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Icons.lightbulb className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <p className="font-medium">Looking for these skills?</p>
@@ -169,9 +166,7 @@ export function RecruiterHiringNeeds({ recruiter }: RecruiterHiringNeedsProps) {
                       Browse our talent pool to find candidates with these qualifications
                     </p>
                   </div>
-                  <button className="ml-auto text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-500 dark:hover:text-amber-400">
-                    Browse Talent
-                  </button>
+                  <button className="ml-auto text-sm font-medium text-primary hover:text-primary">Browse Talent</button>
                 </div>
               </div>
             </div>

@@ -263,18 +263,18 @@ export function ProfileProjects({
   }
 
   return (
-    <Card className="overflow-hidden border-violet-100 shadow-md dark:border-violet-800/30">
-      <CardHeader className="bg-gradient-to-r from-violet-100/50 to-violet-50/50 dark:from-violet-900/20 dark:to-violet-800/20">
+    <Card className="overflow-hidden border-border shadow-md">
+      <CardHeader className="bg-primary/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icons.briefcase className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            <Icons.briefcase className="h-5 w-5 text-primary" />
             <CardTitle>Projects</CardTitle>
           </div>
           {isEditable && (
             <Dialog>
               <DialogTrigger asChild>
                 <Button
-                  className="bg-gradient-to-r from-violet-600 to-amber-600 text-white hover:from-violet-700 hover:to-amber-700"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
                   size="sm"
                   aria-label="Add Project"
                 >
@@ -310,14 +310,11 @@ export function ProfileProjects({
                     <Label>Technologies Used</Label>
                     <div className="flex flex-wrap gap-2">
                       {newProject.technologies.map((tech) => (
-                        <Badge
-                          key={tech}
-                          className="flex items-center gap-1 bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300"
-                        >
+                        <Badge key={tech} className="flex items-center gap-1 bg-primary/10 text-primary">
                           {tech}
                           <button
                             onClick={() => handleRemoveTechnology(tech)}
-                            className="ml-1 rounded-full hover:text-red-500"
+                            className="ml-1 rounded-full hover:text-destructive"
                           >
                             <Icons.x className="h-3 w-3" />
                           </button>
@@ -403,16 +400,14 @@ export function ProfileProjects({
       </CardHeader>
       <CardContent className="p-6">
         {projects.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-violet-200 bg-violet-50/50 p-8 text-center dark:border-violet-800/30 dark:bg-violet-900/10">
-            <Icons.briefcase className="mb-2 h-10 w-10 text-violet-400 dark:text-violet-500" />
-            <h3 className="mb-1 text-lg font-medium text-violet-900 dark:text-white">No projects yet</h3>
-            <p className="mb-4 text-sm text-violet-700 dark:text-violet-300">
-              Showcase your work by adding your first project
-            </p>
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-primary/5 p-8 text-center">
+            <Icons.briefcase className="mb-2 h-10 w-10 text-muted-foreground" />
+            <h3 className="mb-1 text-lg font-medium text-foreground">No projects yet</h3>
+            <p className="mb-4 text-sm text-muted-foreground">Showcase your work by adding your first project</p>
             {/* <Dialog>
               <DialogTrigger asChild>
                 <Button
-                  className="bg-gradient-to-r from-violet-600 to-amber-600 text-white hover:from-violet-700 hover:to-amber-700"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
                   size="sm"
                 >
                   <Icons.plus className="mr-1 h-4 w-4" />
@@ -431,13 +426,13 @@ export function ProfileProjects({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="group relative overflow-hidden rounded-xl border border-violet-100 bg-white shadow-md transition-all hover:shadow-lg hover:-translate-y-1 dark:border-violet-800/30 dark:bg-zinc-900/80"
+                  className="group relative overflow-hidden rounded-xl border border-border bg-card shadow-md transition-all hover:shadow-lg hover:-translate-y-1"
                 >
                   <div className="absolute right-2 top-2 z-10 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 rounded-full bg-white/80 text-violet-600 backdrop-blur-sm hover:bg-white hover:text-violet-700 dark:bg-zinc-900/80 dark:text-violet-400 dark:hover:bg-zinc-800/80 dark:hover:text-violet-300"
+                      className="h-8 w-8 rounded-full bg-background/80 text-primary backdrop-blur-sm hover:bg-background"
                       onClick={() => startEditingProject(project)}
                     >
                       <Icons.edit className="h-4 w-4" />
@@ -446,7 +441,7 @@ export function ProfileProjects({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 rounded-full bg-white/80 text-red-600 backdrop-blur-sm hover:bg-white hover:text-red-700 dark:bg-zinc-900/80 dark:text-red-400 dark:hover:bg-zinc-800/80 dark:hover:text-red-300"
+                      className="h-8 w-8 rounded-full bg-background/80 text-destructive hover:bg-card hover:text-destructive"
                       onClick={() => setProjectToDelete(project.title)}
                     >
                       <Icons.trash className="h-4 w-4" />
@@ -471,31 +466,27 @@ export function ProfileProjects({
                     <div className="mb-3 flex flex-wrap gap-2">
                       {project.technologies &&
                         project.technologies.map((tech) => (
-                          <Badge
-                            key={tech}
-                            variant="outline"
-                            className="bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300"
-                          >
+                          <Badge key={tech} variant="outline" className="bg-primary/5 text-primary">
                             {tech}
                           </Badge>
                         ))}
                     </div>
 
-                    <p className="mb-4 text-sm text-violet-800 dark:text-violet-200">
+                    <p className="mb-4 text-sm text-foreground">
                       {project.description && project.description.length > 150
                         ? `${project.description.substring(0, 150)}...`
                         : project.description}
                     </p>
 
                     <div className="mb-4 flex items-center justify-between">
-                      <div className="flex items-center text-amber-500">
+                      <div className="flex items-center text-primary">
                         {[...Array(5)].map((_, i) => (
                           <Icons.star
                             key={i}
                             className={`h-4 w-4 ${i < Math.floor(project.ratings) ? "fill-current" : "fill-none"}`}
                           />
                         ))}
-                        <span className="ml-1 text-xs text-violet-700 dark:text-violet-300">({project.reviews})</span>
+                        <span className="ml-1 text-xs text-muted-foreground">({project.reviews})</span>
                       </div>
 
                       <div className="flex gap-2">
@@ -504,7 +495,7 @@ export function ProfileProjects({
                             href={project.links.github}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="rounded-full bg-violet-100 p-1.5 text-violet-800 transition-colors hover:bg-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:hover:bg-violet-800/40"
+                            className="rounded-full bg-primary/10 p-1.5 text-primary transition-colors hover:bg-primary/20"
                           >
                             <Icons.github className="h-4 w-4" />
                             <span className="sr-only">GitHub</span>
@@ -515,7 +506,7 @@ export function ProfileProjects({
                             href={project.links.demo}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="rounded-full bg-violet-100 p-1.5 text-violet-800 transition-colors hover:bg-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:hover:bg-violet-800/40"
+                            className="rounded-full bg-primary/10 p-1.5 text-primary transition-colors hover:bg-primary/20"
                           >
                             <Icons.globe className="h-4 w-4" />
                             <span className="sr-only">Demo</span>
@@ -524,10 +515,7 @@ export function ProfileProjects({
                       </div>
                     </div>
 
-                    <Button
-                      variant="link"
-                      className="p-0 text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
-                    >
+                    <Button variant="link" className="p-0 text-primary hover:text-primary/70">
                       View Details
                     </Button>
                   </div>
@@ -547,13 +535,13 @@ export function ProfileProjects({
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}
                     transition={{ duration: 0.3 }}
-                    className="group relative overflow-hidden rounded-xl border border-violet-100 bg-white shadow-md transition-all hover:shadow-lg dark:border-violet-800/30 dark:bg-zinc-900/80"
+                    className="group relative overflow-hidden rounded-xl border border-border bg-card shadow-md transition-all hover:shadow-lg"
                   >
                     <div className="absolute right-2 top-2 z-10 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-white/80 text-violet-600 backdrop-blur-sm hover:bg-white hover:text-violet-700 dark:bg-zinc-900/80 dark:text-violet-400 dark:hover:bg-zinc-800/80 dark:hover:text-violet-300"
+                        className="h-8 w-8 rounded-full bg-background/80 text-primary backdrop-blur-sm hover:bg-background"
                         onClick={() => startEditingProject(displayedProjects[currentIndex])}
                       >
                         <Icons.edit className="h-4 w-4" />
@@ -562,7 +550,7 @@ export function ProfileProjects({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-white/80 text-red-600 backdrop-blur-sm hover:bg-white hover:text-red-700 dark:bg-zinc-900/80 dark:text-red-400 dark:hover:bg-zinc-800/80 dark:hover:text-red-300"
+                        className="h-8 w-8 rounded-full bg-background/80 text-destructive hover:bg-card hover:text-destructive"
                         onClick={() => setProjectToDelete(displayedProjects[currentIndex].title)}
                       >
                         <Icons.trash className="h-4 w-4" />
@@ -587,17 +575,13 @@ export function ProfileProjects({
                       <div className="mb-3 flex flex-wrap gap-2">
                         {displayedProjects[currentIndex].technologies &&
                           displayedProjects[currentIndex].technologies.map((tech) => (
-                            <Badge
-                              key={tech}
-                              variant="outline"
-                              className="bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300"
-                            >
+                            <Badge key={tech} variant="outline" className="bg-primary/5 text-primary">
                               {tech}
                             </Badge>
                           ))}
                       </div>
 
-                      <p className="mb-4 text-sm text-violet-800 dark:text-violet-200">
+                      <p className="mb-4 text-sm text-foreground">
                         {displayedProjects[currentIndex].description &&
                         displayedProjects[currentIndex].description.length > 150
                           ? `${displayedProjects[currentIndex].description.substring(0, 150)}...`
@@ -605,14 +589,14 @@ export function ProfileProjects({
                       </p>
 
                       <div className="mb-4 flex items-center justify-between">
-                        <div className="flex items-center text-amber-500">
+                        <div className="flex items-center text-primary">
                           {[...Array(5)].map((_, i) => (
                             <Icons.star
                               key={i}
                               className={`h-4 w-4 ${i < Math.floor(displayedProjects[currentIndex].ratings) ? "fill-current" : "fill-none"}`}
                             />
                           ))}
-                          <span className="ml-1 text-xs text-violet-700 dark:text-violet-300">
+                          <span className="ml-1 text-xs text-muted-foreground">
                             ({displayedProjects[currentIndex].reviews})
                           </span>
                         </div>
@@ -623,7 +607,7 @@ export function ProfileProjects({
                               href={displayedProjects[currentIndex].links.github}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="rounded-full bg-violet-100 p-1.5 text-violet-800 transition-colors hover:bg-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:hover:bg-violet-800/40"
+                              className="rounded-full bg-primary/10 p-1.5 text-primary transition-colors hover:bg-primary/20"
                             >
                               <Icons.github className="h-4 w-4" />
                               <span className="sr-only">GitHub</span>
@@ -634,7 +618,7 @@ export function ProfileProjects({
                               href={displayedProjects[currentIndex].links.demo}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="rounded-full bg-violet-100 p-1.5 text-violet-800 transition-colors hover:bg-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:hover:bg-violet-800/40"
+                              className="rounded-full bg-primary/10 p-1.5 text-primary transition-colors hover:bg-primary/20"
                             >
                               <Icons.globe className="h-4 w-4" />
                               <span className="sr-only">Demo</span>
@@ -643,10 +627,7 @@ export function ProfileProjects({
                         </div>
                       </div>
 
-                      <Button
-                        variant="link"
-                        className="p-0 text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
-                      >
+                      <Button variant="link" className="p-0 text-primary hover:text-primary/70">
                         View Details
                       </Button>
                     </div>
@@ -659,7 +640,7 @@ export function ProfileProjects({
                     variant="ghost"
                     size="icon"
                     onClick={handlePrevProject}
-                    className="h-8 w-8 rounded-full bg-white/80 text-violet-600 shadow-md backdrop-blur-sm hover:bg-white hover:text-violet-700 dark:bg-zinc-900/80 dark:text-violet-400 dark:hover:bg-zinc-800/80 dark:hover:text-violet-300"
+                    className="h-8 w-8 rounded-full bg-background/80 text-primary shadow-md backdrop-blur-sm hover:bg-background"
                   >
                     <Icons.chevronLeft className="h-4 w-4" />
                     <span className="sr-only">Previous</span>
@@ -668,7 +649,7 @@ export function ProfileProjects({
                     variant="ghost"
                     size="icon"
                     onClick={handleNextProject}
-                    className="h-8 w-8 rounded-full bg-white/80 text-violet-600 shadow-md backdrop-blur-sm hover:bg-white hover:text-violet-700 dark:bg-zinc-900/80 dark:text-violet-400 dark:hover:bg-zinc-800/80 dark:hover:text-violet-300"
+                    className="h-8 w-8 rounded-full bg-background/80 text-primary shadow-md backdrop-blur-sm hover:bg-background"
                   >
                     <Icons.chevronRight className="h-4 w-4" />
                     <span className="sr-only">Next</span>
@@ -681,9 +662,7 @@ export function ProfileProjects({
                     <button
                       key={index}
                       className={`h-2 rounded-full transition-all ${
-                        index === currentIndex
-                          ? "w-6 bg-violet-600 dark:bg-violet-500"
-                          : "w-2 bg-violet-200 dark:bg-violet-800"
+                        index === currentIndex ? "w-6 bg-primary" : "w-2 bg-primary/20"
                       }`}
                       onClick={() => setCurrentIndex(index)}
                       aria-label={`Go to project ${index + 1}`}
@@ -692,18 +671,13 @@ export function ProfileProjects({
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-violet-200 bg-violet-50/50 p-8 text-center dark:border-violet-800/30 dark:bg-violet-900/10">
-                <Icons.briefcase className="mb-2 h-10 w-10 text-violet-400 dark:text-violet-500" />
-                <h3 className="mb-1 text-lg font-medium text-violet-900 dark:text-white">No projects yet</h3>
-                <p className="mb-4 text-sm text-violet-700 dark:text-violet-300">
-                  Showcase your work by adding your first project
-                </p>
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-primary/5 p-8 text-center">
+                <Icons.briefcase className="mb-2 h-10 w-10 text-muted-foreground" />
+                <h3 className="mb-1 text-lg font-medium text-foreground">No projects yet</h3>
+                <p className="mb-4 text-sm text-muted-foreground">Showcase your work by adding your first project</p>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button
-                      className="bg-gradient-to-r from-violet-600 to-amber-600 text-white hover:from-violet-700 hover:to-amber-700"
-                      size="sm"
-                    >
+                    <Button className="bg-primary text-primary-foreground hover:bg-primary/90" size="sm">
                       <Icons.plus className="mr-1 h-4 w-4" />
                       Add Project
                     </Button>
@@ -716,11 +690,7 @@ export function ProfileProjects({
 
         {!viewAll && projects.length > 3 && (
           <div className="mt-4 text-center">
-            <Button
-              variant="link"
-              className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
-              onClick={onViewAllClick}
-            >
+            <Button variant="link" className="text-primary hover:text-primary/70" onClick={onViewAllClick}>
               View all {projects.length} projects
             </Button>
           </div>
@@ -755,14 +725,11 @@ export function ProfileProjects({
                   <Label>Technologies Used</Label>
                   <div className="flex flex-wrap gap-2">
                     {editedProject.technologies.map((tech) => (
-                      <Badge
-                        key={tech}
-                        className="flex items-center gap-1 bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300"
-                      >
+                      <Badge key={tech} className="flex items-center gap-1 bg-primary/10 text-primary">
                         {tech}
                         <button
                           onClick={() => handleEditedTechnologyRemove(tech)}
-                          className="ml-1 rounded-full hover:text-red-500"
+                          className="ml-1 rounded-full hover:text-destructive"
                         >
                           <Icons.x className="h-3 w-3" />
                         </button>

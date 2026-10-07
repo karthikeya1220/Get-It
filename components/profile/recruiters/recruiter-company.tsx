@@ -151,7 +151,7 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsEditCompanyOpen(true)}
-                className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
+                className="text-primary hover:text-primary"
               >
                 <Icons.edit className="h-4 w-4" />
                 <span className="ml-1">Edit</span>
@@ -192,7 +192,7 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
                       href={recruiter.companyWebsite}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-medium hover:text-amber-600 transition-colors"
+                      className="font-medium hover:text-primary transition-colors"
                     >
                       {recruiter.companyWebsite.replace(/^https?:\/\//, "")}
                     </a>
@@ -226,7 +226,7 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsEditCultureOpen(true)}
-                className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
+                className="text-primary hover:text-primary"
               >
                 <Icons.edit className="h-4 w-4" />
                 <span className="ml-1">Edit</span>
@@ -240,10 +240,7 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
                 {recruiter.companyValues && recruiter.companyValues.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {recruiter.companyValues.map((value: string, index: number) => (
-                      <Badge
-                        key={index}
-                        className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
-                      >
+                      <Badge key={index} className="bg-primary/10 text-primary hover:bg-primary/20">
                         {value}
                       </Badge>
                     ))}
@@ -274,7 +271,7 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {recruiter.benefits.map((benefit: string, index: number) => (
                     <div key={index} className="flex items-center gap-2">
-                      <Icons.check className="h-4 w-4 text-amber-600" />
+                      <Icons.check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{benefit}</span>
                     </div>
                   ))}
@@ -404,16 +401,13 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {editedCultureData.companyValues.map((value: string, index: number) => (
-                    <Badge
-                      key={index}
-                      className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
-                    >
+                    <Badge key={index} className="bg-primary/10 text-primary hover:bg-primary/20">
                       {value}
                       <Button
                         variant="ghost"
                         size="xs"
                         onClick={() => handleRemoveValue(index)}
-                        className="ml-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                        className="ml-2 text-destructive hover:text-destructive"
                       >
                         <Icons.x className="h-3 w-3" />
                       </Button>
@@ -452,16 +446,13 @@ export function RecruiterCompany({ recruiter, isEditable = false, onUpdate }: Re
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {editedCultureData.benefits.map((benefit: string, index: number) => (
-                    <Badge
-                      key={index}
-                      className="bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
-                    >
+                    <Badge key={index} className="bg-primary/10 text-primary hover:bg-primary/20">
                       {benefit}
                       <Button
                         variant="ghost"
                         size="xs"
                         onClick={() => handleRemoveBenefit(index)}
-                        className="ml-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                        className="ml-2 text-destructive hover:text-destructive"
                       >
                         <Icons.x className="h-3 w-3" />
                       </Button>

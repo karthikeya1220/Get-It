@@ -361,7 +361,7 @@ export default function RecruiterExplorePage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
+    <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
       <PremiumNavbar recruiterId={recruiterId || ""} />
 
       <main className="flex-1 pt-16">
@@ -376,7 +376,7 @@ export default function RecruiterExplorePage() {
         )}
 
         <div className="container mt-4 mb-8 text-right">
-          <Button className="bg-violet-600 hover:bg-violet-700 text-white" onClick={() => setIsJobModalOpen(true)}>
+          <Button className="bg-primary hover:bg-primary text-white" onClick={() => setIsJobModalOpen(true)}>
             <Icons.plus className="mr-2 h-4 w-4" /> Create New Job
           </Button>
         </div>
@@ -398,15 +398,15 @@ export default function RecruiterExplorePage() {
             <div className="lg:col-span-3">
               {isLoading ? (
                 <div className="flex h-64 items-center justify-center">
-                  <div className="animate-spin text-violet-600">
+                  <div className="animate-spin text-primary">
                     <Icons.spinner className="h-8 w-8" />
                   </div>
                 </div>
               ) : filteredStudents.length === 0 ? (
                 <div className="flex h-64 flex-col items-center justify-center space-y-4 text-center">
-                  <Icons.search className="h-12 w-12 text-gray-400" />
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">No candidates found</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <Icons.search className="h-12 w-12 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold text-foreground">No candidates found</h3>
+                  <p className="text-sm text-muted-foreground">
                     {students.length === 0
                       ? "No students have registered yet. Please check back later."
                       : "Try adjusting your filters or search criteria to find more candidates."}
@@ -504,13 +504,13 @@ export default function RecruiterExplorePage() {
                     {jobFormData.requirements.map((req, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-sm text-violet-800"
+                        className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
                       >
                         {req}
                         <button
                           type="button"
                           onClick={() => handleRemoveRequirement(index)}
-                          className="ml-1 rounded-full hover:bg-violet-200 p-1"
+                          className="ml-1 rounded-full hover:bg-primary/20 p-1"
                         >
                           <Icons.close className="h-3 w-3" />
                         </button>

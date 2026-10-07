@@ -42,30 +42,28 @@ export function ContactStudentModal({ isOpen, onClose, student, onSubmit }: Cont
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md dark:bg-zinc-900">
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-amber-900 dark:text-white">
-            Contact {student.fullName}
-          </DialogTitle>
+          <DialogTitle className="text-xl font-bold text-foreground">Contact {student.fullName}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="subject" className="text-amber-700 dark:text-amber-400">
+              <Label htmlFor="subject" className="text-primary">
                 Subject
               </Label>
               <Input
                 id="subject"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="border-amber-200 dark:border-amber-800/50"
+                className="border-border"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="message" className="text-amber-700 dark:text-amber-400">
+              <Label htmlFor="message" className="text-primary">
                 Message
               </Label>
               <Textarea
@@ -73,7 +71,7 @@ export function ContactStudentModal({ isOpen, onClose, student, onSubmit }: Cont
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={`Hi ${student.fullName},\n\nI came across your profile and was impressed by your skills and experience. I'd like to discuss a potential opportunity with you.`}
-                className="min-h-[150px] border-amber-200 dark:border-amber-800/50"
+                className="min-h-[150px] border-border"
                 required
               />
             </div>
@@ -83,9 +81,9 @@ export function ContactStudentModal({ isOpen, onClose, student, onSubmit }: Cont
                 id="include-role"
                 checked={includeRole}
                 onCheckedChange={(checked) => setIncludeRole(checked as boolean)}
-                className="border-amber-400 text-amber-600 dark:border-amber-700"
+                className="border-primary text-primary"
               />
-              <Label htmlFor="include-role" className="text-sm text-amber-700 dark:text-amber-400">
+              <Label htmlFor="include-role" className="text-sm text-primary">
                 Include active job roles in this message
               </Label>
             </div>
@@ -96,14 +94,14 @@ export function ContactStudentModal({ isOpen, onClose, student, onSubmit }: Cont
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-amber-200 text-amber-700 hover:bg-amber-50 hover:text-amber-800 dark:border-amber-800 dark:text-amber-400 dark:hover:bg-amber-900/20 dark:hover:text-amber-300"
+              className="border-border text-primary hover:bg-primary/5 hover:text-primary"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-gradient-to-r from-amber-600 to-amber-500 text-white hover:from-amber-700 hover:to-amber-600"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {isSubmitting ? (
                 <>

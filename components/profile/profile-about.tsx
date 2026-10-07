@@ -28,11 +28,11 @@ export function ProfileAbout({ about, onUpdate, isEditable = false }: ProfileAbo
   }
 
   return (
-    <Card className="overflow-hidden border-violet-100 shadow-md dark:border-violet-800/30">
-      <CardHeader className="bg-gradient-to-r from-violet-100/50 to-violet-50/50 dark:from-violet-900/20 dark:to-violet-800/20">
+    <Card className="overflow-hidden border-border shadow-md">
+      <CardHeader className="bg-primary/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icons.user className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            <Icons.user className="h-5 w-5 text-primary" />
             <CardTitle>About</CardTitle>
           </div>
           {isEditable && !isEditing && (
@@ -40,7 +40,7 @@ export function ProfileAbout({ about, onUpdate, isEditable = false }: ProfileAbo
               variant="ghost"
               size="sm"
               onClick={() => setIsEditing(true)}
-              className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+              className="text-primary hover:text-primary/70"
             >
               <Icons.edit className="h-4 w-4" />
               <span className="ml-1">Edit</span>
@@ -55,16 +55,12 @@ export function ProfileAbout({ about, onUpdate, isEditable = false }: ProfileAbo
                   setIsEditing(false)
                   setEditedAbout(about)
                 }}
-                className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+                className="text-primary hover:text-primary/70"
               >
                 <Icons.x className="h-4 w-4" />
                 <span className="ml-1">Cancel</span>
               </Button>
-              <Button
-                size="sm"
-                onClick={handleSave}
-                className="bg-gradient-to-r from-violet-600 to-amber-600 text-white hover:from-violet-700 hover:to-amber-700"
-              >
+              <Button size="sm" onClick={handleSave} className="bg-primary text-primary-foreground hover:bg-primary/90">
                 <Icons.check className="h-4 w-4" />
                 <span className="ml-1">Save</span>
               </Button>
@@ -79,7 +75,7 @@ export function ProfileAbout({ about, onUpdate, isEditable = false }: ProfileAbo
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="text-violet-800 dark:text-violet-200"
+            className="text-foreground"
           >
             {about || "No information provided yet."}
           </motion.div>
@@ -88,10 +84,10 @@ export function ProfileAbout({ about, onUpdate, isEditable = false }: ProfileAbo
             <Textarea
               value={editedAbout}
               onChange={(e) => setEditedAbout(e.target.value)}
-              className="min-h-[150px] resize-none border-violet-200 focus:border-violet-500 focus:ring-violet-500 dark:border-violet-800/30 dark:focus:border-violet-500"
+              className="min-h-[150px] resize-none border-border focus:border-border focus:ring-ring"
               placeholder="Write about yourself, your background, interests, and career goals..."
             />
-            <div className="mt-2 text-xs text-violet-600 dark:text-violet-400">
+            <div className="mt-2 text-xs text-primary">
               <Icons.lightbulb className="mr-1 inline-block h-3 w-3" />
               Tip: Include your background, interests, and career goals to make your profile stand out.
             </div>

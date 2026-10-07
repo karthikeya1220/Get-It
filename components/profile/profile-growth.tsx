@@ -34,21 +34,21 @@ export function ProfileGrowth({ suggestions }: ProfileGrowthProps) {
   const getRelevanceColor = (relevance: string) => {
     switch (relevance) {
       case "High":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+        return "bg-success/10 text-success"
       case "Medium":
-        return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+        return "bg-warning/10 text-warning"
       case "Low":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+        return "bg-muted text-muted-foreground"
       default:
-        return "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300"
+        return "bg-primary/10 text-primary"
     }
   }
 
   return (
-    <Card className="overflow-hidden border-violet-100 shadow-md dark:border-violet-800/30">
-      <CardHeader className="bg-gradient-to-r from-violet-100/50 to-violet-50/50 dark:from-violet-900/20 dark:to-violet-800/20">
+    <Card className="overflow-hidden border-border shadow-md">
+      <CardHeader className="bg-primary/5">
         <div className="flex items-center gap-2">
-          <Icons.lightbulb className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+          <Icons.lightbulb className="h-5 w-5 text-primary" />
           <CardTitle>Career Growth</CardTitle>
         </div>
         <CardDescription>AI-powered recommendations for your professional development</CardDescription>
@@ -61,18 +61,16 @@ export function ProfileGrowth({ suggestions }: ProfileGrowthProps) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: index * 0.1 }}
-              className="rounded-lg border border-violet-100 bg-white p-4 shadow-sm transition-all hover:shadow-md dark:border-violet-800/30 dark:bg-zinc-900/80"
+              className="rounded-lg border border-border bg-card p-4 shadow-sm transition-all hover:shadow-md"
             >
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                     {getIcon(suggestion.type)}
                   </div>
                   <div>
-                    <h3 className="font-medium text-violet-900 dark:text-white">{suggestion.name}</h3>
-                    {suggestion.platform && (
-                      <p className="text-xs text-violet-700 dark:text-violet-300">on {suggestion.platform}</p>
-                    )}
+                    <h3 className="font-medium text-foreground">{suggestion.name}</h3>
+                    {suggestion.platform && <p className="text-xs text-muted-foreground">on {suggestion.platform}</p>}
                   </div>
                 </div>
                 <Badge className={getRelevanceColor(suggestion.relevance)}>{suggestion.relevance} Relevance</Badge>
@@ -82,14 +80,11 @@ export function ProfileGrowth({ suggestions }: ProfileGrowthProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-violet-200 bg-white/80 text-violet-800 shadow-sm backdrop-blur-sm hover:bg-white hover:text-violet-900 dark:border-violet-800/30 dark:bg-zinc-900/80 dark:text-violet-300 dark:hover:bg-zinc-800/80 dark:hover:text-violet-200"
+                  className="border-border bg-background/80 text-primary shadow-sm backdrop-blur-sm hover:bg-background"
                 >
                   Save for Later
                 </Button>
-                <Button
-                  size="sm"
-                  className="bg-gradient-to-r from-violet-600 to-amber-600 text-white hover:from-violet-700 hover:to-amber-700"
-                >
+                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                   Explore
                 </Button>
               </div>
@@ -97,21 +92,18 @@ export function ProfileGrowth({ suggestions }: ProfileGrowthProps) {
           ))}
         </div>
 
-        <div className="mt-6 rounded-lg border border-violet-100 bg-violet-50/50 p-4 dark:border-violet-800/30 dark:bg-violet-900/10">
+        <div className="mt-6 rounded-lg border border-border bg-primary/5 p-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Icons.video className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="mb-1 font-medium text-violet-900 dark:text-white">Create a Video Resume</h3>
-              <p className="mb-3 text-sm text-violet-700 dark:text-violet-300">
+              <h3 className="mb-1 font-medium text-foreground">Create a Video Resume</h3>
+              <p className="mb-3 text-sm text-muted-foreground">
                 Stand out to employers with a 60-second introduction video. Our AI will provide feedback on your
                 delivery.
               </p>
-              <Button
-                className="bg-gradient-to-r from-violet-600 to-amber-600 text-white hover:from-violet-700 hover:to-amber-700"
-                size="sm"
-              >
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90" size="sm">
                 Record Video
               </Button>
             </div>

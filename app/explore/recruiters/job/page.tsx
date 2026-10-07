@@ -164,14 +164,14 @@ export default function RecruiterJobsPage() {
   )
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
+    <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
       <PremiumNavbar recruiterId={recruiterId || ""} />
 
       <main className="flex-1 pt-16">
         <div className="container px-4 py-8 md:px-8 lg:px-12">
           <div className="flex flex-col sm:flex-row items-center justify-between mb-8">
             <h1 className="text-3xl font-bold mb-4 sm:mb-0">My Job Postings</h1>
-            <Button className="bg-violet-600 hover:bg-violet-700 text-white" onClick={() => setIsJobModalOpen(true)}>
+            <Button className="bg-primary hover:bg-primary text-white" onClick={() => setIsJobModalOpen(true)}>
               <Icons.plus className="mr-2 h-4 w-4" /> Create New Job
             </Button>
           </div>
@@ -211,7 +211,7 @@ export default function RecruiterJobsPage() {
 
           {isLoading ? (
             <div className="flex h-64 items-center justify-center">
-              <div className="animate-spin text-violet-600">
+              <div className="animate-spin text-primary">
                 <Icons.spinner className="h-8 w-8" />
               </div>
             </div>
@@ -220,35 +220,32 @@ export default function RecruiterJobsPage() {
               {filteredJobs.map((job) => (
                 <div
                   key={job.jobId}
-                  className="border border-violet-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 cursor-pointer"
+                  className="border border-border bg-card rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 cursor-pointer"
                   onClick={() => router.push(`/explore/recruiters/job/${job.jobId}`)}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-xl font-semibold truncate">{job.title}</h3>
                     <span
                       className={`text-xs px-2 py-1 rounded-full ${
-                        job.status === "open" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        job.status === "open" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
                       }`}
                     >
                       {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
                     </span>
                   </div>
 
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">{job.description}</p>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{job.description}</p>
 
                   {job.requirements.length > 0 && (
                     <div className="mb-4">
                       <div className="flex flex-wrap gap-2">
                         {job.requirements.slice(0, 3).map((req, index) => (
-                          <span
-                            key={index}
-                            className="bg-violet-100 dark:bg-violet-900/30 text-violet-800 dark:text-violet-300 text-xs px-2 py-1 rounded-full"
-                          >
+                          <span key={index} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
                             {req}
                           </span>
                         ))}
                         {job.requirements.length > 3 && (
-                          <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-full">
+                          <span className="bg-muted text-muted-foreground text-xs px-2 py-1 rounded-full">
                             +{job.requirements.length - 3} more
                           </span>
                         )}
@@ -256,33 +253,33 @@ export default function RecruiterJobsPage() {
                     </div>
                   )}
 
-                  <div className="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-zinc-800 mt-auto">
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex justify-between items-center pt-2 border-t border-border mt-auto">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Icons.users className="h-4 w-4" />
                       <span>{job.applicants.length} applicants</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <span className="font-medium text-lg">{job.payment}</span>
-                      <span className="text-gray-600 dark:text-gray-400 text-sm">{job.currency}</span>
+                      <span className="text-muted-foreground text-sm">{job.currency}</span>
                     </div>
                   </div>
 
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                  <div className="text-xs text-muted-foreground mt-2">
                     Posted {format(job.createdAt, "MMM d, yyyy")}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center">
-              <Icons.briefcase className="h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" />
-              <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">No jobs found</h3>
-              <p className="text-gray-500 dark:text-gray-500 mb-6">
+            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-border rounded-lg p-8 text-center">
+              <Icons.briefcase className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-xl font-medium text-foreground mb-2">No jobs found</h3>
+              <p className="text-muted-foreground mb-6">
                 {searchQuery || filterStatus !== "all"
                   ? "Try adjusting your search or filters"
                   : "Create your first job posting to get started"}
               </p>
-              <Button onClick={() => setIsJobModalOpen(true)} className="bg-violet-600 hover:bg-violet-700 text-white">
+              <Button onClick={() => setIsJobModalOpen(true)} className="bg-primary hover:bg-primary text-white">
                 <Icons.plus className="mr-2 h-4 w-4" /> Create New Job
               </Button>
             </div>
@@ -348,13 +345,13 @@ export default function RecruiterJobsPage() {
                     {jobFormData.requirements.map((req, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-sm text-violet-800"
+                        className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
                       >
                         {req}
                         <button
                           type="button"
                           onClick={() => handleRemoveRequirement(index)}
-                          className="ml-1 rounded-full hover:bg-violet-200 p-1"
+                          className="ml-1 rounded-full hover:bg-primary/20 p-1"
                         >
                           <Icons.close className="h-3 w-3" />
                         </button>

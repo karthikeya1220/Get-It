@@ -48,15 +48,15 @@ export function SavedSearchModal({ isOpen, onClose, onSave, currentFilters }: Sa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md dark:bg-zinc-900">
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-amber-900 dark:text-white">Save Current Search</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-foreground">Save Current Search</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="search-name" className="text-amber-700 dark:text-amber-400">
+              <Label htmlFor="search-name" className="text-primary">
                 Search Name
               </Label>
               <Input
@@ -64,35 +64,28 @@ export function SavedSearchModal({ isOpen, onClose, onSave, currentFilters }: Sa
                 value={searchName}
                 onChange={(e) => setSearchName(e.target.value)}
                 placeholder="e.g., Frontend Developers 2024"
-                className="border-amber-200 dark:border-amber-800/50"
+                className="border-border"
                 required
               />
             </div>
 
-            <div className="rounded-lg border border-amber-100 bg-amber-50/50 p-3 dark:border-amber-800/30 dark:bg-amber-900/10">
-              <h3 className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                Current Filters ({getActiveFilterCount()})
-              </h3>
+            <div className="rounded-lg border border-border bg-primary/5 p-3">
+              <h3 className="text-sm font-medium text-foreground">Current Filters ({getActiveFilterCount()})</h3>
 
               <div className="mt-2 space-y-2">
                 {currentFilters.searchQuery && (
                   <div>
-                    <span className="text-xs text-amber-600 dark:text-amber-500">Search Query:</span>
-                    <Badge className="ml-2 bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-                      {currentFilters.searchQuery}
-                    </Badge>
+                    <span className="text-xs text-primary">Search Query:</span>
+                    <Badge className="ml-2 bg-primary/10 text-primary">{currentFilters.searchQuery}</Badge>
                   </div>
                 )}
 
                 {currentFilters.skills.length > 0 && (
                   <div>
-                    <span className="text-xs text-amber-600 dark:text-amber-500">Skills:</span>
+                    <span className="text-xs text-primary">Skills:</span>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {currentFilters.skills.map((skill: string) => (
-                        <Badge
-                          key={skill}
-                          className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
-                        >
+                        <Badge key={skill} className="bg-primary/10 text-primary">
                           {skill}
                         </Badge>
                       ))}
@@ -102,13 +95,10 @@ export function SavedSearchModal({ isOpen, onClose, onSave, currentFilters }: Sa
 
                 {currentFilters.universities.length > 0 && (
                   <div>
-                    <span className="text-xs text-amber-600 dark:text-amber-500">Universities:</span>
+                    <span className="text-xs text-primary">Universities:</span>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {currentFilters.universities.map((university: string) => (
-                        <Badge
-                          key={university}
-                          className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
-                        >
+                        <Badge key={university} className="bg-primary/10 text-primary">
                           {university}
                         </Badge>
                       ))}
@@ -118,13 +108,10 @@ export function SavedSearchModal({ isOpen, onClose, onSave, currentFilters }: Sa
 
                 {currentFilters.graduationYears.length > 0 && (
                   <div>
-                    <span className="text-xs text-amber-600 dark:text-amber-500">Graduation Years:</span>
+                    <span className="text-xs text-primary">Graduation Years:</span>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {currentFilters.graduationYears.map((year: number) => (
-                        <Badge
-                          key={year}
-                          className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
-                        >
+                        <Badge key={year} className="bg-primary/10 text-primary">
                           {year}
                         </Badge>
                       ))}
@@ -134,13 +121,10 @@ export function SavedSearchModal({ isOpen, onClose, onSave, currentFilters }: Sa
 
                 {currentFilters.locations.length > 0 && (
                   <div>
-                    <span className="text-xs text-amber-600 dark:text-amber-500">Locations:</span>
+                    <span className="text-xs text-primary">Locations:</span>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {currentFilters.locations.map((location: string) => (
-                        <Badge
-                          key={location}
-                          className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
-                        >
+                        <Badge key={location} className="bg-primary/10 text-primary">
                           {location}
                         </Badge>
                       ))}
@@ -150,13 +134,10 @@ export function SavedSearchModal({ isOpen, onClose, onSave, currentFilters }: Sa
 
                 {currentFilters.roles.length > 0 && (
                   <div>
-                    <span className="text-xs text-amber-600 dark:text-amber-500">Roles:</span>
+                    <span className="text-xs text-primary">Roles:</span>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {currentFilters.roles.map((role: string) => (
-                        <Badge
-                          key={role}
-                          className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
-                        >
+                        <Badge key={role} className="bg-primary/10 text-primary">
                           {role}
                         </Badge>
                       ))}
@@ -166,8 +147,8 @@ export function SavedSearchModal({ isOpen, onClose, onSave, currentFilters }: Sa
 
                 {currentFilters.availability !== "all" && (
                   <div>
-                    <span className="text-xs text-amber-600 dark:text-amber-500">Availability:</span>
-                    <Badge className="ml-2 bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                    <span className="text-xs text-primary">Availability:</span>
+                    <Badge className="ml-2 bg-primary/10 text-primary">
                       {currentFilters.availability === "immediate"
                         ? "Immediately available"
                         : "Available for internships"}
@@ -183,14 +164,14 @@ export function SavedSearchModal({ isOpen, onClose, onSave, currentFilters }: Sa
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-amber-200 text-amber-700 hover:bg-amber-50 hover:text-amber-800 dark:border-amber-800 dark:text-amber-400 dark:hover:bg-amber-900/20 dark:hover:text-amber-300"
+              className="border-border text-primary hover:bg-primary/5 hover:text-primary"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting || !searchName}
-              className="bg-gradient-to-r from-amber-600 to-amber-500 text-white hover:from-amber-700 hover:to-amber-600"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {isSubmitting ? (
                 <>

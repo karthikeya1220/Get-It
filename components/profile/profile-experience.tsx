@@ -224,18 +224,18 @@ export function ProfileExperience({
   }
 
   return (
-    <Card className="overflow-hidden border-violet-100 shadow-md dark:border-violet-800/30">
-      <CardHeader className="bg-gradient-to-r from-violet-100/50 to-violet-50/50 dark:from-violet-900/20 dark:to-violet-800/20">
+    <Card className="overflow-hidden border-border shadow-md">
+      <CardHeader className="bg-primary/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icons.briefcase className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            <Icons.briefcase className="h-5 w-5 text-primary" />
             <CardTitle>Work Experience</CardTitle>
           </div>
           {isEditable && (
             <Dialog>
               <DialogTrigger asChild>
                 <Button
-                  className="bg-gradient-to-r from-violet-600 to-amber-600 text-white hover:from-violet-700 hover:to-amber-700"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
                   size="sm"
                   aria-label="Add Experience"
                 >
@@ -281,12 +281,12 @@ export function ProfileExperience({
                       {newExperience.responsibilities.map((responsibility, index) => (
                         <li
                           key={index}
-                          className="flex items-center justify-between rounded-md bg-violet-50 px-3 py-2 text-sm text-violet-800 dark:bg-violet-900/20 dark:text-violet-300"
+                          className="flex items-center justify-between rounded-md bg-primary/5 px-3 py-2 text-sm text-primary"
                         >
                           <span>{responsibility}</span>
                           <button
                             onClick={() => handleRemoveResponsibility(responsibility)}
-                            className="ml-2 rounded-full text-red-500 hover:text-red-700"
+                            className="ml-2 rounded-full text-destructive hover:text-destructive"
                           >
                             <Icons.x className="h-4 w-4" />
                           </button>
@@ -323,16 +323,16 @@ export function ProfileExperience({
       </CardHeader>
       <CardContent className="p-6">
         {experience.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-violet-200 bg-violet-50/50 p-8 text-center dark:border-violet-800/30 dark:bg-violet-900/10">
-            <Icons.briefcase className="mb-2 h-10 w-10 text-violet-400 dark:text-violet-500" />
-            <h3 className="mb-1 text-lg font-medium text-violet-900 dark:text-white">No work experience yet</h3>
-            <p className="mb-4 text-sm text-violet-700 dark:text-violet-300">
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-primary/5 p-8 text-center">
+            <Icons.briefcase className="mb-2 h-10 w-10 text-muted-foreground" />
+            <h3 className="mb-1 text-lg font-medium text-foreground">No work experience yet</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
               Add your work history to showcase your professional experience
             </p>
             {/* <Dialog>
               <DialogTrigger asChild>
                 <Button
-                  className="bg-gradient-to-r from-violet-600 to-amber-600 text-white hover:from-violet-700 hover:to-amber-700"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
                   size="sm"
                   aria-label="Add Experience"
                 >
@@ -352,13 +352,13 @@ export function ProfileExperience({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="group relative rounded-lg border border-violet-100 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:-translate-y-1 dark:border-violet-800/30 dark:bg-zinc-900/80"
+                  className="group relative rounded-lg border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md hover:-translate-y-1"
                 >
                   <div className="absolute right-4 top-4 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7 rounded-full text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+                      className="h-7 w-7 rounded-full text-primary hover:text-primary/70"
                       onClick={() => startEditingExperience(exp)}
                     >
                       <Icons.edit className="h-3.5 w-3.5" />
@@ -367,7 +367,7 @@ export function ProfileExperience({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7 rounded-full text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                      className="h-7 w-7 rounded-full text-destructive hover:text-destructive"
                       onClick={() => setExperienceToDelete(exp.company)}
                     >
                       <Icons.trash className="h-3.5 w-3.5" />
@@ -377,11 +377,11 @@ export function ProfileExperience({
 
                   <div className="mb-4 flex items-start justify-between">
                     <div>
-                      <h3 className="text-lg font-medium text-violet-900 dark:text-white">{exp.role}</h3>
-                      <p className="text-violet-700 dark:text-violet-300">{exp.company}</p>
-                      <p className="text-sm text-violet-600 dark:text-violet-400">{exp.duration}</p>
+                      <h3 className="text-lg font-medium text-foreground">{exp.role}</h3>
+                      <p className="text-muted-foreground">{exp.company}</p>
+                      <p className="text-sm text-primary">{exp.duration}</p>
                     </div>
-                    <div className="flex items-center text-amber-500">
+                    <div className="flex items-center text-primary">
                       {[...Array(5)].map((_, i) => (
                         <Icons.star
                           key={i}
@@ -392,10 +392,8 @@ export function ProfileExperience({
                   </div>
 
                   <div>
-                    <h4 className="mb-2 text-sm font-medium text-violet-800 dark:text-violet-200">
-                      Key Responsibilities:
-                    </h4>
-                    <ul className="ml-5 list-disc space-y-1 text-sm text-violet-700 dark:text-violet-300">
+                    <h4 className="mb-2 text-sm font-medium text-foreground">Key Responsibilities:</h4>
+                    <ul className="ml-5 list-disc space-y-1 text-sm text-muted-foreground">
                       {exp.responsibilities &&
                         exp.responsibilities.map((responsibility, idx) => <li key={idx}>{responsibility}</li>)}
                     </ul>
@@ -416,13 +414,13 @@ export function ProfileExperience({
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}
                     transition={{ duration: 0.3 }}
-                    className="group relative rounded-lg border border-violet-100 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-violet-800/30 dark:bg-zinc-900/80"
+                    className="group relative rounded-lg border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md"
                   >
                     <div className="absolute right-4 top-4 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-full text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+                        className="h-7 w-7 rounded-full text-primary hover:text-primary/70"
                         onClick={() => startEditingExperience(displayedExperience[currentIndex])}
                       >
                         <Icons.edit className="h-3.5 w-3.5" />
@@ -431,7 +429,7 @@ export function ProfileExperience({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-full text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                        className="h-7 w-7 rounded-full text-destructive hover:text-destructive"
                         onClick={() => setExperienceToDelete(displayedExperience[currentIndex].company)}
                       >
                         <Icons.trash className="h-3.5 w-3.5" />
@@ -441,17 +439,13 @@ export function ProfileExperience({
 
                     <div className="mb-4 flex items-start justify-between">
                       <div>
-                        <h3 className="text-lg font-medium text-violet-900 dark:text-white">
+                        <h3 className="text-lg font-medium text-foreground">
                           {displayedExperience[currentIndex]?.role}
                         </h3>
-                        <p className="text-violet-700 dark:text-violet-300">
-                          {displayedExperience[currentIndex]?.company}
-                        </p>
-                        <p className="text-sm text-violet-600 dark:text-violet-400">
-                          {displayedExperience[currentIndex]?.duration}
-                        </p>
+                        <p className="text-muted-foreground">{displayedExperience[currentIndex]?.company}</p>
+                        <p className="text-sm text-primary">{displayedExperience[currentIndex]?.duration}</p>
                       </div>
-                      <div className="flex items-center text-amber-500">
+                      <div className="flex items-center text-primary">
                         {[...Array(5)].map((_, i) => (
                           <Icons.star
                             key={i}
@@ -462,10 +456,8 @@ export function ProfileExperience({
                     </div>
 
                     <div>
-                      <h4 className="mb-2 text-sm font-medium text-violet-800 dark:text-violet-200">
-                        Key Responsibilities:
-                      </h4>
-                      <ul className="ml-5 list-disc space-y-1 text-sm text-violet-700 dark:text-violet-300">
+                      <h4 className="mb-2 text-sm font-medium text-foreground">Key Responsibilities:</h4>
+                      <ul className="ml-5 list-disc space-y-1 text-sm text-muted-foreground">
                         {displayedExperience[currentIndex]?.responsibilities &&
                           displayedExperience[currentIndex]?.responsibilities.map((responsibility, idx) => (
                             <li key={idx}>{responsibility}</li>
@@ -481,7 +473,7 @@ export function ProfileExperience({
                     variant="ghost"
                     size="icon"
                     onClick={handlePrevExperience}
-                    className="h-8 w-8 rounded-full bg-white/80 text-violet-600 shadow-md backdrop-blur-sm hover:bg-white hover:text-violet-700 dark:bg-zinc-900/80 dark:text-violet-400 dark:hover:bg-zinc-800/80 dark:hover:text-violet-300"
+                    className="h-8 w-8 rounded-full bg-background/80 text-primary shadow-md backdrop-blur-sm hover:bg-background"
                   >
                     <Icons.chevronLeft className="h-4 w-4" />
                     <span className="sr-only">Previous</span>
@@ -490,7 +482,7 @@ export function ProfileExperience({
                     variant="ghost"
                     size="icon"
                     onClick={handleNextExperience}
-                    className="h-8 w-8 rounded-full bg-white/80 text-violet-600 shadow-md backdrop-blur-sm hover:bg-white hover:text-violet-700 dark:bg-zinc-900/80 dark:text-violet-400 dark:hover:bg-zinc-800/80 dark:hover:text-violet-300"
+                    className="h-8 w-8 rounded-full bg-background/80 text-primary shadow-md backdrop-blur-sm hover:bg-background"
                   >
                     <Icons.chevronRight className="h-4 w-4" />
                     <span className="sr-only">Next</span>
@@ -503,9 +495,7 @@ export function ProfileExperience({
                     <button
                       key={index}
                       className={`h-2 rounded-full transition-all ${
-                        index === currentIndex
-                          ? "w-6 bg-violet-600 dark:bg-violet-500"
-                          : "w-2 bg-violet-200 dark:bg-violet-800"
+                        index === currentIndex ? "w-6 bg-primary" : "w-2 bg-primary/20"
                       }`}
                       onClick={() => setCurrentIndex(index)}
                       aria-label={`Go to experience ${index + 1}`}
@@ -514,16 +504,16 @@ export function ProfileExperience({
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-violet-200 bg-violet-50/50 p-8 text-center dark:border-violet-800/30 dark:bg-violet-900/10">
-                <Icons.briefcase className="mb-2 h-10 w-10 text-violet-400 dark:text-violet-500" />
-                <h3 className="mb-1 text-lg font-medium text-violet-900 dark:text-white">No work experience yet</h3>
-                <p className="mb-4 text-sm text-violet-700 dark:text-violet-300">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-primary/5 p-8 text-center">
+                <Icons.briefcase className="mb-2 h-10 w-10 text-muted-foreground" />
+                <h3 className="mb-1 text-lg font-medium text-foreground">No work experience yet</h3>
+                <p className="mb-4 text-sm text-muted-foreground">
                   Add your work history to showcase your professional experience
                 </p>
                 {/* <Dialog>
                   <DialogTrigger asChild>
                     <Button
-                      className="bg-gradient-to-r from-violet-600 to-amber-600 text-white hover:from-violet-700 hover:to-amber-700"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90"
                       size="sm"
                       aria-label="Add Experience"
                     >
@@ -539,11 +529,7 @@ export function ProfileExperience({
 
         {!viewAll && experience.length > 3 && (
           <div className="mt-4 text-center">
-            <Button
-              variant="link"
-              className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
-              onClick={onViewAllClick}
-            >
+            <Button variant="link" className="text-primary hover:text-primary/70" onClick={onViewAllClick}>
               View all {experience.length} experiences
             </Button>
           </div>
@@ -587,12 +573,12 @@ export function ProfileExperience({
                     {editedExperience.responsibilities.map((responsibility, index) => (
                       <li
                         key={index}
-                        className="flex items-center justify-between rounded-md bg-violet-50 px-3 py-2 text-sm text-violet-800 dark:bg-violet-900/20 dark:text-violet-300"
+                        className="flex items-center justify-between rounded-md bg-primary/5 px-3 py-2 text-sm text-primary"
                       >
                         <span>{responsibility}</span>
                         <button
                           onClick={() => handleEditedResponsibilityRemove(responsibility)}
-                          className="ml-2 rounded-full text-red-500 hover:text-red-700"
+                          className="ml-2 rounded-full text-destructive hover:text-destructive"
                         >
                           <Icons.x className="h-4 w-4" />
                         </button>

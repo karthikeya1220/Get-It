@@ -93,15 +93,15 @@ export function RecruiterActivity({ recruiter }: RecruiterActivityProps) {
   const getActivityColor = (type: string) => {
     switch (type) {
       case "job_posted":
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+        return "bg-primary/10 text-primary"
       case "candidate_contacted":
-        return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+        return "bg-secondary text-secondary-foreground"
       case "candidate_hired":
-        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+        return "bg-success/10 text-success"
       case "profile_updated":
-        return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+        return "bg-warning/10 text-warning"
       default:
-        return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+        return "bg-muted text-muted-foreground"
     }
   }
 
@@ -204,9 +204,7 @@ export function RecruiterActivity({ recruiter }: RecruiterActivityProps) {
                         <span>{index === 0 ? "Remote" : recruiter.companyLocation}</span>
                       </div>
                     </div>
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400">
-                      Active
-                    </Badge>
+                    <Badge className="bg-success/10 text-success">Active</Badge>
                   </div>
 
                   <div className="flex flex-wrap gap-2 mt-3">
@@ -235,9 +233,7 @@ export function RecruiterActivity({ recruiter }: RecruiterActivityProps) {
                     <p className="text-sm text-muted-foreground">
                       Posted {index === 0 ? "3 days ago" : index === 1 ? "10 days ago" : "2 weeks ago"}
                     </p>
-                    <button className="text-sm font-medium text-amber-600 hover:text-amber-700 dark:text-amber-500 dark:hover:text-amber-400">
-                      View Details
-                    </button>
+                    <button className="text-sm font-medium text-primary hover:text-primary">View Details</button>
                   </div>
                 </div>
               ))}

@@ -72,7 +72,7 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsEditContactOpen(true)}
-                className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
+                className="text-primary hover:text-primary"
               >
                 <Icons.edit className="h-4 w-4" />
                 <span className="ml-1">Edit</span>
@@ -95,7 +95,7 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
                 <p className="text-sm text-muted-foreground">Email</p>
                 <div className="flex items-center gap-2">
                   <Icons.mail className="h-4 w-4 text-muted-foreground" />
-                  <a href={`mailto:${recruiter.email}`} className="font-medium hover:text-amber-600 transition-colors">
+                  <a href={`mailto:${recruiter.email}`} className="font-medium hover:text-primary transition-colors">
                     {recruiter.email}
                   </a>
                 </div>
@@ -108,7 +108,7 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
                     <Icons.phone className="h-4 w-4 text-muted-foreground" />
                     <a
                       href={`tel:${recruiter.phoneNumber}`}
-                      className="font-medium hover:text-amber-600 transition-colors"
+                      className="font-medium hover:text-primary transition-colors"
                     >
                       {recruiter.phoneNumber}
                     </a>
@@ -125,7 +125,7 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
                       href={`https://linkedin.com/in/${recruiter.linkedinProfile}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-medium hover:text-amber-600 transition-colors"
+                      className="font-medium hover:text-primary transition-colors"
                     >
                       linkedin.com/in/{recruiter.linkedinProfile}
                     </a>
@@ -154,7 +154,7 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsEditSpecializationsOpen(true)}
-                    className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
+                    className="text-primary hover:text-primary"
                   >
                     <Icons.edit className="h-3.5 w-3.5 mr-1" />
                     Edit
@@ -167,7 +167,7 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
                     <Badge
                       key={index}
                       variant="outline"
-                      className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800"
+                      className="bg-primary/5 text-primary border-border hover:bg-primary/10"
                     >
                       {specialization}
                     </Badge>
@@ -188,9 +188,9 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
             <CardDescription>How to best reach this recruiter</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4 p-4 bg-amber-50 dark:bg-amber-950/30 rounded-lg">
-              <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center">
-                <Icons.mail className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-lg">
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Icons.mail className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <p className="font-medium">Prefers communication via {recruiter.preferredCommunication || "email"}</p>
@@ -198,9 +198,7 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
                   Average response time: {recruiter.averageResponseTime || "24 hours"}
                 </p>
               </div>
-              <Button className="ml-auto bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700">
-                Contact
-              </Button>
+              <Button className="ml-auto bg-primary hover:bg-primary/90">Contact</Button>
             </div>
           </CardContent>
         </Card>
@@ -236,13 +234,13 @@ export function RecruiterAbout({ recruiter, isEditable = false, onUpdate }: Recr
                   <Badge
                     key={index}
                     variant="outline"
-                    className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800 pr-1"
+                    className="bg-primary/5 text-primary border-border hover:bg-primary/10 pr-1"
                   >
                     {specialization}
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-5 w-5 p-0 ml-1 text-amber-700 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-300"
+                      className="h-5 w-5 p-0 ml-1 text-primary hover:text-primary"
                       onClick={() => handleRemoveSpecialization(index)}
                     >
                       <Icons.x className="h-3 w-3" />

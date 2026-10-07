@@ -51,7 +51,7 @@ export function RecruiterTestimonials({ testimonials }: RecruiterTestimonialsPro
                   <div className="flex items-center gap-4 mb-4">
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={`/placeholder.svg?height=48&width=48`} alt={testimonial.name} />
-                      <AvatarFallback className="bg-amber-100 text-amber-800">
+                      <AvatarFallback className="bg-primary/10 text-primary">
                         {testimonial.name
                           .split(" ")
                           .map((n) => n[0])
@@ -72,14 +72,14 @@ export function RecruiterTestimonials({ testimonials }: RecruiterTestimonialsPro
                       <Icons.star
                         key={i}
                         className={`h-5 w-5 ${
-                          i < testimonial.rating ? "text-amber-500 fill-amber-500" : "text-muted-foreground"
+                          i < testimonial.rating ? "text-primary fill-primary" : "text-muted-foreground"
                         }`}
                       />
                     ))}
                   </div>
 
                   <div className="relative">
-                    <Icons.quote className="absolute -top-2 -left-2 h-6 w-6 text-amber-200 dark:text-amber-800/50 opacity-50" />
+                    <Icons.quote className="absolute -top-2 -left-2 h-6 w-6 text-primary/50 opacity-50" />
                     <p className="text-sm leading-relaxed pl-4">{testimonial.content}</p>
                   </div>
 

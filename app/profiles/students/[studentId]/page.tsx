@@ -416,7 +416,7 @@ export default function StudentProfilePage() {
           contact: verificationForm.phoneNumber,
         },
         theme: {
-          color: "#7C3AED", // Violet color to match your UI
+          color: "#1B4DFF",
         },
         handler: async (response: any) => {
           try {
@@ -481,15 +481,15 @@ export default function StudentProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
-        <div className="h-16 w-16 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600"></div>
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background text-foreground">
+        <div className="h-16 w-16 animate-spin rounded-full border-4 border-muted border-t-primary"></div>
         <p className="mt-4 text-lg font-medium">Loading profile...</p>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
+    <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
       <PremiumNavbar />
       <motion.main className="flex-1 pt-20" variants={pageVariants} initial="initial" animate="animate" exit="exit">
         <div className="container px-4 py-8 md:px-8 lg:px-12">
@@ -509,20 +509,20 @@ export default function StudentProfilePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, type: "spring" }}
             >
-              <div className="relative overflow-hidden rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100 shadow-md dark:border-amber-900/50 dark:from-amber-900/20 dark:to-amber-800/20">
+              <div className="relative overflow-hidden rounded-lg border border-warning/30 bg-warning/10 shadow-md">
                 {/* Badge content remains the same */}
                 <div className="absolute inset-0 opacity-10">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-400 via-transparent to-transparent"></div>
+                  <div className="absolute inset-0 bg-warning/10"></div>
                 </div>
 
                 <div className="relative flex flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:items-center">
                   <div className="flex items-center space-x-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200 text-amber-600 dark:bg-amber-900/50 dark:text-amber-500">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary">
                       <Icons.alertTriangle className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-amber-900 dark:text-amber-300">Your profile is not verified</h3>
-                      <p className="text-sm text-amber-800 dark:text-amber-400">
+                      <h3 className="font-medium text-foreground">Your profile is not verified</h3>
+                      <p className="text-sm text-foreground">
                         Verified profiles get 5x more visibility and opportunities
                       </p>
                     </div>
@@ -530,14 +530,14 @@ export default function StudentProfilePage() {
 
                   <Button
                     onClick={() => handleGetVerified()}
-                    className="bg-gradient-to-r from-amber-600 to-amber-500 text-white hover:from-amber-700 hover:to-amber-600"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     <Icons.shieldCheck className="mr-1.5 h-4 w-4" />
                     Get Verified
                   </Button>
                 </div>
 
-                <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600"></div>
+                <div className="h-1 w-full bg-primary"></div>
               </div>
             </motion.div>
           )}
@@ -550,26 +550,24 @@ export default function StudentProfilePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, type: "spring" }}
             >
-              <div className="relative overflow-hidden rounded-lg border border-green-200 bg-gradient-to-r from-green-50 to-green-100 shadow-md dark:border-green-900/50 dark:from-green-900/20 dark:to-green-800/20">
+              <div className="relative overflow-hidden rounded-lg border border-success/30 bg-success/10 shadow-md">
                 <div className="absolute inset-0 opacity-10">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-green-400 via-transparent to-transparent"></div>
+                  <div className="absolute inset-0 bg-success/10"></div>
                 </div>
 
                 <div className="relative flex flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:items-center">
                   <div className="flex items-center space-x-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-200 text-green-600 dark:bg-green-900/50 dark:text-green-500">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/20 text-success">
                       <Icons.checkCircle className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-green-900 dark:text-green-300">Your profile is verified</h3>
-                      <p className="text-sm text-green-800 dark:text-green-400">
-                        Your profile has 5x more visibility to recruiters
-                      </p>
+                      <h3 className="font-medium text-success">Your profile is verified</h3>
+                      <p className="text-sm text-success">Your profile has 5x more visibility to recruiters</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="h-1 w-full bg-gradient-to-r from-green-400 via-green-500 to-green-600"></div>
+                <div className="h-1 w-full bg-success"></div>
               </div>
             </motion.div>
           )}
@@ -581,7 +579,7 @@ export default function StudentProfilePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <div className="rounded-full bg-violet-100 px-4 py-1 text-sm text-violet-800 dark:bg-violet-900/30 dark:text-violet-300">
+              <div className="rounded-full bg-primary/10 px-4 py-1 text-sm text-primary">
                 <span className="flex items-center">
                   <Icons.edit className="mr-1.5 h-3.5 w-3.5" />
                   You are editing your own profile
@@ -593,7 +591,7 @@ export default function StudentProfilePage() {
           <motion.div variants={itemVariants} className="mt-8">
             <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="mb-8 overflow-x-auto">
-                <TabsList className="grid min-w-max w-full grid-cols-8 gap-4 rounded-lg bg-violet-100/50 p-2 dark:bg-violet-900/20">
+                <TabsList className="grid min-w-max w-full grid-cols-8 gap-4 rounded-lg bg-primary/10 p-2">
                   <TabsTrigger value="overview" className="rounded-md">
                     Overview
                   </TabsTrigger>
@@ -743,7 +741,7 @@ export default function StudentProfilePage() {
               <div className="relative group">
                 <Button
                   size="lg"
-                  className="h-14 w-14 rounded-full bg-gradient-to-r from-violet-600 to-amber-600 shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="h-14 w-14 rounded-full bg-primary shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <Icons.plus className="h-6 w-6" />
                 </Button>

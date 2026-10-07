@@ -28,21 +28,19 @@ export function RecruiterProfilePage({ recruiter, isEditable = false, onUpdate }
 
       {/* Verification Warning Badge - Only show when user is not verified */}
       {recruiter.verified !== true && isEditable && (
-        <div className="my-4 relative overflow-hidden rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100 shadow-md dark:border-amber-900/50 dark:from-amber-900/20 dark:to-amber-800/20">
+        <div className="my-4 relative overflow-hidden rounded-lg border border-warning/30 bg-warning/10 shadow-md">
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-400 via-transparent to-transparent"></div>
+            <div className="absolute inset-0 bg-warning/10"></div>
           </div>
 
           <div className="relative flex flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:items-center">
             <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200 text-amber-600 dark:bg-amber-900/50 dark:text-amber-500">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary">
                 <Icons.alertTriangle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-medium text-amber-900 dark:text-amber-300">
-                  Your recruiter profile is not verified
-                </h3>
-                <p className="text-sm text-amber-800 dark:text-amber-400">
+                <h3 className="font-medium text-foreground">Your recruiter profile is not verified</h3>
+                <p className="text-sm text-foreground">
                   Verified recruiter profiles get more candidate applications and trust
                 </p>
               </div>
@@ -52,45 +50,45 @@ export function RecruiterProfilePage({ recruiter, isEditable = false, onUpdate }
               onClick={() => {
                 toast.info("Verification feature coming soon!")
               }}
-              className="bg-gradient-to-r from-amber-600 to-amber-500 text-white hover:from-amber-700 hover:to-amber-600"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               <Icons.shieldCheck className="mr-1.5 h-4 w-4" />
               Get Verified
             </Button>
           </div>
 
-          <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600"></div>
+          <div className="h-1 w-full bg-primary"></div>
         </div>
       )}
 
       {/* Success badge when user is verified */}
       {recruiter.verified === true && isEditable && (
-        <div className="my-4 relative overflow-hidden rounded-lg border border-green-200 bg-gradient-to-r from-green-50 to-green-100 shadow-md dark:border-green-900/50 dark:from-green-900/20 dark:to-green-800/20">
+        <div className="my-4 relative overflow-hidden rounded-lg border border-success/30 bg-success/10 shadow-md">
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-green-400 via-transparent to-transparent"></div>
+            <div className="absolute inset-0 bg-success/10"></div>
           </div>
 
           <div className="relative flex flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:items-center">
             <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-200 text-green-600 dark:bg-green-900/50 dark:text-green-500">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/20 text-success">
                 <Icons.checkCircle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-medium text-green-900 dark:text-green-300">Your recruiter profile is verified</h3>
-                <p className="text-sm text-green-800 dark:text-green-400">
+                <h3 className="font-medium text-success">Your recruiter profile is verified</h3>
+                <p className="text-sm text-success">
                   Your profile has increased visibility and credibility with candidates
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="h-1 w-full bg-gradient-to-r from-green-400 via-green-500 to-green-600"></div>
+          <div className="h-1 w-full bg-success"></div>
         </div>
       )}
 
       {isEditable && (
         <div className="mx-auto mb-6 mt-2 flex items-center justify-center">
-          <div className="rounded-full bg-amber-100 px-4 py-1 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+          <div className="rounded-full bg-primary/10 px-4 py-1 text-sm text-primary">
             <span className="flex items-center">
               <Icons.edit className="mr-1.5 h-3.5 w-3.5" />
               You are editing your own profile

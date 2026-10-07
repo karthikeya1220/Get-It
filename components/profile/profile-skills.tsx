@@ -107,22 +107,22 @@ export function ProfileSkills({
   const getProficiencyColor = (proficiency: string) => {
     switch (proficiency) {
       case "Beginner":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+        return "bg-muted text-muted-foreground"
       case "Intermediate":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
+        return "bg-primary/10 text-primary"
       case "Expert":
-        return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+        return "bg-warning/10 text-warning"
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
+        return "bg-muted text-muted-foreground"
     }
   }
 
   return (
     <>
-      <Card className="border-violet-100 shadow-md dark:border-violet-800/30">
-        <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-violet-100/50 to-violet-50/50 dark:from-violet-900/20 dark:to-violet-800/20">
+      <Card className="border-border shadow-md">
+        <CardHeader className="flex flex-row items-center justify-between bg-primary/5">
           <CardTitle className="flex items-center">
-            <Icons.code className="mr-2 h-5 w-5 text-violet-600" />
+            <Icons.code className="mr-2 h-5 w-5 text-primary" />
             Skills
           </CardTitle>
           <div className="flex gap-2">
@@ -138,8 +138,8 @@ export function ProfileSkills({
         <CardContent className="p-6">
           {displayedSkills.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Icons.code className="h-12 w-12 text-gray-300 dark:text-gray-700" />
-              <p className="mt-4 text-gray-500 dark:text-gray-400">No skills added yet</p>
+              <Icons.code className="h-12 w-12 text-muted-foreground" />
+              <p className="mt-4 text-muted-foreground">No skills added yet</p>
               {isEditable && (
                 <Button variant="outline" size="sm" className="mt-4" onClick={() => setIsAddSkillOpen(true)}>
                   <Icons.plus className="mr-2 h-4 w-4" />
@@ -155,7 +155,7 @@ export function ProfileSkills({
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="group relative flex flex-col rounded-lg border border-violet-100 bg-white p-4 shadow-sm transition-all hover:shadow-md dark:border-violet-800/30 dark:bg-zinc-900"
+                  className="group relative flex flex-col rounded-lg border border-border bg-card p-4 shadow-sm transition-all hover:shadow-md"
                 >
                   <div className="flex items-center justify-between">
                     <h4 className="font-medium">{skill.name}</h4>
@@ -167,7 +167,7 @@ export function ProfileSkills({
                     </Badge>
                   </div>
 
-                  <div className="mt-2 flex items-center text-sm text-gray-600 dark:text-gray-400">
+                  <div className="mt-2 flex items-center text-sm text-muted-foreground">
                     <Icons.users className="mr-1.5 h-3.5 w-3.5" />
                     <span>
                       {skill.endorsements} {skill.endorsements === 1 ? "endorsement" : "endorsements"}
@@ -188,10 +188,10 @@ export function ProfileSkills({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-8 w-8 rounded-full bg-red-50 p-0 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40"
+                        className="h-8 w-8 rounded-full bg-destructive/10 p-0 hover:bg-destructive/10"
                         onClick={() => handleDeleteSkill(index)}
                       >
-                        <Icons.trash className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
+                        <Icons.trash className="h-3.5 w-3.5 text-destructive" />
                         <span className="sr-only">Delete</span>
                       </Button>
                     </div>
@@ -205,7 +205,7 @@ export function ProfileSkills({
             <div className="mt-6 flex justify-center">
               <Button
                 variant="outline"
-                className="border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100 dark:border-violet-800/30 dark:bg-violet-900/20 dark:text-violet-300 dark:hover:bg-violet-900/40"
+                className="border-border bg-primary/5 text-primary hover:bg-primary/10"
                 onClick={onViewAllClick}
               >
                 View all {skillsArray.length} skills

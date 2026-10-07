@@ -20,17 +20,17 @@ export function ProfileAchievements({ achievements = [], showAll = false }: Prof
   // If no achievements, show a placeholder
   if (!achievements || achievements.length === 0) {
     return (
-      <Card className="overflow-hidden border-violet-100 shadow-md dark:border-violet-800/30">
-        <CardHeader className="bg-gradient-to-r from-violet-100/50 to-violet-50/50 dark:from-violet-900/20 dark:to-violet-800/20">
+      <Card className="overflow-hidden border-border shadow-md">
+        <CardHeader className="bg-primary/5">
           <CardTitle className="flex items-center">
-            {/* <Icons.trophy className="mr-2 h-5 w-5 text-amber-500" /> */}
+            {/* <Icons.trophy className="mr-2 h-5 w-5 text-primary" /> */}
             Achievements
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 text-center">
           <div className="flex flex-col items-center justify-center py-8">
-            <Icons.award className="h-12 w-12 text-gray-300 dark:text-gray-700" />
-            <p className="mt-4 text-gray-500 dark:text-gray-400">No achievements yet</p>
+            <Icons.award className="h-12 w-12 text-muted-foreground" />
+            <p className="mt-4 text-muted-foreground">No achievements yet</p>
           </div>
         </CardContent>
       </Card>
@@ -57,14 +57,14 @@ export function ProfileAchievements({ achievements = [], showAll = false }: Prof
   }
 
   return (
-    <Card className="overflow-hidden border-violet-100 shadow-md dark:border-violet-800/30">
-      <CardHeader className="bg-gradient-to-r from-violet-100/50 to-violet-50/50 dark:from-violet-900/20 dark:to-violet-800/20">
+    <Card className="overflow-hidden border-border shadow-md">
+      <CardHeader className="bg-primary/5">
         <CardTitle className="flex items-center">
-          <Icons.trophy className="mr-2 h-5 w-5 text-amber-500" />
+          <Icons.trophy className="mr-2 h-5 w-5 text-primary" />
           Achievements
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-6 divide-y divide-gray-100 dark:divide-gray-800">
+      <CardContent className="p-6 divide-y divide-border">
         {displayedAchievements.map((achievement, index) => (
           <motion.div
             key={index}
@@ -74,12 +74,12 @@ export function ProfileAchievements({ achievements = [], showAll = false }: Prof
             transition={{ delay: index * 0.1 }}
           >
             <div className="flex items-start">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                 {getIcon(achievement.icon)}
               </div>
               <div className="ml-4">
-                <h4 className="font-medium text-violet-900 dark:text-violet-300">{achievement.name}</h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{achievement.description}</p>
+                <h4 className="font-medium text-foreground">{achievement.name}</h4>
+                <p className="text-sm text-muted-foreground">{achievement.description}</p>
               </div>
             </div>
           </motion.div>
@@ -87,11 +87,7 @@ export function ProfileAchievements({ achievements = [], showAll = false }: Prof
 
         {!showAll && achievements.length > 3 && (
           <div className="pt-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
-            >
+            <Button variant="ghost" size="sm" className="w-full text-primary hover:text-primary/70">
               View {achievements.length - 3} more achievements
               <Icons.arrowRight className="ml-2 h-4 w-4" />
             </Button>

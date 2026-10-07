@@ -44,34 +44,34 @@ export function ProfileConnections({ connections, showAll = false }: ProfileConn
   const displayedUsers = showAll ? students : students.slice(0, 3)
 
   return (
-    <Card className="overflow-hidden border-violet-100 shadow-md dark:border-violet-800/30">
-      <CardHeader className="bg-gradient-to-r from-violet-100/50 to-violet-50/50 dark:from-violet-900/20 dark:to-violet-800/20">
+    <Card className="overflow-hidden border-border shadow-md">
+      <CardHeader className="bg-primary/5">
         <div className="flex items-center gap-2">
-          <Icons.users className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+          <Icons.users className="h-5 w-5 text-primary" />
           <CardTitle>Students Network</CardTitle>
         </div>
         <CardDescription>Connect with other students</CardDescription>
       </CardHeader>
       <CardContent className="p-6">
         <div className="mb-6 grid grid-cols-2 gap-4">
-          <div className="flex flex-col items-center justify-center rounded-lg border border-violet-100 bg-white p-4 shadow-sm dark:border-violet-800/30 dark:bg-zinc-900/80">
-            <span className="text-2xl font-bold text-violet-900 dark:text-white">{connections.followers}</span>
-            <span className="text-sm text-violet-700 dark:text-violet-300">Followers</span>
+          <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-card p-4 shadow-sm">
+            <span className="text-2xl font-bold text-foreground">{connections.followers}</span>
+            <span className="text-sm text-muted-foreground">Followers</span>
           </div>
-          <div className="flex flex-col items-center justify-center rounded-lg border border-violet-100 bg-white p-4 shadow-sm dark:border-violet-800/30 dark:bg-zinc-900/80">
-            <span className="text-2xl font-bold text-violet-900 dark:text-white">{connections.following}</span>
-            <span className="text-sm text-violet-700 dark:text-violet-300">Following</span>
+          <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-card p-4 shadow-sm">
+            <span className="text-2xl font-bold text-foreground">{connections.following}</span>
+            <span className="text-sm text-muted-foreground">Following</span>
           </div>
         </div>
 
-        <h3 className="mb-4 text-sm font-medium text-violet-800 dark:text-violet-200">Student Network</h3>
+        <h3 className="mb-4 text-sm font-medium text-foreground">Student Network</h3>
         <div className="space-y-4">
           {loading ? (
             // Loading skeleton
             Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between rounded-lg border border-violet-100 bg-white p-3 shadow-sm dark:border-violet-800/30 dark:bg-zinc-900/80"
+                className="flex items-center justify-between rounded-lg border border-border bg-card p-3 shadow-sm"
               >
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-10 w-10 rounded-full" />
@@ -91,12 +91,12 @@ export function ProfileConnections({ connections, showAll = false }: ProfileConn
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, delay: index * 0.1 }}
-                className="flex items-center justify-between rounded-lg border border-violet-100 bg-white p-3 shadow-sm transition-all hover:shadow-md dark:border-violet-800/30 dark:bg-zinc-900/80"
+                className="flex items-center justify-between rounded-lg border border-border bg-card p-3 shadow-sm transition-all hover:shadow-md"
               >
                 <div className="flex items-center gap-3">
                   <Avatar>
                     <AvatarImage src={student.avatar} alt={student.fullName} />
-                    <AvatarFallback className="bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200">
+                    <AvatarFallback className="bg-primary/10 text-primary">
                       {student.fullName
                         .split(" ")
                         .map((n) => n[0])
@@ -104,8 +104,8 @@ export function ProfileConnections({ connections, showAll = false }: ProfileConn
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h4 className="font-medium text-violet-900 dark:text-white">{student.fullName}</h4>
-                    <p className="text-xs text-violet-700 dark:text-violet-300">
+                    <h4 className="font-medium text-foreground">{student.fullName}</h4>
+                    <p className="text-xs text-muted-foreground">
                       {student.title}
                       {student.university && ` at ${student.university}`}
                     </p>
@@ -115,7 +115,7 @@ export function ProfileConnections({ connections, showAll = false }: ProfileConn
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-violet-200 bg-white/80 text-violet-800 shadow-sm backdrop-blur-sm hover:bg-white hover:text-violet-900 dark:border-violet-800/30 dark:bg-zinc-900/80 dark:text-violet-300 dark:hover:bg-zinc-800/80 dark:hover:text-violet-200"
+                    className="border-border bg-background/80 text-primary shadow-sm backdrop-blur-sm hover:bg-background"
                   >
                     View
                   </Button>
@@ -125,8 +125,8 @@ export function ProfileConnections({ connections, showAll = false }: ProfileConn
           ) : (
             // No students found
             <div className="flex flex-col items-center justify-center py-6 text-center">
-              <Icons.users className="h-12 w-12 text-gray-300 dark:text-gray-700" />
-              <p className="mt-4 text-gray-500 dark:text-gray-400">No students found</p>
+              <Icons.users className="h-12 w-12 text-muted-foreground" />
+              <p className="mt-4 text-muted-foreground">No students found</p>
             </div>
           )}
         </div>
@@ -134,10 +134,7 @@ export function ProfileConnections({ connections, showAll = false }: ProfileConn
         {!showAll && students.length > 3 && (
           <div className="mt-4 text-center">
             <Link href="/explore/students" passHref>
-              <Button
-                variant="link"
-                className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
-              >
+              <Button variant="link" className="text-primary hover:text-primary/70">
                 View all students
               </Button>
             </Link>

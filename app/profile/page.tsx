@@ -98,10 +98,10 @@ export default function ProfilePage() {
   }, [router])
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-gradient-to-b from-white via-violet-50/30 to-white text-violet-950 dark:from-black dark:via-zinc-900/50 dark:to-black dark:text-white">
-      <div className="h-16 w-16 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600"></div>
+    <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-foreground">
+      <div className="h-16 w-16 animate-spin rounded-full border-4 border-muted border-t-primary"></div>
       <p className="mt-4 text-lg font-medium">{loadingMessage}</p>
-      <p className="mt-2 text-sm text-gray-500">This may take a moment...</p>
+      <p className="mt-2 text-sm text-muted-foreground">This may take a moment...</p>
     </div>
   )
 }

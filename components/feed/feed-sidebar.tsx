@@ -218,7 +218,7 @@ export function FeedSidebar({ posts }: FeedSidebarProps) {
                     <span>{resource.duration}</span>
                     <span>•</span>
                     <span className="flex items-center">
-                      <Star className="mr-1 h-3 w-3 fill-amber-400 text-amber-400" />
+                      <Star className="mr-1 h-3 w-3 fill-warning text-warning" />
                       {resource.level}
                     </span>
                   </div>
