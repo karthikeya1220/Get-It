@@ -9,7 +9,7 @@ import { PremiumFooter } from "@/components/premium-footer"
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gradient-to-b from-zinc-50 via-white to-zinc-100 text-zinc-900 dark:from-zinc-900 dark:via-zinc-900 dark:to-black dark:text-white">
+    <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
       <PremiumNavbar />
       <main className="flex-1">
         <PremiumHero />

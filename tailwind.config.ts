@@ -64,6 +64,12 @@ const config = {
         money: "hsl(var(--money))",
         raised: "hsl(var(--surface-raised))",
         sunken: "hsl(var(--surface-sunken))",
+        /* Campus Board (landing only): notice-board ink and safety tape. */
+        ink: "#111318",
+        safety: {
+          DEFAULT: "#FFD600",
+          foreground: "#111318",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -73,6 +79,7 @@ const config = {
       fontFamily: {
         sans: ["var(--font-archivo)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-plex-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
+        display: ["var(--font-display)", "var(--font-archivo)", "ui-sans-serif", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

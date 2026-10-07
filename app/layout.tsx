@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Archivo, IBM_Plex_Mono } from "next/font/google"
+import { Archivo, Bricolage_Grotesque, IBM_Plex_Mono } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "sonner"
@@ -10,6 +10,13 @@ import { QueryProvider } from "@/components/query-provider"
 const archivo = Archivo({
   subsets: ["latin"],
   variable: "--font-archivo",
+  display: "swap",
+})
+
+// Landing display face only — the Campus Board side of the hybrid.
+const display = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display",
   display: "swap",
 })
 
@@ -32,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${archivo.variable} ${plexMono.variable} ${archivo.className}`}>
+      <body className={`${archivo.variable} ${display.variable} ${plexMono.variable} ${archivo.className}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

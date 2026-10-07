@@ -119,13 +119,13 @@ export function SignupStepOne({ formData, updateFormData, nextStep, isLoading }:
     >
       <div className="space-y-4">
         <motion.div className="space-y-2" variants={itemVariants}>
-          <Label htmlFor="fullName" className="text-zinc-700 dark:text-zinc-300">
+          <Label htmlFor="fullName" className="text-foreground">
             Full Name
-            <span className="text-amber-500"> *</span>
+            <span className="text-destructive"> *</span>
           </Label>
           <div className="group relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Icons.user className="h-5 w-5 text-zinc-400 group-focus-within:text-violet-500 dark:text-zinc-500 dark:group-focus-within:text-violet-400" />
+              <Icons.user className="h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
             </div>
             <Input
               id="fullName"
@@ -135,12 +135,12 @@ export function SignupStepOne({ formData, updateFormData, nextStep, isLoading }:
               onChange={handleChange}
               disabled={isLoading}
               required
-              className="h-12 pl-10 border-zinc-300 bg-white/50 text-zinc-900 placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-violet-500"
+              className="h-12 pl-10"
             />
           </div>
           {errors.fullName && (
             <motion.p
-              className="flex items-center gap-1 text-sm text-amber-600 dark:text-amber-500"
+              className="flex items-center gap-1 text-sm text-muted-foreground"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -152,13 +152,13 @@ export function SignupStepOne({ formData, updateFormData, nextStep, isLoading }:
         </motion.div>
 
         <motion.div className="space-y-2" variants={itemVariants}>
-          <Label htmlFor="email" className="text-zinc-700 dark:text-zinc-300">
+          <Label htmlFor="email" className="text-foreground">
             Email Address
-            <span className="text-amber-500"> *</span>
+            <span className="text-destructive"> *</span>
           </Label>
           <div className="group relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Icons.mail className="h-5 w-5 text-zinc-400 group-focus-within:text-violet-500 dark:text-zinc-500 dark:group-focus-within:text-violet-400" />
+              <Icons.mail className="h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
             </div>
             <Input
               id="email"
@@ -169,12 +169,12 @@ export function SignupStepOne({ formData, updateFormData, nextStep, isLoading }:
               onChange={handleChange}
               disabled={isLoading}
               required
-              className="h-12 pl-10 border-zinc-300 bg-white/50 text-zinc-900 placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-violet-500"
+              className="h-12 pl-10"
             />
           </div>
           {errors.email && (
             <motion.p
-              className="flex items-center gap-1 text-sm text-amber-600 dark:text-amber-500"
+              className="flex items-center gap-1 text-sm text-muted-foreground"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -183,17 +183,17 @@ export function SignupStepOne({ formData, updateFormData, nextStep, isLoading }:
               {errors.email}
             </motion.p>
           )}
-          <p className="text-xs text-zinc-500">Preferably use your college email</p>
+          <p className="text-xs text-muted-foreground">Preferably use your college email</p>
         </motion.div>
 
         <motion.div className="space-y-2" variants={itemVariants}>
-          <Label htmlFor="password" className="text-zinc-700 dark:text-zinc-300">
+          <Label htmlFor="password" className="text-foreground">
             Password
-            <span className="text-amber-500"> *</span>
+            <span className="text-destructive"> *</span>
           </Label>
           <div className="group relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Icons.lock className="h-5 w-5 text-zinc-400 group-focus-within:text-violet-500 dark:text-zinc-500 dark:group-focus-within:text-violet-400" />
+              <Icons.lock className="h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
             </div>
             <Input
               id="password"
@@ -204,12 +204,12 @@ export function SignupStepOne({ formData, updateFormData, nextStep, isLoading }:
               onChange={handleChange}
               disabled={isLoading}
               required
-              className="h-12 pl-10 border-zinc-300 bg-white/50 text-zinc-900 placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-violet-500"
+              className="h-12 pl-10"
             />
           </div>
           {errors.password && (
             <motion.p
-              className="flex items-center gap-1 text-sm text-amber-600 dark:text-amber-500"
+              className="flex items-center gap-1 text-sm text-muted-foreground"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -218,17 +218,17 @@ export function SignupStepOne({ formData, updateFormData, nextStep, isLoading }:
               {errors.password}
             </motion.p>
           )}
-          <p className="text-xs text-zinc-500">Must be at least 8 characters</p>
+          <p className="text-xs text-muted-foreground">Must be at least 8 characters</p>
         </motion.div>
 
         <motion.div className="space-y-2" variants={itemVariants}>
-          <Label htmlFor="confirmPassword" className="text-zinc-700 dark:text-zinc-300">
+          <Label htmlFor="confirmPassword" className="text-foreground">
             Confirm Password
-            <span className="text-amber-500"> *</span>
+            <span className="text-destructive"> *</span>
           </Label>
           <div className="group relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Icons.lock className="h-5 w-5 text-zinc-400 group-focus-within:text-violet-500 dark:text-zinc-500 dark:group-focus-within:text-violet-400" />
+              <Icons.lock className="h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
             </div>
             <Input
               id="confirmPassword"
@@ -239,12 +239,12 @@ export function SignupStepOne({ formData, updateFormData, nextStep, isLoading }:
               onChange={handleChange}
               disabled={isLoading}
               required
-              className="h-12 pl-10 border-zinc-300 bg-white/50 text-zinc-900 placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-violet-500"
+              className="h-12 pl-10"
             />
           </div>
           {errors.confirmPassword && (
             <motion.p
-              className="flex items-center gap-1 text-sm text-amber-600 dark:text-amber-500"
+              className="flex items-center gap-1 text-sm text-muted-foreground"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -258,11 +258,7 @@ export function SignupStepOne({ formData, updateFormData, nextStep, isLoading }:
 
       <motion.div variants={itemVariants}>
         <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-          <Button
-            type="submit"
-            className="h-12 w-full bg-gradient-to-r from-violet-600 to-amber-600 text-white hover:from-violet-700 hover:to-amber-700 shadow-lg shadow-violet-600/20 dark:shadow-violet-600/10"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="h-12 w-full" disabled={isLoading}>
             {isLoading ? (
               <motion.div
                 animate={{ rotate: 360 }}

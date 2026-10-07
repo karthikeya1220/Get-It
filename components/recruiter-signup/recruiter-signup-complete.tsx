@@ -30,15 +30,15 @@ export function RecruiterSignupComplete() {
         animate={{ scale: 1 }}
         transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
       >
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-amber-600/20 to-orange-600/20 blur-xl"></div>
-        <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-amber-600 to-orange-600">
+        <div className="absolute inset-0 rounded-full bg-primary/15 blur-xl"></div>
+        <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-primary">
           <Icons.check className="h-14 w-14 text-white" />
         </div>
       </motion.div>
 
       <div className="space-y-3">
         <motion.h2
-          className="text-2xl font-bold text-zinc-900 dark:text-white"
+          className="text-2xl font-bold text-foreground"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -46,7 +46,7 @@ export function RecruiterSignupComplete() {
           Registration Complete!
         </motion.h2>
         <motion.p
-          className="text-zinc-600 dark:text-zinc-400"
+          className="text-muted-foreground"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
@@ -62,47 +62,43 @@ export function RecruiterSignupComplete() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <div className="rounded-xl border border-zinc-200 bg-white/50 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/50 p-6">
-          <h3 className="mb-4 font-medium text-zinc-900 dark:text-white">What's Next?</h3>
+        <div className="rounded-xl border border-border bg-card/60 p-6">
+          <h3 className="mb-4 font-medium text-foreground">What's Next?</h3>
           <ul className="space-y-4 text-sm">
             <li className="flex items-start gap-3">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-600 to-orange-600 text-white">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <span className="text-xs">1</span>
               </div>
-              <span className="text-zinc-700 dark:text-zinc-300">
-                Complete your company profile by adding more details and a logo
-              </span>
+              <span className="text-foreground">Complete your company profile by adding more details and a logo</span>
             </li>
             <li className="flex items-start gap-3">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-600 to-orange-600 text-white">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <span className="text-xs">2</span>
               </div>
-              <span className="text-zinc-700 dark:text-zinc-300">
+              <span className="text-foreground">
                 Post your first job or project to start attracting talented students
               </span>
             </li>
             <li className="flex items-start gap-3">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-600 to-orange-600 text-white">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <span className="text-xs">3</span>
               </div>
-              <span className="text-zinc-700 dark:text-zinc-300">
+              <span className="text-foreground">
                 Browse student profiles and discover talent that matches your needs
               </span>
             </li>
             <li className="flex items-start gap-3">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-600 to-orange-600 text-white">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <span className="text-xs">4</span>
               </div>
-              <span className="text-zinc-700 dark:text-zinc-300">
-                Set up your team members and customize your recruitment workflow
-              </span>
+              <span className="text-foreground">Set up your team members and customize your recruitment workflow</span>
             </li>
           </ul>
         </div>
 
         <div className="flex flex-col gap-3">
           <Link href="/recruiter-dashboard">
-            <Button className="w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:from-amber-700 hover:to-orange-700">
+            <Button className="w-full">
               Go to Dashboard
               <Icons.arrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -110,7 +106,7 @@ export function RecruiterSignupComplete() {
           <Link href="/">
             <Button
               variant="outline"
-              className="w-full border-zinc-300 bg-transparent text-zinc-900 hover:bg-zinc-100 dark:border-zinc-700 dark:text-white dark:hover:bg-zinc-800"
+              className="w-full border border-border bg-transparent text-foreground hover:bg-secondary"
             >
               Return to Home
             </Button>
@@ -119,7 +115,7 @@ export function RecruiterSignupComplete() {
       </motion.div>
 
       <motion.p
-        className="text-sm text-amber-600 dark:text-amber-400 italic"
+        className="text-sm italic text-muted-foreground"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}

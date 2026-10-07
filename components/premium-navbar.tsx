@@ -8,7 +8,7 @@ import { toast } from "sonner"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
-import { useTheme } from "next-themes"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ScrollProgress } from "@/components/motion/scroll-progress"
 import { cn } from "@/lib/utils"
 
 interface PremiumNavbarProps {
@@ -44,7 +45,6 @@ export function PremiumNavbar({ recruiterId, userId }: PremiumNavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [role, setRole] = useState<string | null>(null)
-  const { resolvedTheme, setTheme } = useTheme()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -84,18 +84,6 @@ export function PremiumNavbar({ recruiterId, userId }: PremiumNavbarProps) {
       active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
     )
   }
-
-  const ThemeToggle = ({ className }: { className?: string }) => (
-    <Button
-      variant="outline"
-      size="icon"
-      aria-label="Toggle theme"
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      className={cn("h-9 w-9 rounded-md", className)}
-    >
-      {resolvedTheme === "dark" ? <Icons.sun className="h-4 w-4" /> : <Icons.moon className="h-4 w-4" />}
-    </Button>
-  )
 
   const AccountMenu = () => (
     <DropdownMenu>
@@ -154,6 +142,7 @@ export function PremiumNavbar({ recruiterId, userId }: PremiumNavbarProps) {
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur-md">
+      <ScrollProgress />
       <div className="container flex h-16 items-center justify-between px-4 md:px-8 lg:px-12">
         <Link href="/" className="flex shrink-0 items-center gap-2.5 focus-visible:outline-none">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -185,7 +174,7 @@ export function PremiumNavbar({ recruiterId, userId }: PremiumNavbarProps) {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <ThemeToggle />
+          <ThemeToggle className="h-9 w-9 rounded-md" />
           {user ? (
             <AccountMenu />
           ) : (
@@ -203,7 +192,7 @@ export function PremiumNavbar({ recruiterId, userId }: PremiumNavbarProps) {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-          <ThemeToggle />
+          <ThemeToggle className="h-9 w-9 rounded-md" />
           <Button
             variant="ghost"
             size="icon"

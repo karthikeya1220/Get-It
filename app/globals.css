@@ -179,4 +179,36 @@
       animation: none;
     }
   }
+
+  /*
+    The hero board: a column of gig slips that posts itself. The track holds two
+    identical copies so -50% lands exactly on the seam. Paused by the board's own
+    control, on hover, and under reduced motion.
+  */
+  .board-scroll {
+    animation: board-scroll 36s linear infinite;
+  }
+
+  .board-scroll:hover {
+    animation-play-state: paused;
+  }
+
+  .board-idle {
+    animation: none;
+  }
+
+  @keyframes board-scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(0, -50%, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .board-scroll {
+      animation: none;
+    }
+  }
 }

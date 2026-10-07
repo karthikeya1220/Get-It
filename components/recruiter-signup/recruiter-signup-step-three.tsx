@@ -287,11 +287,7 @@ export function RecruiterSignupStepThree({
         <Button type="button" variant="outline" onClick={prevStep} disabled={isLoading} className="flex-1">
           Back
         </Button>
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="flex-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
-        >
+        <Button type="submit" disabled={isLoading} className="flex-1">
           {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
           Continue
         </Button>
